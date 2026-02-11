@@ -1,0 +1,83 @@
+{
+  "document_name": "User Story Backlog",
+  "document_type": "User Story Backlog",
+  "estimated_completion_time": "10-15 minutes",
+  "total_questions": 1,
+  "question_categories": [
+    {
+      "category": "User Story Backlog Items",
+      "order": 1,
+      "questions": [
+        {
+          "question_id": "user_story_items",
+          "question": "What user stories should be included in your backlog?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Story ID",
+              "type": "text"
+            },
+            {
+              "name": "User Story",
+              "type": "text"
+            },
+            {
+              "name": "Persona",
+              "type": "select",
+              "options": [
+                "Admin",
+                "End User",
+                "Customer",
+                "Manager",
+                "Developer",
+                "Analyst",
+                "Support"
+              ]
+            },
+            {
+              "name": "Priority",
+              "type": "select",
+              "options": [
+                "High",
+                "Medium",
+                "Low"
+              ]
+            },
+            {
+              "name": "Status",
+              "type": "select",
+              "options": [
+                "Ready",
+                "Backlog",
+                "Icebox",
+                "In Progress",
+                "Done"
+              ]
+            },
+            {
+              "name": "Estimate (Pts)",
+              "type": "number"
+            },
+            {
+              "name": "Epic / Feature",
+              "type": "text"
+            },
+            {
+              "name": "Acceptance Criteria",
+              "type": "text"
+            }
+          ],
+          "description": "Add each user story with all required fields. Use the format 'As a [persona], I want to [action] so that [benefit]' for user stories.",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    }
+  ],
+  "_metadata": {
+    "page_id": "2fc89db1-5e5b-80f3-9493-ddbe5ddc099e",
+    "extraction_date": "2026-02-09T15:40:41.543424",
+    "model_used": "moonshotai/kimi-k2-instruct-0905"
+  }
+}

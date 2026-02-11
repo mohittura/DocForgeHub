@@ -1,0 +1,158 @@
+{
+  "document_name": "Evidence Collection Log",
+  "document_type": "Evidence Collection Log",
+  "estimated_completion_time": "15-20 minutes",
+  "total_questions": 7,
+  "question_categories": [
+    {
+      "category": "Document Information",
+      "order": 1,
+      "questions": [
+        {
+          "question_id": "organization_name",
+          "question": "What is your organization's name?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Acme Corp",
+          "description": "Used in the document header to identify the organization",
+          "answer": ""
+        },
+        {
+          "question_id": "audit_compliance_program",
+          "question": "Which audit or compliance program is this evidence log for?",
+          "answer_type": "select",
+          "required": true,
+          "options": [
+            "SOC 2",
+            "ISO 27001",
+            "Internal Audit",
+            "HIPAA",
+            "PCI DSS",
+            "Other"
+          ],
+          "description": "Determines the compliance framework for evidence collection",
+          "answer": ""
+        },
+        {
+          "question_id": "audit_period",
+          "question": "What is the audit period (start and end dates)?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Jan 1, 2024 – Dec 31, 2024",
+          "description": "Defines the time range covered by the evidence collection",
+          "answer": ""
+        },
+        {
+          "question_id": "prepared_by",
+          "question": "Which team or individual is preparing this log?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Compliance Team",
+          "description": "Identifies the responsible party for maintaining the log",
+          "answer": ""
+        },
+        {
+          "question_id": "document_version",
+          "question": "What is the version number of this document?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "1.0",
+          "description": "Tracks document revisions",
+          "answer": ""
+        },
+        {
+          "question_id": "last_updated",
+          "question": "When was this document last updated?",
+          "answer_type": "date",
+          "required": true,
+          "description": "Records the most recent update date",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Evidence Items",
+      "order": 2,
+      "questions": [
+        {
+          "question_id": "evidence_items",
+          "question": "What evidence items should be included in your evidence collection log?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Evidence ID",
+              "type": "text"
+            },
+            {
+              "name": "Control ID",
+              "type": "text"
+            },
+            {
+              "name": "Control Area",
+              "type": "text"
+            },
+            {
+              "name": "Evidence Name",
+              "type": "text"
+            },
+            {
+              "name": "Description",
+              "type": "text"
+            },
+            {
+              "name": "Source System",
+              "type": "text"
+            },
+            {
+              "name": "Owner",
+              "type": "text"
+            },
+            {
+              "name": "Collection Frequency",
+              "type": "select",
+              "options": [
+                "One-time",
+                "Monthly",
+                "Quarterly",
+                "Annual",
+                "Continuous"
+              ]
+            },
+            {
+              "name": "Evidence Location",
+              "type": "text"
+            },
+            {
+              "name": "Collected Date",
+              "type": "date"
+            },
+            {
+              "name": "Reviewer",
+              "type": "text"
+            },
+            {
+              "name": "Status",
+              "type": "select",
+              "options": [
+                "Pending",
+                "Collected",
+                "Reviewed",
+                "Approved",
+                "Rejected"
+              ]
+            }
+          ],
+          "description": "Add each evidence item with all required fields for tracking compliance evidence",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    }
+  ],
+  "_metadata": {
+    "page_id": "2fc89db1-5e5b-80f6-a946-f66afb22b2a2",
+    "extraction_date": "2026-02-09T17:02:58.605954",
+    "model_used": "moonshotai/kimi-k2-instruct-0905"
+  }
+}

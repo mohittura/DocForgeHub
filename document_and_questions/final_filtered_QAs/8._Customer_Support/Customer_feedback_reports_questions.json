@@ -1,0 +1,581 @@
+{
+  "document_name": "Customer Feedback Report",
+  "document_type": "Customer Feedback Report",
+  "estimated_completion_time": "20-30 minutes",
+  "total_questions": 26,
+  "question_categories": [
+    {
+      "category": "Document Metadata",
+      "order": 1,
+      "questions": [
+        {
+          "question_id": "company_name",
+          "question": "What is your company name?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Acme Corporation",
+          "description": "Used in document header and overview",
+          "answer": ""
+        },
+        {
+          "question_id": "reporting_period",
+          "question": "What reporting period does this feedback cover?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Q1 2024",
+          "description": "Timeframe for the feedback data",
+          "answer": ""
+        },
+        {
+          "question_id": "product_name",
+          "question": "What product or solution is this feedback about?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Acme Platform",
+          "description": "Specific product or service being analyzed",
+          "answer": ""
+        },
+        {
+          "question_id": "department",
+          "question": "Which department is responsible for this report?",
+          "answer_type": "select",
+          "required": true,
+          "options": [
+            "Customer Support",
+            "Customer Success",
+            "Product Management",
+            "Customer Experience"
+          ],
+          "description": "Owning department for the feedback analysis",
+          "answer": ""
+        },
+        {
+          "question_id": "document_owner",
+          "question": "Who is the document owner?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Jane Smith",
+          "description": "Person responsible for maintaining this report",
+          "answer": ""
+        },
+        {
+          "question_id": "report_date",
+          "question": "What is the report date?",
+          "answer_type": "date",
+          "required": true,
+          "description": "Date when the report is generated",
+          "answer": ""
+        },
+        {
+          "question_id": "approver_name",
+          "question": "Who approved this report?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "John Doe",
+          "description": "Person who approved the final report",
+          "answer": ""
+        },
+        {
+          "question_id": "version",
+          "question": "What is the document version?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "v1.0",
+          "description": "Version number for tracking changes",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Feedback Overview",
+      "order": 2,
+      "questions": [
+        {
+          "question_id": "overall_sentiment",
+          "question": "What is the overall customer sentiment?",
+          "answer_type": "long_text",
+          "required": true,
+          "description": "High-level summary of how customers feel",
+          "answer": ""
+        },
+        {
+          "question_id": "major_themes",
+          "question": "What are the major feedback themes?",
+          "answer_type": "long_text",
+          "required": true,
+          "description": "Recurring topics in customer feedback",
+          "answer": ""
+        },
+        {
+          "question_id": "changes_vs_previous",
+          "question": "What notable changes occurred compared to the previous period?",
+          "answer_type": "long_text",
+          "required": false,
+          "description": "Trends or shifts in feedback patterns",
+          "answer": ""
+        },
+        {
+          "question_id": "frequent_issues",
+          "question": "What issues are mentioned most frequently?",
+          "answer_type": "long_text",
+          "required": true,
+          "description": "Top pain points customers report",
+          "answer": ""
+        },
+        {
+          "question_id": "positive_highlights",
+          "question": "What positive feedback highlights should be included?",
+          "answer_type": "long_text",
+          "required": false,
+          "description": "Good news or praise from customers",
+          "answer": ""
+        },
+        {
+          "question_id": "emerging_expectations",
+          "question": "What emerging customer expectations are identified?",
+          "answer_type": "long_text",
+          "required": false,
+          "description": "New needs or wants customers express",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Key Highlights",
+      "order": 3,
+      "questions": [
+        {
+          "question_id": "key_highlights",
+          "question": "What are the top 3 positive highlights from customer feedback?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Highlight 1",
+              "type": "text"
+            },
+            {
+              "name": "Highlight 2",
+              "type": "text"
+            },
+            {
+              "name": "Highlight 3",
+              "type": "text"
+            }
+          ],
+          "description": "Main positive findings to feature prominently",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Key Concerns",
+      "order": 4,
+      "questions": [
+        {
+          "question_id": "key_concerns",
+          "question": "What are the top 3 key concerns from customer feedback?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Concern 1",
+              "type": "text"
+            },
+            {
+              "name": "Concern 2",
+              "type": "text"
+            },
+            {
+              "name": "Concern 3",
+              "type": "text"
+            }
+          ],
+          "description": "Main negative findings to feature prominently",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Feedback Sources",
+      "order": 5,
+      "questions": [
+        {
+          "question_id": "feedback_sources",
+          "question": "Which feedback sources should be included?",
+          "answer_type": "multi_select",
+          "required": true,
+          "options": [
+            "Support Tickets",
+            "Customer Surveys",
+            "Sales Feedback",
+            "Customer Success Calls",
+            "Product Feedback Tools",
+            "Social or Community Channels"
+          ],
+          "description": "Channels where customer feedback was collected",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Feedback Volume",
+      "order": 6,
+      "questions": [
+        {
+          "question_id": "feedback_volumes",
+          "question": "What are the feedback volumes by source?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Feedback Source",
+              "type": "select",
+              "options": [
+                "Support Tickets",
+                "Survey Responses",
+                "Feature Requests",
+                "Complaints",
+                "Positive Feedback"
+              ]
+            },
+            {
+              "name": "Volume",
+              "type": "number"
+            },
+            {
+              "name": "Change vs Previous Period",
+              "type": "text"
+            }
+          ],
+          "description": "Quantify feedback volume and trend for each source",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Sentiment Analysis",
+      "order": 7,
+      "questions": [
+        {
+          "question_id": "sentiment_distribution",
+          "question": "What is the sentiment distribution?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Sentiment",
+              "type": "select",
+              "options": [
+                "Positive",
+                "Neutral",
+                "Negative"
+              ]
+            },
+            {
+              "name": "Percentage",
+              "type": "number"
+            },
+            {
+              "name": "Trend",
+              "type": "select",
+              "options": [
+                "Increasing",
+                "Stable",
+                "Declining"
+              ]
+            }
+          ],
+          "description": "Break down customer sentiment percentages and trends",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Top Themes",
+      "order": 8,
+      "questions": [
+        {
+          "question_id": "positive_themes",
+          "question": "What are the top positive themes?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Theme",
+              "type": "text"
+            },
+            {
+              "name": "Description",
+              "type": "text"
+            },
+            {
+              "name": "Impact Area",
+              "type": "select",
+              "options": [
+                "Product",
+                "Support",
+                "UX"
+              ]
+            }
+          ],
+          "description": "Most common positive topics in feedback",
+          "answer": "",
+          "answers": []
+        },
+        {
+          "question_id": "negative_themes",
+          "question": "What are the top negative themes?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Theme",
+              "type": "text"
+            },
+            {
+              "name": "Description",
+              "type": "text"
+            },
+            {
+              "name": "Impact Area",
+              "type": "select",
+              "options": [
+                "Product",
+                "Support",
+                "Performance"
+              ]
+            },
+            {
+              "name": "Frequency",
+              "type": "select",
+              "options": [
+                "High",
+                "Medium",
+                "Low"
+              ]
+            }
+          ],
+          "description": "Most common negative topics in feedback",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Feature Feedback",
+      "order": 9,
+      "questions": [
+        {
+          "question_id": "feature_feedback",
+          "question": "What feature feedback should be included?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Feature / Area",
+              "type": "text"
+            },
+            {
+              "name": "Feedback Type",
+              "type": "select",
+              "options": [
+                "Request",
+                "Issue",
+                "Praise"
+              ]
+            },
+            {
+              "name": "Summary",
+              "type": "text"
+            },
+            {
+              "name": "Priority Indicator",
+              "type": "select",
+              "options": [
+                "High",
+                "Medium",
+                "Low"
+              ]
+            }
+          ],
+          "description": "Specific feedback about product features",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Support Experience",
+      "order": 10,
+      "questions": [
+        {
+          "question_id": "support_feedback",
+          "question": "What support experience feedback should be included?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Area",
+              "type": "select",
+              "options": [
+                "Response Time",
+                "Resolution Quality",
+                "Communication Clarity"
+              ]
+            },
+            {
+              "name": "Feedback Summary",
+              "type": "text"
+            },
+            {
+              "name": "Trend",
+              "type": "select",
+              "options": [
+                "Improving",
+                "Stable",
+                "Declining"
+              ]
+            }
+          ],
+          "description": "Customer feedback about support interactions",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Impact Analysis",
+      "order": 11,
+      "questions": [
+        {
+          "question_id": "impact_areas",
+          "question": "What are the customer experience impact areas?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Area",
+              "type": "select",
+              "options": [
+                "Product Usability",
+                "Onboarding Experience",
+                "Performance / Reliability",
+                "Documentation"
+              ]
+            },
+            {
+              "name": "Impact Level",
+              "type": "select",
+              "options": [
+                "High",
+                "Medium",
+                "Low"
+              ]
+            },
+            {
+              "name": "Description",
+              "type": "text"
+            }
+          ],
+          "description": "Areas where feedback impacts customer experience",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Action Plan",
+      "order": 12,
+      "questions": [
+        {
+          "question_id": "recommendations",
+          "question": "What recommendations and actions should be taken?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Area",
+              "type": "select",
+              "options": [
+                "Product Improvement",
+                "Support Process",
+                "Documentation"
+              ]
+            },
+            {
+              "name": "Recommendation",
+              "type": "text"
+            },
+            {
+              "name": "Owner",
+              "type": "select",
+              "options": [
+                "Product Team",
+                "Support Team",
+                "Documentation Team"
+              ]
+            },
+            {
+              "name": "Priority",
+              "type": "select",
+              "options": [
+                "High",
+                "Medium",
+                "Low"
+              ]
+            },
+            {
+              "name": "Timeline",
+              "type": "date"
+            }
+          ],
+          "description": "Specific actions to address feedback",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "KPI Snapshot",
+      "order": 13,
+      "questions": [
+        {
+          "question_id": "kpi_snapshot",
+          "question": "What are the key metrics for the KPI snapshot?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Category",
+              "type": "select",
+              "options": [
+                "Overall Sentiment",
+                "Top Positive Driver",
+                "Top Pain Point",
+                "Most Requested Feature",
+                "Primary Action Item"
+              ]
+            },
+            {
+              "name": "Summary",
+              "type": "text"
+            }
+          ],
+          "description": "Quick reference metrics for executives",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    }
+  ],
+  "_metadata": {
+    "page_id": "2fc89db1-5e5b-80bf-a997-cb1dc9486a0f",
+    "extraction_date": "2026-02-09T17:55:15.150823",
+    "model_used": "moonshotai/kimi-k2-instruct-0905"
+  }
+}

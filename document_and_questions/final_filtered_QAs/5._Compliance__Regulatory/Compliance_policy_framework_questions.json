@@ -1,0 +1,181 @@
+{
+  "document_name": "Compliance Policy Framework",
+  "document_type": "Compliance Policy Framework",
+  "estimated_completion_time": "15-20 minutes",
+  "total_questions": 10,
+  "question_categories": [
+    {
+      "category": "Document Metadata",
+      "order": 1,
+      "questions": [
+        {
+          "question_id": "organization_name",
+          "question": "What is the name of your organization?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Acme Corp",
+          "description": "Used in the document header and scope statements",
+          "answer": ""
+        },
+        {
+          "question_id": "document_version",
+          "question": "What version number should this document be?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "1.0",
+          "description": "Version tracking for document control",
+          "answer": ""
+        },
+        {
+          "question_id": "document_owner",
+          "question": "Who is the owner of this compliance framework document?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Compliance / Information Security",
+          "description": "The team or role responsible for maintaining this document",
+          "answer": ""
+        },
+        {
+          "question_id": "approved_by",
+          "question": "Who approves this compliance framework?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Executive Management",
+          "description": "The authority that signs off on the framework",
+          "answer": ""
+        },
+        {
+          "question_id": "effective_date",
+          "question": "What is the effective date of this framework?",
+          "answer_type": "date",
+          "required": true,
+          "description": "Date when the framework becomes active",
+          "answer": ""
+        },
+        {
+          "question_id": "review_cycle",
+          "question": "How often will this framework be reviewed?",
+          "answer_type": "select",
+          "required": true,
+          "options": [
+            "Annual",
+            "Bi-annual",
+            "Quarterly",
+            "As needed"
+          ],
+          "description": "Sets the review frequency for continuous compliance",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Compliance Domains",
+      "order": 2,
+      "questions": [
+        {
+          "question_id": "compliance_domains",
+          "question": "Which compliance domains apply to your organization?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Domain",
+              "type": "text"
+            },
+            {
+              "name": "Description",
+              "type": "text"
+            }
+          ],
+          "description": "Add each compliance domain your organization must address (e.g., Information Security, Data Privacy)",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Applicable Standards and Regulations",
+      "order": 3,
+      "questions": [
+        {
+          "question_id": "applicable_standards",
+          "question": "Which standards and regulations must your organization comply with?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Standard / Regulation",
+              "type": "text"
+            },
+            {
+              "name": "Applicability",
+              "type": "text"
+            }
+          ],
+          "description": "List each standard or regulation and how it applies to your organization",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Roles and Responsibilities",
+      "order": 4,
+      "questions": [
+        {
+          "question_id": "compliance_roles",
+          "question": "What roles in your organization have compliance responsibilities?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Role",
+              "type": "text"
+            },
+            {
+              "name": "Responsibility",
+              "type": "text"
+            }
+          ],
+          "description": "Map each role to its specific compliance duty",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Policy Hierarchy",
+      "order": 5,
+      "questions": [
+        {
+          "question_id": "policy_levels",
+          "question": "Define your organization's policy hierarchy levels",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Level",
+              "type": "text"
+            },
+            {
+              "name": "Description",
+              "type": "text"
+            },
+            {
+              "name": "Example",
+              "type": "text"
+            }
+          ],
+          "description": "Describe each level of your compliance documentation structure",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    }
+  ],
+  "_metadata": {
+    "page_id": "2fc89db1-5e5b-8077-83a0-d695f1788d33",
+    "extraction_date": "2026-02-09T17:00:45.945467",
+    "model_used": "moonshotai/kimi-k2-instruct-0905"
+  }
+}

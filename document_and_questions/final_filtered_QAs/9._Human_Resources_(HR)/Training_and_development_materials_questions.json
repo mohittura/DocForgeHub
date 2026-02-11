@@ -1,0 +1,217 @@
+{
+  "document_name": "Training and Development Materials",
+  "document_type": "Training and Development Materials",
+  "estimated_completion_time": "15-20 minutes",
+  "total_questions": 16,
+  "question_categories": [
+    {
+      "category": "Document Metadata",
+      "order": 1,
+      "questions": [
+        {
+          "question_id": "company_name",
+          "question": "What is your company name?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Acme Corporation",
+          "description": "Replaces the {{Company Name}} placeholder throughout the document",
+          "answer": ""
+        },
+        {
+          "question_id": "document_version",
+          "question": "What is the version number for this document?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "1.0",
+          "description": "Document version control",
+          "answer": ""
+        },
+        {
+          "question_id": "effective_date",
+          "question": "When does this training framework become effective?",
+          "answer_type": "date",
+          "required": true,
+          "description": "Sets the effective date for the training program",
+          "answer": ""
+        },
+        {
+          "question_id": "last_review_date",
+          "question": "When was this document last reviewed?",
+          "answer_type": "date",
+          "required": false,
+          "description": "Tracks when the document was last reviewed",
+          "answer": ""
+        },
+        {
+          "question_id": "approved_by",
+          "question": "Who is the approver for this document?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Chief Human Resources Officer",
+          "description": "Person who approved this training framework",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Training Delivery Methods",
+      "order": 2,
+      "questions": [
+        {
+          "question_id": "training_methods",
+          "question": "What training delivery methods does your organization use?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Method",
+              "type": "text"
+            },
+            {
+              "name": "Description",
+              "type": "text"
+            }
+          ],
+          "description": "Define how training is delivered in your organization",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Success Metrics",
+      "order": 3,
+      "questions": [
+        {
+          "question_id": "success_metrics",
+          "question": "What metrics will you use to measure training success?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Metric",
+              "type": "text"
+            },
+            {
+              "name": "Purpose",
+              "type": "text"
+            }
+          ],
+          "description": "Define how you will measure the effectiveness of your training programs",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Training Scope",
+      "order": 4,
+      "questions": [
+        {
+          "question_id": "training_programs",
+          "question": "What specific training programs does your organization offer?",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "List each training program, one per line",
+          "description": "Customize the scope section with your specific training programs",
+          "answer": ""
+        },
+        {
+          "question_id": "out_of_scope",
+          "question": "What training activities are out of scope for this framework?",
+          "answer_type": "long_text",
+          "required": false,
+          "placeholder": "List activities not covered by this framework",
+          "description": "Define what training activities are excluded from this framework",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Roles and Responsibilities",
+      "order": 5,
+      "questions": [
+        {
+          "question_id": "department_names",
+          "question": "What departments are responsible for training in your organization?",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "Human Resources, Learning & Development, etc.",
+          "description": "Customize department names responsible for training",
+          "answer": ""
+        },
+        {
+          "question_id": "role_titles",
+          "question": "What are the specific role titles involved in training?",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "Training Manager, L&D Specialist, etc.",
+          "description": "Define the actual role titles in your organization",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Training Planning Process",
+      "order": 6,
+      "questions": [
+        {
+          "question_id": "training_procedures",
+          "question": "Describe your company-specific training procedures",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "Detail your training planning, development, execution, and evaluation procedures",
+          "description": "Customize the training planning process for your organization",
+          "answer": ""
+        },
+        {
+          "question_id": "evaluation_criteria",
+          "question": "What criteria do you use to evaluate training effectiveness?",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "Assessment methods, feedback mechanisms, etc.",
+          "description": "Define how you evaluate and improve training programs",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Measurement and Success",
+      "order": 7,
+      "questions": [
+        {
+          "question_id": "company_kpis",
+          "question": "What are your company-specific KPIs for training?",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "List key performance indicators for training success",
+          "description": "Define specific KPIs that align with your business goals",
+          "answer": ""
+        },
+        {
+          "question_id": "success_criteria",
+          "question": "What constitutes success for your training programs?",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "Define what successful training looks like in your organization",
+          "description": "Set clear success criteria for training initiatives",
+          "answer": ""
+        },
+        {
+          "question_id": "measurement_tools",
+          "question": "What tools or systems do you use to measure training effectiveness?",
+          "answer_type": "long_text",
+          "required": false,
+          "placeholder": "LMS, surveys, performance management systems, etc.",
+          "description": "Specify the tools used to track and measure training metrics",
+          "answer": ""
+        }
+      ]
+    }
+  ],
+  "_metadata": {
+    "page_id": "2fc89db1-5e5b-80c7-9b09-c9ffc2768345",
+    "extraction_date": "2026-02-09T18:01:31.273122",
+    "model_used": "moonshotai/kimi-k2-instruct-0905"
+  }
+}

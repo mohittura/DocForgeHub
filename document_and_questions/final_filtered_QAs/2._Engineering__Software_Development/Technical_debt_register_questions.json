@@ -1,0 +1,157 @@
+{
+  "document_name": "Technical Debt Register",
+  "document_type": "Technical Debt Register",
+  "estimated_completion_time": "15-20 minutes",
+  "total_questions": 5,
+  "question_categories": [
+    {
+      "category": "Document Metadata",
+      "order": 1,
+      "questions": [
+        {
+          "question_id": "product_system_name",
+          "question": "What is the name of the product or system this technical debt register covers?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "e.g., Checkout Service, Mobile App, Data Platform",
+          "description": "Identifies which system the technical debt items belong to",
+          "answer": ""
+        },
+        {
+          "question_id": "last_updated_date",
+          "question": "When was this register last updated?",
+          "answer_type": "date",
+          "required": true,
+          "description": "Tracks when the register was last reviewed or modified",
+          "answer": ""
+        },
+        {
+          "question_id": "document_owner",
+          "question": "Who owns this technical debt register?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Engineering / Architecture",
+          "description": "Identifies the team responsible for maintaining the register",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Technical Debt Items",
+      "order": 2,
+      "questions": [
+        {
+          "question_id": "debt_items",
+          "question": "What technical debt items should be included in your register?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "ID",
+              "type": "text",
+              "description": "Unique identifier (e.g., TD-001)"
+            },
+            {
+              "name": "Title",
+              "type": "text",
+              "description": "Short descriptive name"
+            },
+            {
+              "name": "Type",
+              "type": "select",
+              "options": [
+                "Code Debt",
+                "Architecture Debt",
+                "Test Debt",
+                "Documentation Debt",
+                "Performance Debt",
+                "Infrastructure Debt",
+                "Maintenance Debt"
+              ]
+            },
+            {
+              "name": "Description",
+              "type": "text",
+              "description": "Detailed explanation of the debt"
+            },
+            {
+              "name": "Impact",
+              "type": "text",
+              "description": "Business or technical impact"
+            },
+            {
+              "name": "Owner",
+              "type": "text",
+              "description": "Team responsible"
+            },
+            {
+              "name": "Priority",
+              "type": "select",
+              "options": [
+                "High",
+                "Medium",
+                "Low"
+              ]
+            },
+            {
+              "name": "Created Date",
+              "type": "date"
+            },
+            {
+              "name": "Target Resolution Date",
+              "type": "text",
+              "description": "e.g., Q1-2026"
+            },
+            {
+              "name": "Status",
+              "type": "select",
+              "options": [
+                "Open",
+                "Planned",
+                "In Progress",
+                "Backlog",
+                "Resolved",
+                "Closed"
+              ]
+            }
+          ],
+          "description": "Add each technical debt item with all required fields",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Technical Debt Types Reference",
+      "order": 3,
+      "questions": [
+        {
+          "question_id": "custom_debt_types",
+          "question": "Do you need to add any custom technical debt types beyond the standard ones?",
+          "answer_type": "structured_list",
+          "required": false,
+          "fields": [
+            {
+              "name": "Type",
+              "type": "text",
+              "description": "Name of the debt type"
+            },
+            {
+              "name": "Description",
+              "type": "text",
+              "description": "What this type covers"
+            }
+          ],
+          "description": "Optional: Define additional debt types specific to your organization",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    }
+  ],
+  "_metadata": {
+    "page_id": "2fc89db1-5e5b-80b8-b3a3-d363066aafaf",
+    "extraction_date": "2026-02-09T15:51:29.050237",
+    "model_used": "moonshotai/kimi-k2-instruct-0905"
+  }
+}

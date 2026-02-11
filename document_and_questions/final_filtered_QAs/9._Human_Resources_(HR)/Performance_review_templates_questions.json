@@ -1,0 +1,334 @@
+{
+  "document_name": "Performance Review Template",
+  "document_type": "Performance Review Template",
+  "estimated_completion_time": "20-30 minutes",
+  "total_questions": 19,
+  "question_categories": [
+    {
+      "category": "Document Metadata",
+      "order": 1,
+      "questions": [
+        {
+          "question_id": "company_name",
+          "question": "What is your company name?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Acme Corp",
+          "description": "Used throughout the document header and overview",
+          "answer": ""
+        },
+        {
+          "question_id": "document_version",
+          "question": "What is the version number for this template?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "1.0",
+          "description": "Version tracking for template updates",
+          "answer": ""
+        },
+        {
+          "question_id": "review_period_type",
+          "question": "What type of review period does this template cover?",
+          "answer_type": "select",
+          "required": true,
+          "options": [
+            "Quarterly",
+            "Half-Year",
+            "Annual"
+          ],
+          "description": "Determines frequency of performance reviews",
+          "answer": ""
+        },
+        {
+          "question_id": "review_date",
+          "question": "What is the review date for this document?",
+          "answer_type": "date",
+          "required": true,
+          "description": "Date when the review is conducted",
+          "answer": ""
+        },
+        {
+          "question_id": "approver_name",
+          "question": "Who is the approver for this performance review?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "HR Director Name",
+          "description": "Person responsible for approving the review",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Employee Information",
+      "order": 2,
+      "questions": [
+        {
+          "question_id": "employee_name",
+          "question": "What is the employee's full name?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "John Smith",
+          "description": "Employee being reviewed",
+          "answer": ""
+        },
+        {
+          "question_id": "employee_id",
+          "question": "What is the employee ID?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "EMP001234",
+          "description": "Unique identifier for employee",
+          "answer": ""
+        },
+        {
+          "question_id": "job_title",
+          "question": "What is the employee's job title?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Software Engineer",
+          "description": "Current role of employee",
+          "answer": ""
+        },
+        {
+          "question_id": "employee_department",
+          "question": "Which department does the employee belong to?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Engineering",
+          "description": "Department where employee works",
+          "answer": ""
+        },
+        {
+          "question_id": "manager_name",
+          "question": "Who is the employee's direct manager?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Jane Doe",
+          "description": "Person conducting the review",
+          "answer": ""
+        },
+        {
+          "question_id": "employment_start_date",
+          "question": "What is the employee's employment start date?",
+          "answer_type": "date",
+          "required": true,
+          "description": "Used to calculate tenure",
+          "answer": ""
+        },
+        {
+          "question_id": "review_period_dates",
+          "question": "What is the specific review period (e.g., Jan 2024 - Jun 2024)?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "January 2024 - June 2024",
+          "description": "Timeframe being reviewed",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Role Summary",
+      "order": 3,
+      "questions": [
+        {
+          "question_id": "role_overview",
+          "question": "Provide a brief overview of the employee's role and expected outcomes for this review period.",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "Responsible for developing new features for the customer portal, improving system performance, and mentoring junior developers...",
+          "description": "High-level summary of role expectations",
+          "answer": ""
+        },
+        {
+          "question_id": "key_responsibilities",
+          "question": "List the employee's key responsibilities (one per line).",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "Develop and maintain web applications\nCollaborate with product team on feature design\nParticipate in code reviews",
+          "description": "Core duties of the employee",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Performance Goals",
+      "order": 4,
+      "questions": [
+        {
+          "question_id": "performance_goals",
+          "question": "What performance goals should be evaluated?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Goal",
+              "type": "text"
+            },
+            {
+              "name": "Expected Outcome",
+              "type": "text"
+            },
+            {
+              "name": "Actual Outcome",
+              "type": "text"
+            },
+            {
+              "name": "Status",
+              "type": "select",
+              "options": [
+                "Achieved",
+                "Partially Achieved",
+                "Not Achieved"
+              ]
+            },
+            {
+              "name": "Comments",
+              "type": "text"
+            }
+          ],
+          "description": "Goals set at beginning of review period and their outcomes",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Performance Evaluation",
+      "order": 5,
+      "questions": [
+        {
+          "question_id": "core_performance_ratings",
+          "question": "Rate the employee on each core performance area.",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Evaluation Area",
+              "type": "select",
+              "options": [
+                "Quality of Work",
+                "Productivity & Efficiency",
+                "Ownership & Accountability",
+                "Problem Solving",
+                "Communication & Collaboration",
+                "Adaptability"
+              ]
+            },
+            {
+              "name": "Rating",
+              "type": "select",
+              "options": [
+                "Exceeds",
+                "Meets",
+                "Needs Improvement"
+              ]
+            },
+            {
+              "name": "Comments",
+              "type": "text"
+            }
+          ],
+          "description": "Standard performance criteria evaluation",
+          "answer": "",
+          "answers": []
+        },
+        {
+          "question_id": "role_specific_competencies",
+          "question": "What role-specific competencies should be evaluated and their ratings?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Competency",
+              "type": "text"
+            },
+            {
+              "name": "Rating",
+              "type": "text"
+            },
+            {
+              "name": "Comments",
+              "type": "text"
+            }
+          ],
+          "description": "Skills specific to employee's role",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Development Planning",
+      "order": 6,
+      "questions": [
+        {
+          "question_id": "development_plan",
+          "question": "What development actions are planned for this employee?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Development Area",
+              "type": "text"
+            },
+            {
+              "name": "Action",
+              "type": "text"
+            },
+            {
+              "name": "Owner",
+              "type": "select",
+              "options": [
+                "Employee",
+                "Manager",
+                "HR"
+              ]
+            },
+            {
+              "name": "Timeline",
+              "type": "date"
+            }
+          ],
+          "description": "Future growth and skill development plans",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Compensation Considerations",
+      "order": 7,
+      "questions": [
+        {
+          "question_id": "compensation_considerations",
+          "question": "Are there any compensation or role change considerations for this employee?",
+          "answer_type": "structured_list",
+          "required": false,
+          "fields": [
+            {
+              "name": "Area",
+              "type": "select",
+              "options": [
+                "Promotion Consideration",
+                "Compensation Review",
+                "Role Change Recommendation"
+              ]
+            },
+            {
+              "name": "Notes",
+              "type": "text"
+            }
+          ],
+          "description": "Optional section for advancement discussions",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    }
+  ],
+  "_metadata": {
+    "page_id": "2fc89db1-5e5b-8082-8b23-e4664448162c",
+    "extraction_date": "2026-02-09T18:02:07.076863",
+    "model_used": "moonshotai/kimi-k2-instruct-0905"
+  }
+}

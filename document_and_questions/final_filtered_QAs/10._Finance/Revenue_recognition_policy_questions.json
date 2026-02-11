@@ -1,0 +1,143 @@
+{
+  "document_name": "Revenue Recognition Policy",
+  "document_type": "Revenue Recognition Policy",
+  "estimated_completion_time": "15-20 minutes",
+  "total_questions": 9,
+  "question_categories": [
+    {
+      "category": "Document Metadata",
+      "order": 1,
+      "questions": [
+        {
+          "question_id": "company_name",
+          "question": "What is your company name?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Acme SaaS Inc.",
+          "description": "Used throughout the policy document",
+          "answer": ""
+        },
+        {
+          "question_id": "fiscal_year",
+          "question": "What fiscal year does this policy cover?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "FY 2026",
+          "description": "Shown in document overview",
+          "answer": ""
+        },
+        {
+          "question_id": "document_version",
+          "question": "What is the version number for this policy?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "v2.1",
+          "description": "Used for document control",
+          "answer": ""
+        },
+        {
+          "question_id": "effective_date",
+          "question": "When does this policy become effective?",
+          "answer_type": "date",
+          "required": true,
+          "description": "Used in metadata table",
+          "answer": ""
+        },
+        {
+          "question_id": "last_review_date",
+          "question": "When was this policy last reviewed?",
+          "answer_type": "date",
+          "required": true,
+          "description": "Used in metadata table",
+          "answer": ""
+        },
+        {
+          "question_id": "approved_by",
+          "question": "Who approved this policy?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "CFO Jane Smith",
+          "description": "Used in metadata table",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Revenue Scope",
+      "order": 2,
+      "questions": [
+        {
+          "question_id": "revenue_types",
+          "question": "Which revenue types does your company generate?",
+          "answer_type": "multi_select",
+          "required": true,
+          "options": [
+            "SaaS subscription revenue",
+            "Professional services revenue",
+            "Usage-based fees",
+            "Licensing revenue",
+            "One-time fees",
+            "Partnership revenue"
+          ],
+          "description": "Determines which sections of the policy apply",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "SaaS Metrics",
+      "order": 3,
+      "questions": [
+        {
+          "question_id": "saas_metrics",
+          "question": "What SaaS metrics does your company track and how do they relate to revenue recognition?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Metric Name",
+              "type": "text"
+            },
+            {
+              "name": "Recognition Reference",
+              "type": "text"
+            }
+          ],
+          "description": "Builds the SaaS metrics integration table",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Roles and Responsibilities",
+      "order": 4,
+      "questions": [
+        {
+          "question_id": "roles_responsibilities",
+          "question": "What roles in your organization are responsible for revenue recognition tasks?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Role",
+              "type": "text"
+            },
+            {
+              "name": "Responsibility",
+              "type": "text"
+            }
+          ],
+          "description": "Builds the roles and responsibilities table",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    }
+  ],
+  "_metadata": {
+    "page_id": "2fc89db1-5e5b-80a0-86e7-e988a3f0b76e",
+    "extraction_date": "2026-02-09T18:11:04.795043",
+    "model_used": "moonshotai/kimi-k2-instruct-0905"
+  }
+}

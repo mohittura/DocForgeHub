@@ -1,0 +1,275 @@
+{
+  "document_name": "Service Level Agreement (SLA)",
+  "document_type": "Service Level Agreement (SLA)",
+  "estimated_completion_time": "15-20 minutes",
+  "total_questions": 19,
+  "question_categories": [
+    {
+      "category": "Document Metadata",
+      "order": 1,
+      "questions": [
+        {
+          "question_id": "company_name",
+          "question": "What is your company name?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Acme Corp",
+          "answer": ""
+        },
+        {
+          "question_id": "product_name",
+          "question": "What is the name of the product or platform covered by this SLA?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Acme Cloud Platform",
+          "answer": ""
+        },
+        {
+          "question_id": "department",
+          "question": "Which department owns this SLA?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Customer Support",
+          "answer": ""
+        },
+        {
+          "question_id": "applicable_teams",
+          "question": "Which internal teams are covered by this SLA?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Support / Engineering / Customer Success",
+          "answer": ""
+        },
+        {
+          "question_id": "document_owner",
+          "question": "Who is the document owner or responsible party?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Customer Support Leadership",
+          "answer": ""
+        },
+        {
+          "question_id": "version",
+          "question": "What is the current version of this SLA?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "1.0",
+          "answer": ""
+        },
+        {
+          "question_id": "effective_date",
+          "question": "When does this SLA become effective?",
+          "answer_type": "date",
+          "required": true,
+          "answer": ""
+        },
+        {
+          "question_id": "last_review_date",
+          "question": "When was this SLA last reviewed?",
+          "answer_type": "date",
+          "required": true,
+          "answer": ""
+        },
+        {
+          "question_id": "approved_by",
+          "question": "Who approved this SLA?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "VP of Customer Success",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Service Availability",
+      "order": 2,
+      "questions": [
+        {
+          "question_id": "service_tiers",
+          "question": "What service tiers do you offer and what are their availability commitments?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Service Tier",
+              "type": "text"
+            },
+            {
+              "name": "Availability Commitment (%)",
+              "type": "text"
+            }
+          ],
+          "description": "Add each tier with its uptime percentage (e.g., 99.5%, 99.9%)",
+          "answer": "",
+          "answers": []
+        },
+        {
+          "question_id": "maintenance_window",
+          "question": "What are your scheduled maintenance windows?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Saturdays 02:00–06:00 UTC",
+          "answer": ""
+        },
+        {
+          "question_id": "maintenance_notification",
+          "question": "How far in advance do you notify customers of scheduled maintenance?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "At least 7 days in advance",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Support Coverage",
+      "order": 3,
+      "questions": [
+        {
+          "question_id": "support_tiers",
+          "question": "What support tiers do you offer and what are their support hours?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Support Tier",
+              "type": "text"
+            },
+            {
+              "name": "Support Hours",
+              "type": "text"
+            }
+          ],
+          "description": "Add each tier with its hours (e.g., Business hours (EST), 24/7)",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Severity Levels",
+      "order": 4,
+      "questions": [
+        {
+          "question_id": "severity_levels",
+          "question": "Define your issue severity levels",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Severity Level",
+              "type": "text"
+            },
+            {
+              "name": "Description",
+              "type": "text"
+            },
+            {
+              "name": "Example",
+              "type": "text"
+            }
+          ],
+          "description": "Add each severity with description and example (e.g., Severity 1 (Critical) – Service unavailable – System outage)",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Response & Resolution Targets",
+      "order": 5,
+      "questions": [
+        {
+          "question_id": "response_times",
+          "question": "What are your initial response time targets by severity?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Severity",
+              "type": "text"
+            },
+            {
+              "name": "Initial Response Time",
+              "type": "text"
+            }
+          ],
+          "description": "Add each severity with its target (e.g., Severity 1 – 15 minutes)",
+          "answer": "",
+          "answers": []
+        },
+        {
+          "question_id": "resolution_times",
+          "question": "What are your target resolution times by severity?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Severity",
+              "type": "text"
+            },
+            {
+              "name": "Target Resolution Time",
+              "type": "text"
+            }
+          ],
+          "description": "Add each severity with its target (e.g., Severity 1 – 4 hours)",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "SLA Monitoring",
+      "order": 6,
+      "questions": [
+        {
+          "question_id": "monitoring_metrics",
+          "question": "Which metrics will you monitor and report?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Metric",
+              "type": "text"
+            },
+            {
+              "name": "Description",
+              "type": "text"
+            }
+          ],
+          "description": "Add each metric with its description (e.g., First Response Time – Speed of initial acknowledgement)",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Scope & Exclusions",
+      "order": 7,
+      "questions": [
+        {
+          "question_id": "covered_services",
+          "question": "Which services are covered by this SLA?",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "Customer support response and resolution times, platform availability, incident response handling",
+          "answer": ""
+        },
+        {
+          "question_id": "excluded_services",
+          "question": "Which items are explicitly excluded from this SLA?",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "Feature requests, product roadmap timelines, third-party outages",
+          "answer": ""
+        }
+      ]
+    }
+  ],
+  "_metadata": {
+    "page_id": "2fc89db1-5e5b-8046-90b9-ccc60b532e3e",
+    "extraction_date": "2026-02-09T17:52:18.748696",
+    "model_used": "moonshotai/kimi-k2-instruct-0905"
+  }
+}

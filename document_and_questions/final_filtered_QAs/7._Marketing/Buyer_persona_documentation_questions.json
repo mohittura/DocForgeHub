@@ -1,0 +1,316 @@
+{
+  "document_name": "Buyer Persona Documentation",
+  "document_type": "Buyer Persona Documentation",
+  "estimated_completion_time": "20-30 minutes",
+  "total_questions": 21,
+  "question_categories": [
+    {
+      "category": "Document Metadata",
+      "order": 1,
+      "questions": [
+        {
+          "question_id": "persona_name",
+          "question": "What is the name of this buyer persona?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "e.g., 'IT Director Daniel' or 'Marketing Manager Maya'",
+          "description": "Used throughout the document to reference this specific persona",
+          "answer": ""
+        },
+        {
+          "question_id": "product_name",
+          "question": "What product or solution does this persona evaluate or purchase?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "e.g., 'Cloud Security Platform', 'CRM Software'",
+          "description": "Links the persona to the specific offering they influence or buy",
+          "answer": ""
+        },
+        {
+          "question_id": "company_name",
+          "question": "What is your company name?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "e.g., 'Acme Corp'",
+          "description": "Provides context for the persona's purchasing environment",
+          "answer": ""
+        },
+        {
+          "question_id": "document_version",
+          "question": "What is the version number for this persona document?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "e.g., '1.0', '2.3'",
+          "description": "Tracks document revisions and updates",
+          "answer": ""
+        },
+        {
+          "question_id": "effective_date",
+          "question": "When does this persona documentation become effective?",
+          "answer_type": "date",
+          "required": true,
+          "description": "Indicates when the persona insights should be used",
+          "answer": ""
+        },
+        {
+          "question_id": "last_review_date",
+          "question": "When was this persona last reviewed or updated?",
+          "answer_type": "date",
+          "required": true,
+          "description": "Helps ensure persona remains current and accurate",
+          "answer": ""
+        },
+        {
+          "question_id": "approved_by",
+          "question": "Who approved this persona documentation?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "e.g., 'Jane Smith, VP Marketing'",
+          "description": "Shows ownership and sign-off for the persona",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Persona Demographics and Role",
+      "order": 2,
+      "questions": [
+        {
+          "question_id": "job_title",
+          "question": "What is the persona's job title?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "e.g., 'Director of IT', 'VP of Sales'",
+          "description": "Primary identifier for the persona's organizational role",
+          "answer": ""
+        },
+        {
+          "question_id": "department",
+          "question": "Which department does this persona work in?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "e.g., 'Information Technology', 'Marketing'",
+          "description": "Clarifies the functional area and priorities",
+          "answer": ""
+        },
+        {
+          "question_id": "industry",
+          "question": "What industry does this persona typically work in?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "e.g., 'Financial Services', 'Healthcare'",
+          "description": "Helps tailor messaging to industry-specific needs",
+          "answer": ""
+        },
+        {
+          "question_id": "company_size",
+          "question": "What size company does this persona typically work for?",
+          "answer_type": "select",
+          "required": true,
+          "options": [
+            "Startup (1-50)",
+            "Small (51-200)",
+            "Medium (201-1000)",
+            "Large (1001-5000)",
+            "Enterprise (5000+)"
+          ],
+          "description": "Influences buying process complexity and budget",
+          "answer": ""
+        },
+        {
+          "question_id": "seniority_level",
+          "question": "What is the persona's seniority level?",
+          "answer_type": "select",
+          "required": true,
+          "options": [
+            "Individual Contributor",
+            "Manager",
+            "Director",
+            "VP",
+            "C-Suite"
+          ],
+          "description": "Determines decision-making authority and focus",
+          "answer": ""
+        },
+        {
+          "question_id": "reports_to",
+          "question": "Who does this persona report to?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "e.g., 'Chief Technology Officer', 'VP of Marketing'",
+          "description": "Shows reporting structure and potential approvers",
+          "answer": ""
+        },
+        {
+          "question_id": "key_responsibilities",
+          "question": "What are the persona's key responsibilities?",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "List 3-5 main responsibilities, one per line",
+          "description": "Identifies areas where your solution can help",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Goals and Challenges",
+      "order": 3,
+      "questions": [
+        {
+          "question_id": "persona_goals",
+          "question": "What are the persona's primary business goals?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Goal",
+              "type": "text"
+            }
+          ],
+          "description": "Add each goal the persona is measured on",
+          "answer": "",
+          "answers": []
+        },
+        {
+          "question_id": "persona_description",
+          "question": "Provide a brief narrative describing this persona",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "e.g., 'Sarah is a mid-level marketing manager at a growing B2B SaaS company...'",
+          "description": "Humanizes the persona and provides context",
+          "answer": ""
+        },
+        {
+          "question_id": "pain_points",
+          "question": "What challenges or pain points does this persona face?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Pain Point",
+              "type": "text"
+            }
+          ],
+          "description": "List problems your product can help solve",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Buying Drivers and Decision Criteria",
+      "order": 4,
+      "questions": [
+        {
+          "question_id": "buying_drivers",
+          "question": "What motivates this persona to buy solutions like yours?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Driver",
+              "type": "text"
+            },
+            {
+              "name": "Description",
+              "type": "text"
+            }
+          ],
+          "description": "Add each driver with a brief explanation",
+          "answer": "",
+          "answers": []
+        },
+        {
+          "question_id": "decision_criteria",
+          "question": "What criteria does this persona use to evaluate solutions?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Criteria",
+              "type": "text"
+            },
+            {
+              "name": "Importance",
+              "type": "select",
+              "options": [
+                "High",
+                "Medium",
+                "Low"
+              ]
+            },
+            {
+              "name": "Notes",
+              "type": "text"
+            }
+          ],
+          "description": "List evaluation factors and their relative importance",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Information Sources and Channels",
+      "order": 5,
+      "questions": [
+        {
+          "question_id": "information_channels",
+          "question": "Where does this persona go for information during their buying process?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Channel",
+              "type": "text"
+            },
+            {
+              "name": "Usage Purpose",
+              "type": "text"
+            }
+          ],
+          "description": "Add each channel and how they use it",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Persona Summary Snapshot",
+      "order": 6,
+      "questions": [
+        {
+          "question_id": "summary_snapshot",
+          "question": "Complete the quick-reference summary for this persona",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Category",
+              "type": "select",
+              "options": [
+                "Primary Goal",
+                "Main Challenge",
+                "Buying Driver",
+                "Key Concern",
+                "Messaging Angle"
+              ]
+            },
+            {
+              "name": "Summary",
+              "type": "text"
+            }
+          ],
+          "description": "Add key summary points for easy reference",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    }
+  ],
+  "_metadata": {
+    "page_id": "2fc89db1-5e5b-803c-83f2-df42a9bfe8d4",
+    "extraction_date": "2026-02-09T17:24:47.884936",
+    "model_used": "moonshotai/kimi-k2-instruct-0905"
+  }
+}

@@ -1,0 +1,135 @@
+{
+  "document_name": "Vendor Payment Records",
+  "document_type": "Vendor Payment Records",
+  "estimated_completion_time": "10-15 minutes",
+  "total_questions": 8,
+  "question_categories": [
+    {
+      "category": "Document Metadata",
+      "order": 1,
+      "questions": [
+        {
+          "question_id": "company_name",
+          "question": "What is your company's legal name?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Acme Corporation",
+          "description": "Replaces {{Company Name}} placeholder throughout the document",
+          "answer": ""
+        },
+        {
+          "question_id": "document_version",
+          "question": "What version number should this document be?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "1.0",
+          "description": "Replaces {{Version}} placeholder",
+          "answer": ""
+        },
+        {
+          "question_id": "effective_date",
+          "question": "When should this policy become effective?",
+          "answer_type": "date",
+          "required": true,
+          "description": "Replaces {{Date}} placeholder for effective date",
+          "answer": ""
+        },
+        {
+          "question_id": "last_review_date",
+          "question": "When was this document last reviewed?",
+          "answer_type": "date",
+          "required": true,
+          "description": "Replaces {{Date}} placeholder for last review date",
+          "answer": ""
+        },
+        {
+          "question_id": "approved_by",
+          "question": "Who approved this document?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "CFO Name",
+          "description": "Replaces {{Approver Name}} placeholder",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Scope Configuration",
+      "order": 2,
+      "questions": [
+        {
+          "question_id": "applicable_departments",
+          "question": "Which departments will use this vendor payment process?",
+          "answer_type": "multi_select",
+          "required": true,
+          "options": [
+            "Finance / Accounting",
+            "Procurement",
+            "Operations",
+            "IT",
+            "Marketing",
+            "Sales",
+            "HR",
+            "Legal",
+            "All Departments"
+          ],
+          "description": "Defines scope of which departments are covered",
+          "answer": ""
+        },
+        {
+          "question_id": "payment_methods",
+          "question": "What payment methods does your organization use for vendor payments?",
+          "answer_type": "multi_select",
+          "required": true,
+          "options": [
+            "Bank Transfer",
+            "ACH",
+            "Credit Card",
+            "Check",
+            "Wire Transfer",
+            "Cash",
+            "Digital Wallet"
+          ],
+          "description": "Defines payment methods covered in the scope",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Approval Workflow",
+      "order": 3,
+      "questions": [
+        {
+          "question_id": "approval_thresholds",
+          "question": "What are your invoice amount thresholds for different approval levels?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Threshold Range",
+              "type": "text"
+            },
+            {
+              "name": "Approver Required",
+              "type": "select",
+              "options": [
+                "Department Manager / Finance Associate",
+                "Finance Manager / Department Head",
+                "CFO / Executive Approval",
+                "Custom"
+              ]
+            }
+          ],
+          "description": "Configures the payment approval workflow table",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    }
+  ],
+  "_metadata": {
+    "page_id": "2fc89db1-5e5b-8051-8681-c06158bbcf27",
+    "extraction_date": "2026-02-09T18:14:12.592152",
+    "model_used": "moonshotai/kimi-k2-instruct-0905"
+  }
+}

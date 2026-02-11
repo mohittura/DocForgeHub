@@ -1,0 +1,336 @@
+{
+  "document_name": "Regression Testing Checklist",
+  "document_type": "Regression Testing Checklist",
+  "estimated_completion_time": "15-20 minutes",
+  "total_questions": 20,
+  "question_categories": [
+    {
+      "category": "Document Information",
+      "order": 1,
+      "questions": [
+        {
+          "question_id": "product_name",
+          "question": "What is the name of the product or system under test?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "e.g., MyApp Web Platform",
+          "description": "Used to identify the system being regression tested",
+          "answer": ""
+        },
+        {
+          "question_id": "release_version",
+          "question": "What is the release version being tested?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "e.g., v2.3.1",
+          "description": "Version identifier for this release",
+          "answer": ""
+        },
+        {
+          "question_id": "release_type",
+          "question": "What type of release is this?",
+          "answer_type": "select",
+          "required": true,
+          "options": [
+            "Patch",
+            "Minor",
+            "Major"
+          ],
+          "description": "Determines the scope and risk level of the release",
+          "answer": ""
+        },
+        {
+          "question_id": "environment",
+          "question": "Which environment is being tested?",
+          "answer_type": "select",
+          "required": true,
+          "options": [
+            "QA",
+            "Staging"
+          ],
+          "description": "Environment where regression testing is executed",
+          "answer": ""
+        },
+        {
+          "question_id": "prepared_by",
+          "question": "Who prepared this regression checklist?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "e.g., QA Team Lead",
+          "description": "Person or team responsible for the checklist",
+          "answer": ""
+        },
+        {
+          "question_id": "execution_date",
+          "question": "When will this regression testing be executed?",
+          "answer_type": "date",
+          "required": true,
+          "description": "Planned date for executing the regression tests",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Change Summary",
+      "order": 2,
+      "questions": [
+        {
+          "question_id": "modules_changed",
+          "question": "Which modules or components have been changed in this release?",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "List each changed module, one per line\ne.g., UserService\nPaymentModule\nDashboardUI",
+          "description": "Helps determine which areas need focused regression testing",
+          "answer": ""
+        },
+        {
+          "question_id": "apis_changed",
+          "question": "Have any APIs been changed?",
+          "answer_type": "select",
+          "required": true,
+          "options": [
+            "Yes",
+            "No"
+          ],
+          "description": "Triggers API validation and integration tests",
+          "answer": ""
+        },
+        {
+          "question_id": "database_changes",
+          "question": "Have there been any database schema or data changes?",
+          "answer_type": "select",
+          "required": true,
+          "options": [
+            "Yes",
+            "No"
+          ],
+          "description": "Triggers data integrity and migration checks",
+          "answer": ""
+        },
+        {
+          "question_id": "ui_changes",
+          "question": "Have there been any user interface changes?",
+          "answer_type": "select",
+          "required": true,
+          "options": [
+            "Yes",
+            "No"
+          ],
+          "description": "Triggers layout and workflow validation",
+          "answer": ""
+        },
+        {
+          "question_id": "integration_changes",
+          "question": "Have there been any integration or external service changes?",
+          "answer_type": "select",
+          "required": true,
+          "options": [
+            "Yes",
+            "No"
+          ],
+          "description": "Triggers external service testing",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Critical Workflow Validation",
+      "order": 3,
+      "questions": [
+        {
+          "question_id": "critical_workflow_results",
+          "question": "What are the results for Critical Workflow Validation tests?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Check Item",
+              "type": "text"
+            },
+            {
+              "name": "Status",
+              "type": "select",
+              "options": [
+                "Pass",
+                "Fail",
+                "Blocked",
+                "Not Run"
+              ]
+            },
+            {
+              "name": "Notes",
+              "type": "text"
+            }
+          ],
+          "description": "Update status and notes for each critical workflow test",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Functional Regression",
+      "order": 4,
+      "questions": [
+        {
+          "question_id": "functional_regression_results",
+          "question": "What are the results for Functional Regression tests?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Check Item",
+              "type": "text"
+            },
+            {
+              "name": "Status",
+              "type": "select",
+              "options": [
+                "Pass",
+                "Fail",
+                "Blocked",
+                "Not Run"
+              ]
+            },
+            {
+              "name": "Notes",
+              "type": "text"
+            }
+          ],
+          "description": "Update status and notes for each functional regression test",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Integration & API Checks",
+      "order": 5,
+      "questions": [
+        {
+          "question_id": "integration_api_results",
+          "question": "What are the results for Integration & API checks?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Check Item",
+              "type": "text"
+            },
+            {
+              "name": "Status",
+              "type": "select",
+              "options": [
+                "Pass",
+                "Fail",
+                "Blocked",
+                "Not Run"
+              ]
+            },
+            {
+              "name": "Notes",
+              "type": "text"
+            }
+          ],
+          "description": "Update status and notes for each integration and API test",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "UI & Compatibility Checks",
+      "order": 6,
+      "questions": [
+        {
+          "question_id": "ui_compatibility_results",
+          "question": "What are the results for UI & Compatibility checks?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Check Item",
+              "type": "text"
+            },
+            {
+              "name": "Status",
+              "type": "select",
+              "options": [
+                "Pass",
+                "Fail",
+                "Blocked",
+                "Not Run"
+              ]
+            },
+            {
+              "name": "Notes",
+              "type": "text"
+            }
+          ],
+          "description": "Update status and notes for each UI and compatibility test",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Execution Summary",
+      "order": 7,
+      "questions": [
+        {
+          "question_id": "total_items",
+          "question": "What is the total number of regression test items?",
+          "answer_type": "number",
+          "required": true,
+          "placeholder": "e.g., 25",
+          "description": "Total count of all regression test items executed",
+          "answer": ""
+        },
+        {
+          "question_id": "passed_count",
+          "question": "How many tests passed?",
+          "answer_type": "number",
+          "required": true,
+          "placeholder": "e.g., 22",
+          "description": "Number of regression tests that passed",
+          "answer": ""
+        },
+        {
+          "question_id": "failed_count",
+          "question": "How many tests failed?",
+          "answer_type": "number",
+          "required": true,
+          "placeholder": "e.g., 2",
+          "description": "Number of regression tests that failed",
+          "answer": ""
+        },
+        {
+          "question_id": "blocked_count",
+          "question": "How many tests were blocked?",
+          "answer_type": "number",
+          "required": true,
+          "placeholder": "e.g., 1",
+          "description": "Number of regression tests that could not be executed",
+          "answer": ""
+        },
+        {
+          "question_id": "regression_result",
+          "question": "What is the overall regression result?",
+          "answer_type": "select",
+          "required": true,
+          "options": [
+            "Passed",
+            "Failed"
+          ],
+          "description": "Overall pass/fail status for the regression test suite",
+          "answer": ""
+        }
+      ]
+    }
+  ],
+  "_metadata": {
+    "page_id": "2fc89db1-5e5b-804a-9513-ec7eff4f253f",
+    "extraction_date": "2026-02-09T16:27:44.437724",
+    "model_used": "moonshotai/kimi-k2-instruct-0905"
+  }
+}

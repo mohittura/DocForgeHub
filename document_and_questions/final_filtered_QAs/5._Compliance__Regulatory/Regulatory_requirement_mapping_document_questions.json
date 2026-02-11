@@ -1,0 +1,262 @@
+{
+  "document_name": "Regulatory Requirement Mapping Document",
+  "document_type": "Regulatory Requirement Mapping Document",
+  "estimated_completion_time": "25-35 minutes",
+  "total_questions": 10,
+  "question_categories": [
+    {
+      "category": "Document Metadata",
+      "order": 1,
+      "questions": [
+        {
+          "question_id": "organization_name",
+          "question": "What is your organization's name?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Acme Corp",
+          "description": "Used in document header and ownership fields",
+          "answer": ""
+        },
+        {
+          "question_id": "compliance_frameworks",
+          "question": "Which compliance frameworks are you mapping?",
+          "answer_type": "multi_select",
+          "required": true,
+          "options": [
+            "SOC 2",
+            "ISO 27001",
+            "GDPR",
+            "HIPAA",
+            "PCI-DSS",
+            "NIST",
+            "FedRAMP",
+            "SOX",
+            "Other"
+          ],
+          "description": "Select all that apply to your organization",
+          "answer": ""
+        },
+        {
+          "question_id": "scope_description",
+          "question": "Describe the systems or services in scope for this mapping",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "Cloud platform, payment processing system, customer data warehouse",
+          "description": "Defines the boundaries of the compliance assessment",
+          "answer": ""
+        },
+        {
+          "question_id": "document_owner",
+          "question": "Who is the document owner?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Compliance / Information Security",
+          "description": "Team or individual responsible for maintaining this document",
+          "answer": ""
+        },
+        {
+          "question_id": "version_number",
+          "question": "What is the document version?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "1.0",
+          "description": "Version tracking for document control",
+          "answer": ""
+        },
+        {
+          "question_id": "last_updated_date",
+          "question": "What is the last updated date?",
+          "answer_type": "date",
+          "required": true,
+          "description": "Date when this version was last modified",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Regulatory Scope Overview",
+      "order": 2,
+      "questions": [
+        {
+          "question_id": "regulations_list",
+          "question": "List each regulation/standard you are including in the scope",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Regulation / Standard",
+              "type": "text"
+            },
+            {
+              "name": "Description",
+              "type": "text"
+            },
+            {
+              "name": "Applicability",
+              "type": "text"
+            }
+          ],
+          "description": "Add each regulatory framework with description and how it applies to your organization",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Core Mapping Table",
+      "order": 3,
+      "questions": [
+        {
+          "question_id": "mapping_items",
+          "question": "Map each regulatory requirement to your internal controls",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Mapping ID",
+              "type": "text"
+            },
+            {
+              "name": "Regulation",
+              "type": "text"
+            },
+            {
+              "name": "Requirement ID",
+              "type": "text"
+            },
+            {
+              "name": "Requirement Summary",
+              "type": "text"
+            },
+            {
+              "name": "Internal Control / Policy",
+              "type": "text"
+            },
+            {
+              "name": "Control Owner",
+              "type": "text"
+            },
+            {
+              "name": "Evidence Reference",
+              "type": "text"
+            },
+            {
+              "name": "Compliance Status",
+              "type": "select",
+              "options": [
+                "Compliant",
+                "Partially Compliant",
+                "Non-Compliant"
+              ]
+            }
+          ],
+          "description": "Each row maps one external requirement to your internal implementation",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Control Coverage Summary",
+      "order": 4,
+      "questions": [
+        {
+          "question_id": "coverage_summary",
+          "question": "Provide coverage statistics for each regulation",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Regulation",
+              "type": "text"
+            },
+            {
+              "name": "Total Requirements",
+              "type": "number"
+            },
+            {
+              "name": "Covered",
+              "type": "number"
+            },
+            {
+              "name": "Partial",
+              "type": "number"
+            },
+            {
+              "name": "Gap Identified",
+              "type": "number"
+            }
+          ],
+          "description": "Quantitative summary of compliance coverage per framework",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Gap Identification and Action Tracking",
+      "order": 5,
+      "questions": [
+        {
+          "question_id": "gap_items",
+          "question": "Document any compliance gaps and required actions",
+          "answer_type": "structured_list",
+          "required": false,
+          "fields": [
+            {
+              "name": "Gap ID",
+              "type": "text"
+            },
+            {
+              "name": "Requirement",
+              "type": "text"
+            },
+            {
+              "name": "Gap Description",
+              "type": "text"
+            },
+            {
+              "name": "Risk Level",
+              "type": "select",
+              "options": [
+                "Low",
+                "Medium",
+                "High",
+                "Critical"
+              ]
+            },
+            {
+              "name": "Action Required",
+              "type": "text"
+            },
+            {
+              "name": "Owner",
+              "type": "text"
+            },
+            {
+              "name": "Target Date",
+              "type": "date"
+            },
+            {
+              "name": "Status",
+              "type": "select",
+              "options": [
+                "Open",
+                "In Progress",
+                "Closed"
+              ]
+            }
+          ],
+          "description": "Track remediation of identified compliance gaps",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    }
+  ],
+  "_metadata": {
+    "page_id": "2fc89db1-5e5b-806c-b096-de82b3cab681",
+    "extraction_date": "2026-02-09T17:05:41.747579",
+    "model_used": "moonshotai/kimi-k2-instruct-0905"
+  }
+}

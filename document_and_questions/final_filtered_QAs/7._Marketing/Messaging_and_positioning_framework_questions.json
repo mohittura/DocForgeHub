@@ -1,0 +1,364 @@
+{
+  "document_name": "Messaging and Positioning Framework",
+  "document_type": "Messaging and Positioning Framework",
+  "estimated_completion_time": "45-60 minutes",
+  "total_questions": 27,
+  "question_categories": [
+    {
+      "category": "Document Metadata",
+      "order": 1,
+      "questions": [
+        {
+          "question_id": "company_name",
+          "question": "What is your company name?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Acme Corp",
+          "description": "Used throughout the framework to identify your company",
+          "answer": ""
+        },
+        {
+          "question_id": "product_name",
+          "question": "What is the name of the product or solution this framework covers?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Acme Analytics Platform",
+          "description": "Primary product or solution being positioned",
+          "answer": ""
+        },
+        {
+          "question_id": "document_owner",
+          "question": "Who is the document owner responsible for maintaining this framework?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Product Marketing Manager",
+          "description": "Person or team responsible for updates and approvals",
+          "answer": ""
+        },
+        {
+          "question_id": "version",
+          "question": "What is the current version of this framework?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "1.0",
+          "description": "Version number for tracking changes",
+          "answer": ""
+        },
+        {
+          "question_id": "effective_date",
+          "question": "When does this framework become effective?",
+          "answer_type": "date",
+          "required": true,
+          "description": "Date when the framework should be used",
+          "answer": ""
+        },
+        {
+          "question_id": "approver_name",
+          "question": "Who approves this messaging framework?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "VP of Marketing",
+          "description": "Person who gives final approval for the framework",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Target Market and Customer Profile",
+      "order": 2,
+      "questions": [
+        {
+          "question_id": "target_industry",
+          "question": "What industry or industries does your solution target?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Healthcare, Financial Services, Manufacturing",
+          "description": "Primary industry focus for your messaging",
+          "answer": ""
+        },
+        {
+          "question_id": "company_size_range",
+          "question": "What company sizes are you targeting?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Mid-market (100-1000 employees), Enterprise (1000+)",
+          "description": "Size range of target companies",
+          "answer": ""
+        },
+        {
+          "question_id": "primary_decision_maker",
+          "question": "Who is the primary decision maker for your solution?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Chief Technology Officer, VP of Operations",
+          "description": "Key buyer persona for your messaging",
+          "answer": ""
+        },
+        {
+          "question_id": "primary_users",
+          "question": "Who are the primary users of your solution?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Data Analysts, Operations Managers",
+          "description": "End users who will interact with your product",
+          "answer": ""
+        },
+        {
+          "question_id": "buying_motivation",
+          "question": "What are the key drivers that motivate customers to buy?",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "Cost reduction, operational efficiency, competitive advantage",
+          "description": "Primary motivations that influence purchase decisions",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Market Problems and Positioning",
+      "order": 3,
+      "questions": [
+        {
+          "question_id": "market_problems",
+          "question": "What are the top 3-5 problems your target customers currently experience?",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "List each problem on a new line",
+          "description": "Pain points that your solution addresses",
+          "answer": ""
+        },
+        {
+          "question_id": "positioning_statement",
+          "question": "What is your positioning statement? (For [target customer] who [need], our [product] is a [category] that [benefit])",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "For mid-market retailers who struggle with inventory management, our SmartStock platform is an AI-powered inventory system that reduces stockouts by 40%",
+          "description": "Core positioning that differentiates you in the market",
+          "answer": ""
+        },
+        {
+          "question_id": "core_value_proposition",
+          "question": "What is your core value proposition in one sentence?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "We help retailers reduce stockouts and increase profitability through AI-powered inventory optimization",
+          "description": "Primary benefit you deliver to customers",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Value Pillars",
+      "order": 4,
+      "questions": [
+        {
+          "question_id": "value_pillars",
+          "question": "What are your 3-4 key value pillars?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Value Pillar",
+              "type": "text"
+            },
+            {
+              "name": "Description",
+              "type": "text"
+            },
+            {
+              "name": "Customer Outcome",
+              "type": "text"
+            }
+          ],
+          "description": "Core value areas that support your proposition",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Pain Points and Messaging Alignment",
+      "order": 5,
+      "questions": [
+        {
+          "question_id": "pain_point_alignment",
+          "question": "Map customer pain points to your product capabilities and messaging",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Customer Pain Point",
+              "type": "text"
+            },
+            {
+              "name": "Product Capability",
+              "type": "text"
+            },
+            {
+              "name": "Messaging Angle",
+              "type": "text"
+            }
+          ],
+          "description": "How you address each pain point and the benefit message",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Differentiation",
+      "order": 6,
+      "questions": [
+        {
+          "question_id": "competitive_alternatives",
+          "question": "What do customers typically use instead of your solution?",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "Manual processes, spreadsheets, competitor products",
+          "description": "Alternatives customers consider",
+          "answer": ""
+        },
+        {
+          "question_id": "key_differentiators",
+          "question": "What are your top 3-5 key differentiators?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Differentiator",
+              "type": "text"
+            },
+            {
+              "name": "Description",
+              "type": "text"
+            },
+            {
+              "name": "Customer Impact",
+              "type": "text"
+            }
+          ],
+          "description": "What makes you unique and valuable",
+          "answer": "",
+          "answers": []
+        },
+        {
+          "question_id": "reasons_to_believe",
+          "question": "What proof points support your claims? (customer results, awards, patents, etc.)",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "98% customer retention, 50+ industry awards, 200+ patents",
+          "description": "Evidence that builds credibility",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Messaging Framework",
+      "order": 7,
+      "questions": [
+        {
+          "question_id": "primary_message",
+          "question": "What is your primary message that should be communicated everywhere?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "The only AI-powered platform that reduces inventory costs by 30%",
+          "description": "Core message used across all channels",
+          "answer": ""
+        },
+        {
+          "question_id": "supporting_messages",
+          "question": "What are your 3-5 supporting messages?",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "List each supporting message on a new line",
+          "description": "Additional key messages that reinforce the primary message",
+          "answer": ""
+        },
+        {
+          "question_id": "elevator_pitch",
+          "question": "What is your 30-second elevator pitch?",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "We're the AI-powered inventory platform that helps retailers reduce stockouts by 40% and increase profitability by 25% through predictive analytics and automated reordering.",
+          "description": "Concise pitch for quick introductions",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Audience-Based Messaging",
+      "order": 8,
+      "questions": [
+        {
+          "question_id": "executive_messaging",
+          "question": "What are the key messages for executive audiences? (focus on business outcomes)",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "ROI, strategic impact, competitive advantage",
+          "description": "Messages tailored for C-suite and executive buyers",
+          "answer": ""
+        },
+        {
+          "question_id": "operational_messaging",
+          "question": "What are the key messages for operational users? (focus on daily benefits)",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "Ease of use, time savings, workflow improvements",
+          "description": "Messages for day-to-day users",
+          "answer": ""
+        },
+        {
+          "question_id": "technical_messaging",
+          "question": "What are the key messages for technical audiences? (focus on capabilities)",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "Integration, security, scalability, architecture",
+          "description": "Messages for technical evaluators",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Governance and Review",
+      "order": 9,
+      "questions": [
+        {
+          "question_id": "review_frequency",
+          "question": "How often should this framework be reviewed?",
+          "answer_type": "select",
+          "required": true,
+          "options": [
+            "Quarterly",
+            "Bi-annually",
+            "Annually",
+            "As needed"
+          ],
+          "description": "Schedule for reviewing and updating the framework",
+          "answer": ""
+        },
+        {
+          "question_id": "communication_channels",
+          "question": "Which communication channels should this framework apply to?",
+          "answer_type": "multi_select",
+          "required": true,
+          "options": [
+            "Website",
+            "Sales presentations",
+            "Advertising",
+            "Product messaging",
+            "Partner communications",
+            "Social media",
+            "Email campaigns"
+          ],
+          "description": "Channels where messaging consistency is required",
+          "answer": ""
+        }
+      ]
+    }
+  ],
+  "_metadata": {
+    "page_id": "2fc89db1-5e5b-800c-8892-e308ad7c9f60",
+    "extraction_date": "2026-02-09T17:20:00.572765",
+    "model_used": "moonshotai/kimi-k2-instruct-0905"
+  }
+}

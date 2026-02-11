@@ -1,0 +1,122 @@
+{
+  "document_name": "Offer Letter Templates",
+  "document_type": "Offer Letter",
+  "estimated_completion_time": "5-8 minutes",
+  "total_questions": 10,
+  "question_categories": [
+    {
+      "category": "Basic Offer Information",
+      "order": 1,
+      "questions": [
+        {
+          "question_id": "offer_date",
+          "question": "What date should appear at the top of the offer letter?",
+          "answer_type": "date",
+          "required": true,
+          "description": "This is the date the offer letter is issued",
+          "answer": ""
+        },
+        {
+          "question_id": "candidate_name",
+          "question": "What is the candidate's full name as it should appear in the letter?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "John Smith",
+          "description": "Used in salutation and throughout the letter",
+          "answer": ""
+        },
+        {
+          "question_id": "company_name",
+          "question": "What is your company name?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Acme Corporation",
+          "description": "Appears in the offer paragraph",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Position Details",
+      "order": 2,
+      "questions": [
+        {
+          "question_id": "job_title",
+          "question": "What is the official job title being offered?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Senior Software Engineer",
+          "description": "Used in offer paragraph and position details table",
+          "answer": ""
+        },
+        {
+          "question_id": "department",
+          "question": "Which department will the candidate join?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Engineering",
+          "description": "Used in offer paragraph and position details table",
+          "answer": ""
+        },
+        {
+          "question_id": "reporting_manager",
+          "question": "Who will the candidate report to?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Jane Doe, Engineering Manager",
+          "description": "Appears in position details table",
+          "answer": ""
+        },
+        {
+          "question_id": "work_location",
+          "question": "What is the work location or arrangement?",
+          "answer_type": "select",
+          "required": true,
+          "options": [
+            "On-site",
+            "Remote",
+            "Hybrid"
+          ],
+          "description": "Used in position details table",
+          "answer": ""
+        },
+        {
+          "question_id": "start_date",
+          "question": "What is the proposed start date?",
+          "answer_type": "date",
+          "required": true,
+          "description": "Appears in position details table",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Compensation & Terms",
+      "order": 3,
+      "questions": [
+        {
+          "question_id": "compensation",
+          "question": "What is the total annual compensation being offered?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "$120,000 per annum",
+          "description": "Appears in compensation section",
+          "answer": ""
+        },
+        {
+          "question_id": "acceptance_date",
+          "question": "By what date should the candidate accept the offer?",
+          "answer_type": "date",
+          "required": true,
+          "description": "Appears in acceptance section",
+          "answer": ""
+        }
+      ]
+    }
+  ],
+  "_metadata": {
+    "page_id": "2fc89db1-5e5b-8087-ad07-daf4d4f121f2",
+    "extraction_date": "2026-02-09T17:59:10.631535",
+    "model_used": "moonshotai/kimi-k2-instruct-0905"
+  }
+}

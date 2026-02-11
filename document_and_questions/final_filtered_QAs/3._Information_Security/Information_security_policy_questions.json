@@ -1,0 +1,109 @@
+{
+  "document_name": "Information Security Policy",
+  "document_type": "Information Security Policy",
+  "estimated_completion_time": "10-15 minutes",
+  "total_questions": 7,
+  "question_categories": [
+    {
+      "category": "Document Control & Metadata",
+      "order": 1,
+      "questions": [
+        {
+          "question_id": "document_owner",
+          "question": "Who is the Document Owner for this Information Security Policy?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "e.g., Information Security, CISO Office, Risk Management",
+          "description": "Identifies the team responsible for maintaining this policy",
+          "answer": ""
+        },
+        {
+          "question_id": "approved_by",
+          "question": "Who approved this policy?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "e.g., Executive Management, Board of Directors, CEO",
+          "description": "Shows the authority that approved the policy",
+          "answer": ""
+        },
+        {
+          "question_id": "effective_date",
+          "question": "What is the effective date of this policy?",
+          "answer_type": "date",
+          "required": true,
+          "description": "Date when the policy becomes enforceable",
+          "answer": ""
+        },
+        {
+          "question_id": "review_cycle",
+          "question": "How often will this policy be reviewed?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "e.g., Annual, Bi-annual, Upon major change",
+          "description": "Defines the review frequency for keeping the policy current",
+          "answer": ""
+        },
+        {
+          "question_id": "version",
+          "question": "What is the version number of this policy?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "e.g., 1.0, 2.3",
+          "description": "Version tracking for document control",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Policy Scope",
+      "order": 2,
+      "questions": [
+        {
+          "question_id": "scope_items",
+          "question": "What specific items are covered under this policy?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Scope Item",
+              "type": "text"
+            }
+          ],
+          "description": "Defines what the policy applies to within your organization",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Information Classification",
+      "order": 3,
+      "questions": [
+        {
+          "question_id": "classification_levels",
+          "question": "What information classification levels does your organization use?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Classification",
+              "type": "text"
+            },
+            {
+              "name": "Description",
+              "type": "text"
+            }
+          ],
+          "description": "Defines how information is classified and handled in your organization",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    }
+  ],
+  "_metadata": {
+    "page_id": "2fc89db1-5e5b-8086-9ec6-c8d927f1f091",
+    "extraction_date": "2026-02-09T15:55:18.855114",
+    "model_used": "moonshotai/kimi-k2-instruct-0905"
+  }
+}

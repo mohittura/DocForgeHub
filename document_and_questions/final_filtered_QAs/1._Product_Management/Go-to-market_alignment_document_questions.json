@@ -1,0 +1,277 @@
+{
+  "document_name": "Go-to-market alignment document",
+  "document_type": "Go-to-market alignment document",
+  "estimated_completion_time": "25-35 minutes",
+  "total_questions": 13,
+  "question_categories": [
+    {
+      "category": "Document Overview",
+      "order": 1,
+      "questions": [
+        {
+          "question_id": "product_feature_name",
+          "question": "What is the name of the product or feature being launched?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Acme Cloud Platform – Advanced Reporting",
+          "description": "This identifies the specific product or feature for the go-to-market plan",
+          "answer": ""
+        },
+        {
+          "question_id": "document_owner",
+          "question": "Who is the Document Owner responsible for maintaining this document?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Product Marketing",
+          "description": "The team or person accountable for updates and accuracy",
+          "answer": ""
+        },
+        {
+          "question_id": "stakeholders",
+          "question": "List all stakeholder teams involved in the launch (comma-separated)",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Product, Marketing, Sales, Customer Success, Support",
+          "description": "Teams that need to be aligned on the launch details",
+          "answer": ""
+        },
+        {
+          "question_id": "target_launch_date",
+          "question": "What is the target launch date?",
+          "answer_type": "date",
+          "required": true,
+          "description": "The planned date when the product/feature will be available to customers",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Launch Scope",
+      "order": 2,
+      "questions": [
+        {
+          "question_id": "included_features",
+          "question": "What features or capabilities are included in this launch?",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "New advanced reporting dashboard, Scheduled report exports, Role-based report access",
+          "description": "Defines the scope of what customers will receive on launch day",
+          "answer": ""
+        },
+        {
+          "question_id": "excluded_features",
+          "question": "What is explicitly NOT included in this launch?",
+          "answer_type": "long_text",
+          "required": false,
+          "placeholder": "Custom report builder, API access for reports (future release)",
+          "description": "Sets expectations and avoids scope creep",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Target Audience & Personas",
+      "order": 3,
+      "questions": [
+        {
+          "question_id": "personas",
+          "question": "What personas should be included in the target audience table?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Persona",
+              "type": "text"
+            },
+            {
+              "name": "Role",
+              "type": "text"
+            },
+            {
+              "name": "Pain Points",
+              "type": "text"
+            },
+            {
+              "name": "Value Proposition",
+              "type": "text"
+            }
+          ],
+          "description": "Each persona row defines who will benefit and why",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Competitive Positioning",
+      "order": 4,
+      "questions": [
+        {
+          "question_id": "competitors",
+          "question": "Which competitors should be analyzed and how do we compare?",
+          "answer_type": "structured_list",
+          "required": false,
+          "fields": [
+            {
+              "name": "Competitor",
+              "type": "text"
+            },
+            {
+              "name": "Strength",
+              "type": "text"
+            },
+            {
+              "name": "Our Advantage",
+              "type": "text"
+            }
+          ],
+          "description": "Helps sales and marketing position against alternatives",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Pricing & Packaging",
+      "order": 5,
+      "questions": [
+        {
+          "question_id": "pricing_plans",
+          "question": "How is the feature/product packaged across pricing tiers?",
+          "answer_type": "structured_list",
+          "required": false,
+          "fields": [
+            {
+              "name": "Plan",
+              "type": "text"
+            },
+            {
+              "name": "Availability",
+              "type": "text"
+            }
+          ],
+          "description": "Clarifies which customers get access under which plans",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Marketing Plan",
+      "order": 6,
+      "questions": [
+        {
+          "question_id": "marketing_activities",
+          "question": "What marketing activities and channels will be used for the launch?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Channel",
+              "type": "text"
+            },
+            {
+              "name": "Activity",
+              "type": "text"
+            },
+            {
+              "name": "Owner",
+              "type": "text"
+            }
+          ],
+          "description": "Defines who does what and where to promote the launch",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Internal Communication Plan",
+      "order": 7,
+      "questions": [
+        {
+          "question_id": "internal_comms",
+          "question": "How will internal teams be informed and trained before launch?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Audience",
+              "type": "text"
+            },
+            {
+              "name": "Channel",
+              "type": "text"
+            },
+            {
+              "name": "Timing",
+              "type": "text"
+            }
+          ],
+          "description": "Ensures all internal stakeholders are ready on launch day",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Success Metrics",
+      "order": 8,
+      "questions": [
+        {
+          "question_id": "success_metrics",
+          "question": "What metrics and targets will measure launch success?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Metric",
+              "type": "text"
+            },
+            {
+              "name": "Target",
+              "type": "text"
+            }
+          ],
+          "description": "Quantifiable goals to evaluate post-launch performance",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Risks & Mitigation",
+      "order": 9,
+      "questions": [
+        {
+          "question_id": "risks",
+          "question": "What are the key risks and how will they be mitigated?",
+          "answer_type": "structured_list",
+          "required": false,
+          "fields": [
+            {
+              "name": "Risk",
+              "type": "text"
+            },
+            {
+              "name": "Impact",
+              "type": "text"
+            },
+            {
+              "name": "Mitigation",
+              "type": "text"
+            }
+          ],
+          "description": "Proactive planning to reduce launch issues",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    }
+  ],
+  "_metadata": {
+    "page_id": "2fc89db1-5e5b-80e0-a1af-dff0f384a9b2",
+    "extraction_date": "2026-02-09T15:45:38.445488",
+    "model_used": "moonshotai/kimi-k2-instruct-0905"
+  }
+}

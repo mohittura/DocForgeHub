@@ -1,0 +1,260 @@
+{
+  "document_name": "Sales Contract Template",
+  "document_type": "Contract",
+  "estimated_completion_time": "20-30 minutes",
+  "total_questions": 12,
+  "question_categories": [
+    {
+      "category": "Contract Information",
+      "order": 1,
+      "questions": [
+        {
+          "question_id": "contract_date",
+          "question": "What is the contract date?",
+          "answer_type": "date",
+          "required": true,
+          "description": "The date when the contract is created or signed",
+          "answer": ""
+        },
+        {
+          "question_id": "contract_number",
+          "question": "What is the contract number?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "e.g., SC-2024-001",
+          "description": "Unique identifier for this contract",
+          "answer": ""
+        },
+        {
+          "question_id": "effective_date",
+          "question": "What is the effective date of the contract?",
+          "answer_type": "date",
+          "required": true,
+          "description": "When the contract terms become active",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Seller Information",
+      "order": 2,
+      "questions": [
+        {
+          "question_id": "seller_legal_name",
+          "question": "What is the seller's legal entity name?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "e.g., ABC Corporation, LLC",
+          "description": "Full legal name as registered",
+          "answer": ""
+        },
+        {
+          "question_id": "seller_address",
+          "question": "What is the seller's business address?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Street, City, State, ZIP",
+          "description": "Primary business address for legal notices",
+          "answer": ""
+        },
+        {
+          "question_id": "seller_contact",
+          "question": "Who is the primary contact person for the seller?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Contact Name",
+              "type": "text"
+            },
+            {
+              "name": "Email",
+              "type": "text"
+            },
+            {
+              "name": "Phone",
+              "type": "text"
+            }
+          ],
+          "description": "Primary contact for contract communications",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Buyer Information",
+      "order": 3,
+      "questions": [
+        {
+          "question_id": "buyer_legal_name",
+          "question": "What is the buyer's legal entity name?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "e.g., XYZ Industries, Inc.",
+          "description": "Full legal name as registered",
+          "answer": ""
+        },
+        {
+          "question_id": "buyer_address",
+          "question": "What is the buyer's business address?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Street, City, State, ZIP",
+          "description": "Primary business address for legal notices",
+          "answer": ""
+        },
+        {
+          "question_id": "buyer_contact",
+          "question": "Who is the primary contact person for the buyer?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Contact Name",
+              "type": "text"
+            },
+            {
+              "name": "Email",
+              "type": "text"
+            },
+            {
+              "name": "Phone",
+              "type": "text"
+            }
+          ],
+          "description": "Primary contact for contract communications",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Products/Services",
+      "order": 4,
+      "questions": [
+        {
+          "question_id": "contract_items",
+          "question": "What products or services are being sold under this contract?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Item Description",
+              "type": "text"
+            },
+            {
+              "name": "Quantity",
+              "type": "number"
+            },
+            {
+              "name": "Unit Price",
+              "type": "number"
+            },
+            {
+              "name": "Total Price",
+              "type": "number"
+            }
+          ],
+          "description": "List each product or service with pricing details",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Payment Terms",
+      "order": 5,
+      "questions": [
+        {
+          "question_id": "payment_terms",
+          "question": "What are the payment terms?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Total Contract Value",
+              "type": "number"
+            },
+            {
+              "name": "Currency",
+              "type": "select",
+              "options": [
+                "USD",
+                "EUR",
+                "GBP",
+                "CAD",
+                "AUD",
+                "JPY",
+                "Other"
+              ]
+            },
+            {
+              "name": "Payment Method",
+              "type": "select",
+              "options": [
+                "Wire Transfer",
+                "Check",
+                "Credit Card",
+                "ACH",
+                "Other"
+              ]
+            },
+            {
+              "name": "Late Payment Penalty",
+              "type": "text",
+              "placeholder": "e.g., 1.5% per month"
+            }
+          ],
+          "description": "Define payment schedule, currency, and penalties",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Delivery Terms",
+      "order": 6,
+      "questions": [
+        {
+          "question_id": "delivery_terms",
+          "question": "What are the delivery terms?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Delivery Address",
+              "type": "text"
+            },
+            {
+              "name": "Expected Delivery Date",
+              "type": "date"
+            },
+            {
+              "name": "Shipping Method",
+              "type": "text"
+            },
+            {
+              "name": "Risk of Loss Transfer",
+              "type": "select",
+              "options": [
+                "Upon delivery",
+                "Upon shipment",
+                "Upon receipt",
+                "Other"
+              ]
+            }
+          ],
+          "description": "Specify delivery logistics and when risk transfers",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    }
+  ],
+  "_metadata": {
+    "page_id": "2fc89db1-5e5b-801b-ae19-fd67e7e82b71",
+    "extraction_date": "2026-02-09T17:12:06.458360",
+    "model_used": "moonshotai/kimi-k2-instruct-0905"
+  }
+}

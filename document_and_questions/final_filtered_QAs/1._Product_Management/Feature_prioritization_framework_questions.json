@@ -1,0 +1,221 @@
+{
+  "document_name": "Feature Prioritization Framework",
+  "document_type": "Feature Prioritization Framework",
+  "estimated_completion_time": "15-20 minutes",
+  "total_questions": 8,
+  "question_categories": [
+    {
+      "category": "Framework Configuration",
+      "order": 1,
+      "questions": [
+        {
+          "question_id": "dimension_weights",
+          "question": "What weight should each dimension have in the scoring model? (Must sum to 100%)",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Dimension",
+              "type": "select",
+              "options": [
+                "Customer Impact",
+                "Strategic Alignment",
+                "Revenue / Business Impact",
+                "Effort",
+                "Risk"
+              ]
+            },
+            {
+              "name": "Weight (%)",
+              "type": "number"
+            }
+          ],
+          "description": "These weights determine how heavily each factor influences the final priority score",
+          "answer": "",
+          "answers": []
+        },
+        {
+          "question_id": "priority_bands",
+          "question": "Define your priority bands based on score ranges",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Score Range",
+              "type": "text"
+            },
+            {
+              "name": "Priority Label",
+              "type": "select",
+              "options": [
+                "Must Do",
+                "Should Do",
+                "Could Do",
+                "Won't Do"
+              ]
+            }
+          ],
+          "description": "These bands will categorize features into priority levels based on their total scores",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Decision Rules",
+      "order": 2,
+      "questions": [
+        {
+          "question_id": "decision_rules",
+          "question": "What hard constraints or decision rules override scoring? (e.g., regulatory requirements, security mandates, contractual obligations)",
+          "answer_type": "long_text",
+          "required": false,
+          "description": "These rules ensure critical non-negotiables are always prioritized regardless of score",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Governance & Review",
+      "order": 3,
+      "questions": [
+        {
+          "question_id": "review_frequency",
+          "question": "How often will priorities be reviewed?",
+          "answer_type": "select",
+          "required": true,
+          "options": [
+            "Weekly",
+            "Bi-weekly",
+            "Monthly",
+            "Quarterly"
+          ],
+          "description": "Determines the cadence for re-evaluating feature priorities",
+          "answer": ""
+        },
+        {
+          "question_id": "committee_members",
+          "question": "Who are the committee members or owners responsible for prioritization decisions?",
+          "answer_type": "long_text",
+          "required": true,
+          "description": "List names and roles of people who will own and govern this framework",
+          "answer": ""
+        },
+        {
+          "question_id": "escalation_path",
+          "question": "What is the escalation path for priority conflicts?",
+          "answer_type": "long_text",
+          "required": false,
+          "description": "Define who makes final decisions when there are disagreements on priorities",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Feature Evaluation",
+      "order": 4,
+      "questions": [
+        {
+          "question_id": "features_to_evaluate",
+          "question": "What features need to be prioritized?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Feature Name",
+              "type": "text"
+            },
+            {
+              "name": "Customer Impact Score (1-5)",
+              "type": "select",
+              "options": [
+                "5",
+                "4",
+                "3",
+                "2",
+                "1"
+              ]
+            },
+            {
+              "name": "Strategic Alignment Score (1-5)",
+              "type": "select",
+              "options": [
+                "5",
+                "4",
+                "3",
+                "2",
+                "1"
+              ]
+            },
+            {
+              "name": "Revenue Impact Score (1-5)",
+              "type": "select",
+              "options": [
+                "5",
+                "4",
+                "3",
+                "2",
+                "1"
+              ]
+            },
+            {
+              "name": "Effort Score (1-5, where 5=low effort)",
+              "type": "select",
+              "options": [
+                "5",
+                "4",
+                "3",
+                "2",
+                "1"
+              ]
+            },
+            {
+              "name": "Risk Score (1-5, where 5=low risk)",
+              "type": "select",
+              "options": [
+                "5",
+                "4",
+                "3",
+                "2",
+                "1"
+              ]
+            }
+          ],
+          "description": "Score each feature on all dimensions to calculate total priority scores",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Approval & Sign-off",
+      "order": 5,
+      "questions": [
+        {
+          "question_id": "approvers",
+          "question": "Who needs to approve the final prioritized feature list?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Name",
+              "type": "text"
+            },
+            {
+              "name": "Title/Role",
+              "type": "text"
+            }
+          ],
+          "description": "These stakeholders will provide final sign-off on the prioritized roadmap",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    }
+  ],
+  "_metadata": {
+    "page_id": "2fc89db1-5e5b-80da-8e8b-c8aec918667f",
+    "extraction_date": "2026-02-09T15:43:57.728456",
+    "model_used": "moonshotai/kimi-k2-instruct-0905"
+  }
+}

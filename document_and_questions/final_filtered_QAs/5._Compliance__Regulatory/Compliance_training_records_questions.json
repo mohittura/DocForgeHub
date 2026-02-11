@@ -1,0 +1,247 @@
+{
+  "document_name": "Compliance Training Records",
+  "document_type": "Compliance Training Records",
+  "estimated_completion_time": "15-20 minutes",
+  "total_questions": 10,
+  "question_categories": [
+    {
+      "category": "Document Metadata",
+      "order": 1,
+      "questions": [
+        {
+          "question_id": "organization_name",
+          "question": "What is your organization's name?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Acme Corporation",
+          "description": "Used in document header",
+          "answer": ""
+        },
+        {
+          "question_id": "training_program_name",
+          "question": "What is the name of your training program?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Compliance & Security Awareness",
+          "description": "Overall program name",
+          "answer": ""
+        },
+        {
+          "question_id": "program_owner",
+          "question": "Who owns this training program?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "HR / Compliance / Information Security",
+          "description": "Department or team responsible",
+          "answer": ""
+        },
+        {
+          "question_id": "review_frequency",
+          "question": "How often is this document reviewed?",
+          "answer_type": "select",
+          "required": true,
+          "options": [
+            "Annual",
+            "Quarterly",
+            "Monthly",
+            "Bi-annual"
+          ],
+          "description": "Review cycle for the document",
+          "answer": ""
+        },
+        {
+          "question_id": "document_version",
+          "question": "Current document version?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "1.0",
+          "description": "Version number",
+          "answer": ""
+        },
+        {
+          "question_id": "last_updated_date",
+          "question": "When was this document last updated?",
+          "answer_type": "date",
+          "required": true,
+          "description": "Date of last revision",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Training Program Overview",
+      "order": 2,
+      "questions": [
+        {
+          "question_id": "training_items",
+          "question": "What training items should be included in your program?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Training Name",
+              "type": "text"
+            },
+            {
+              "name": "Description",
+              "type": "text"
+            },
+            {
+              "name": "Frequency",
+              "type": "select",
+              "options": [
+                "Annual",
+                "Quarterly",
+                "Monthly",
+                "One-time",
+                "Bi-annual"
+              ]
+            },
+            {
+              "name": "Mandatory For",
+              "type": "text"
+            }
+          ],
+          "description": "List each training with all required fields",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Training Completion Records",
+      "order": 3,
+      "questions": [
+        {
+          "question_id": "training_records",
+          "question": "Add training completion records for employees",
+          "answer_type": "structured_list",
+          "required": false,
+          "fields": [
+            {
+              "name": "Record ID",
+              "type": "text"
+            },
+            {
+              "name": "Employee Name",
+              "type": "text"
+            },
+            {
+              "name": "Department",
+              "type": "text"
+            },
+            {
+              "name": "Training Name",
+              "type": "text"
+            },
+            {
+              "name": "Training Type",
+              "type": "select",
+              "options": [
+                "Mandatory",
+                "Optional",
+                "Role-specific"
+              ]
+            },
+            {
+              "name": "Assigned Date",
+              "type": "date"
+            },
+            {
+              "name": "Completion Date",
+              "type": "date"
+            },
+            {
+              "name": "Status",
+              "type": "select",
+              "options": [
+                "Assigned",
+                "In Progress",
+                "Completed",
+                "Overdue",
+                "Exempted"
+              ]
+            },
+            {
+              "name": "Score (If Applicable)",
+              "type": "number"
+            },
+            {
+              "name": "Trainer / Platform",
+              "type": "text"
+            }
+          ],
+          "description": "Add each training record with all required fields",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Compliance Requirements Mapping",
+      "order": 4,
+      "questions": [
+        {
+          "question_id": "compliance_mappings",
+          "question": "Map your training to compliance requirements",
+          "answer_type": "structured_list",
+          "required": false,
+          "fields": [
+            {
+              "name": "Training Name",
+              "type": "text"
+            },
+            {
+              "name": "Compliance Requirement",
+              "type": "text"
+            },
+            {
+              "name": "Evidence Type",
+              "type": "select",
+              "options": [
+                "Training completion records",
+                "Training logs",
+                "Attendance records",
+                "Certificates",
+                "Assessments"
+              ]
+            }
+          ],
+          "description": "Link each training to specific compliance needs",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Roles and Responsibilities",
+      "order": 5,
+      "questions": [
+        {
+          "question_id": "roles_responsibilities",
+          "question": "Define roles and their training responsibilities",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Role",
+              "type": "text"
+            },
+            {
+              "name": "Responsibility",
+              "type": "text"
+            }
+          ],
+          "description": "Who does what in your training program",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    }
+  ],
+  "_metadata": {
+    "page_id": "2fc89db1-5e5b-805d-9991-c7043fa7ab2b",
+    "extraction_date": "2026-02-09T17:07:45.958458",
+    "model_used": "moonshotai/kimi-k2-instruct-0905"
+  }
+}

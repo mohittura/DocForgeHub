@@ -1,0 +1,200 @@
+{
+  "document_name": "Data Classification Policy",
+  "document_type": "Data Classification Policy",
+  "estimated_completion_time": "10-15 minutes",
+  "total_questions": 10,
+  "question_categories": [
+    {
+      "category": "Organization & Scope",
+      "order": 1,
+      "questions": [
+        {
+          "question_id": "organization_name",
+          "question": "What is your organization or product name?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Acme Corp",
+          "description": "Used throughout the policy document",
+          "answer": ""
+        },
+        {
+          "question_id": "system_scope",
+          "question": "What systems does this policy cover?",
+          "answer_type": "select",
+          "required": true,
+          "options": [
+            "SaaS platform",
+            "Internal systems",
+            "Cloud infrastructure",
+            "Hybrid environment"
+          ],
+          "description": "Defines the scope of the policy",
+          "answer": ""
+        },
+        {
+          "question_id": "primary_data_types",
+          "question": "What are your primary data types?",
+          "answer_type": "multi_select",
+          "required": true,
+          "options": [
+            "Customer data",
+            "Operational data",
+            "Financial data",
+            "Analytics data",
+            "Employee data",
+            "Health data",
+            "Payment data"
+          ],
+          "description": "Helps tailor classification examples",
+          "answer": ""
+        },
+        {
+          "question_id": "regulatory_context",
+          "question": "Which regulatory frameworks apply to you?",
+          "answer_type": "multi_select",
+          "required": false,
+          "options": [
+            "GDPR",
+            "SOC 2",
+            "ISO 27001",
+            "HIPAA",
+            "PCI-DSS",
+            "CCPA",
+            "SOX",
+            "None"
+          ],
+          "description": "Optional context for compliance requirements",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Document Metadata",
+      "order": 2,
+      "questions": [
+        {
+          "question_id": "policy_owner",
+          "question": "Who is the policy owner?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Chief Information Security Officer",
+          "description": "Person or role responsible for this policy",
+          "answer": ""
+        },
+        {
+          "question_id": "version",
+          "question": "What is the version number?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "1.0",
+          "description": "Document version for tracking changes",
+          "answer": ""
+        },
+        {
+          "question_id": "effective_date",
+          "question": "When does this policy become effective?",
+          "answer_type": "date",
+          "required": true,
+          "description": "Date the policy takes effect",
+          "answer": ""
+        },
+        {
+          "question_id": "review_cycle",
+          "question": "How often will this policy be reviewed?",
+          "answer_type": "select",
+          "required": true,
+          "options": [
+            "Annual",
+            "Bi-annual",
+            "Quarterly",
+            "As needed"
+          ],
+          "description": "Review frequency for policy maintenance",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Roles & Responsibilities",
+      "order": 3,
+      "questions": [
+        {
+          "question_id": "roles_responsibilities",
+          "question": "Define roles and their classification responsibilities",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Role",
+              "type": "text"
+            },
+            {
+              "name": "Responsibility",
+              "type": "text"
+            }
+          ],
+          "description": "Who does what in the classification process",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Data Handling Requirements",
+      "order": 4,
+      "questions": [
+        {
+          "question_id": "handling_requirements",
+          "question": "Specify handling requirements for each classification level",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Classification",
+              "type": "select",
+              "options": [
+                "Public",
+                "Internal",
+                "Confidential",
+                "Restricted"
+              ]
+            },
+            {
+              "name": "Storage",
+              "type": "text"
+            },
+            {
+              "name": "Transmission",
+              "type": "text"
+            },
+            {
+              "name": "Access",
+              "type": "text"
+            },
+            {
+              "name": "Logging",
+              "type": "select",
+              "options": [
+                "Optional",
+                "Recommended",
+                "Required"
+              ]
+            },
+            {
+              "name": "Sharing",
+              "type": "text"
+            }
+          ],
+          "description": "How each data classification should be handled",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    }
+  ],
+  "_metadata": {
+    "page_id": "2fc89db1-5e5b-809f-a4e6-e24578e4570b",
+    "extraction_date": "2026-02-09T15:58:39.329340",
+    "model_used": "moonshotai/kimi-k2-instruct-0905"
+  }
+}

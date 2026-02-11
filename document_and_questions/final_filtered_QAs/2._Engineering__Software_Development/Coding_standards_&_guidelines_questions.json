@@ -1,0 +1,123 @@
+{
+  "document_name": "Coding Standards & Guidelines",
+  "document_type": "Coding Standards & Guidelines",
+  "estimated_completion_time": "10-15 minutes",
+  "total_questions": 7,
+  "question_categories": [
+    {
+      "category": "Document Metadata",
+      "order": 1,
+      "questions": [
+        {
+          "question_id": "organization_product",
+          "question": "What is the name of your organization or product?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Acme Corp / Project Alpha",
+          "description": "Used in the document header to identify the scope of these coding standards",
+          "answer": ""
+        },
+        {
+          "question_id": "last_updated",
+          "question": "When should the 'Last Updated' date be set?",
+          "answer_type": "date",
+          "required": true,
+          "description": "Tracks when this document was last revised",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Naming Conventions",
+      "order": 2,
+      "questions": [
+        {
+          "question_id": "naming_elements",
+          "question": "What code elements need naming conventions defined?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Element",
+              "type": "text"
+            },
+            {
+              "name": "Convention",
+              "type": "text"
+            },
+            {
+              "name": "Example",
+              "type": "text"
+            }
+          ],
+          "description": "Define how each type of code element should be named",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Testing Standards",
+      "order": 3,
+      "questions": [
+        {
+          "question_id": "test_requirements",
+          "question": "What are your testing requirements?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Test Type",
+              "type": "text"
+            },
+            {
+              "name": "Requirement",
+              "type": "text"
+            }
+          ],
+          "description": "Specify which tests are mandatory and their requirements",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Document Customization",
+      "order": 4,
+      "questions": [
+        {
+          "question_id": "document_owner",
+          "question": "Who owns this coding standards document?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Engineering / CTO Office",
+          "description": "Identifies the team responsible for maintaining this document",
+          "answer": ""
+        },
+        {
+          "question_id": "audience",
+          "question": "Who is the intended audience for these coding standards?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Backend, Frontend, DevOps, QA",
+          "description": "Lists the teams or roles that should follow these standards",
+          "answer": ""
+        },
+        {
+          "question_id": "custom_purpose",
+          "question": "What is the specific purpose of your coding standards?",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "Define consistent coding standards to improve code quality, readability, security, and maintainability",
+          "description": "Describes why these standards are being established",
+          "answer": ""
+        }
+      ]
+    }
+  ],
+  "_metadata": {
+    "page_id": "2fc89db1-5e5b-80e6-b8df-cba56d3043e5",
+    "extraction_date": "2026-02-09T15:49:15.467545",
+    "model_used": "moonshotai/kimi-k2-instruct-0905"
+  }
+}

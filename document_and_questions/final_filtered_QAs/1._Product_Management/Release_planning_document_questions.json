@@ -1,0 +1,297 @@
+{
+  "document_name": "Release Planning Document",
+  "document_type": "Release Planning Document",
+  "estimated_completion_time": "20-30 minutes",
+  "total_questions": 14,
+  "question_categories": [
+    {
+      "category": "Release Metadata",
+      "order": 1,
+      "questions": [
+        {
+          "question_id": "product_name",
+          "question": "What is the name of your product?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "e.g. Acme Cloud Platform",
+          "description": "Used in document header and communications",
+          "answer": ""
+        },
+        {
+          "question_id": "release_name",
+          "question": "What is the name or title of this release?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "e.g. Q2 2026 Platform Update",
+          "description": "Human-readable release identifier",
+          "answer": ""
+        },
+        {
+          "question_id": "release_version",
+          "question": "What version number will this release carry?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "e.g. v2.4.0",
+          "description": "Used in tagging and release notes",
+          "answer": ""
+        },
+        {
+          "question_id": "release_type",
+          "question": "What type of release is this?",
+          "answer_type": "select",
+          "required": true,
+          "options": [
+            "Major Release",
+            "Minor Release",
+            "Patch Release",
+            "Hotfix"
+          ],
+          "description": "Determines process rigor and communication scope",
+          "answer": ""
+        },
+        {
+          "question_id": "release_owner",
+          "question": "Who is the overall owner or lead for this release?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "e.g. Product Management",
+          "description": "Single point of accountability",
+          "answer": ""
+        },
+        {
+          "question_id": "planned_release_date",
+          "question": "What is the target production release date?",
+          "answer_type": "date",
+          "required": true,
+          "description": "Drives milestone planning",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Release Objectives",
+      "order": 2,
+      "questions": [
+        {
+          "question_id": "release_purpose",
+          "question": "In 1-2 sentences, what is the primary purpose of this release?",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "Describe the main goal and customer value",
+          "description": "Sets context for all downstream decisions",
+          "answer": ""
+        },
+        {
+          "question_id": "release_objectives",
+          "question": "List the top 3-5 objectives this release must achieve (one per line)",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "Improve security and access control\nEnhance reporting and analytics\nAddress high-impact customer feedback",
+          "description": "Used to validate scope and success",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Release Scope",
+      "order": 3,
+      "questions": [
+        {
+          "question_id": "in_scope_items",
+          "question": "What items are included in this release?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Item",
+              "type": "text"
+            },
+            {
+              "name": "Type",
+              "type": "select",
+              "options": [
+                "Feature",
+                "Enhancement",
+                "Fix"
+              ]
+            },
+            {
+              "name": "Description",
+              "type": "text"
+            }
+          ],
+          "description": "Defines what work is committed",
+          "answer": "",
+          "answers": []
+        },
+        {
+          "question_id": "out_of_scope_items",
+          "question": "What is explicitly out of scope for this release?",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "Mobile application changes\nMajor UI redesign\nNew pricing plans",
+          "description": "Prevents scope creep",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Milestones & Timeline",
+      "order": 4,
+      "questions": [
+        {
+          "question_id": "milestones",
+          "question": "List the key milestones and their target dates",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Milestone",
+              "type": "text"
+            },
+            {
+              "name": "Description",
+              "type": "text"
+            },
+            {
+              "name": "Target Date",
+              "type": "date"
+            }
+          ],
+          "description": "Drives the release schedule",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Feature Readiness",
+      "order": 5,
+      "questions": [
+        {
+          "question_id": "feature_readiness",
+          "question": "Track readiness of each major feature across teams",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Feature",
+              "type": "text"
+            },
+            {
+              "name": "Engineering",
+              "type": "select",
+              "options": [
+                "Not Started",
+                "In Progress",
+                "Complete"
+              ]
+            },
+            {
+              "name": "QA",
+              "type": "select",
+              "options": [
+                "Not Started",
+                "In Progress",
+                "Complete"
+              ]
+            },
+            {
+              "name": "Docs",
+              "type": "select",
+              "options": [
+                "Not Started",
+                "Pending",
+                "Complete"
+              ]
+            },
+            {
+              "name": "Status",
+              "type": "select",
+              "options": [
+                "On Track",
+                "At Risk",
+                "Blocked",
+                "Complete"
+              ]
+            }
+          ],
+          "description": "Identifies blocking issues early",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Risk Management",
+      "order": 6,
+      "questions": [
+        {
+          "question_id": "risks",
+          "question": "What are the top risks that could derail the release?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Risk",
+              "type": "text"
+            },
+            {
+              "name": "Impact",
+              "type": "text"
+            },
+            {
+              "name": "Likelihood",
+              "type": "select",
+              "options": [
+                "Low",
+                "Medium",
+                "High"
+              ]
+            },
+            {
+              "name": "Mitigation",
+              "type": "text"
+            }
+          ],
+          "description": "Enables proactive risk management",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Go/No-Go Criteria",
+      "order": 7,
+      "questions": [
+        {
+          "question_id": "go_no_go_criteria",
+          "question": "What are the mandatory criteria that must pass before release?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Criteria",
+              "type": "text"
+            },
+            {
+              "name": "Status",
+              "type": "select",
+              "options": [
+                "☐ Yes ☐ No"
+              ]
+            }
+          ],
+          "description": "Final checklist for release approval",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    }
+  ],
+  "_metadata": {
+    "page_id": "2fc89db1-5e5b-80f4-b565-fff882bf86d7",
+    "extraction_date": "2026-02-09T15:42:53.612693",
+    "model_used": "moonshotai/kimi-k2-instruct-0905"
+  }
+}

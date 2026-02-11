@@ -1,0 +1,427 @@
+{
+  "document_name": "Sales Forecast Report",
+  "document_type": "Sales Forecast Report",
+  "estimated_completion_time": "15-20 minutes",
+  "total_questions": 22,
+  "question_categories": [
+    {
+      "category": "Document Metadata",
+      "order": 1,
+      "questions": [
+        {
+          "question_id": "company_name",
+          "question": "What is your company name?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Acme Corp",
+          "answer": ""
+        },
+        {
+          "question_id": "product_service",
+          "question": "What product or service line is this forecast for?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Cloud SaaS Platform",
+          "answer": ""
+        },
+        {
+          "question_id": "forecast_period",
+          "question": "What is the forecast period?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Jan 2026 – Dec 2026",
+          "answer": ""
+        },
+        {
+          "question_id": "prepared_by",
+          "question": "Which team prepared this forecast?",
+          "answer_type": "select",
+          "required": true,
+          "options": [
+            "Sales",
+            "Finance",
+            "Strategy",
+            "Sales / Finance",
+            "Sales / Finance / Strategy"
+          ],
+          "answer": ""
+        },
+        {
+          "question_id": "report_date",
+          "question": "What is the report date?",
+          "answer_type": "date",
+          "required": true,
+          "answer": ""
+        },
+        {
+          "question_id": "currency",
+          "question": "Which currency is used in this forecast?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "USD",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Executive Summary Highlights",
+      "order": 2,
+      "questions": [
+        {
+          "question_id": "projected_revenue",
+          "question": "What is the expected total revenue for the forecast period?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "$12.5M",
+          "answer": ""
+        },
+        {
+          "question_id": "expected_growth_rate",
+          "question": "What is the expected growth rate compared to the previous period?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "25%",
+          "answer": ""
+        },
+        {
+          "question_id": "primary_growth_drivers",
+          "question": "What are the primary growth drivers?",
+          "answer_type": "multi_select",
+          "required": true,
+          "options": [
+            "New customers",
+            "Expansion revenue",
+            "Pricing changes",
+            "Market growth",
+            "Product launch",
+            "Partnership revenue"
+          ],
+          "answer": ""
+        },
+        {
+          "question_id": "key_risks",
+          "question": "What are the key risks to the forecast?",
+          "answer_type": "multi_select",
+          "required": true,
+          "options": [
+            "Pipeline uncertainty",
+            "Market competition",
+            "Seasonality",
+            "Economic downturn",
+            "Customer churn",
+            "Pricing pressure"
+          ],
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Forecast Confidence",
+      "order": 3,
+      "questions": [
+        {
+          "question_id": "confidence_level",
+          "question": "What is the overall forecast confidence level?",
+          "answer_type": "select",
+          "required": true,
+          "options": [
+            "High",
+            "Medium",
+            "Low"
+          ],
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Scope and Assumptions",
+      "order": 4,
+      "questions": [
+        {
+          "question_id": "scope_inclusions",
+          "question": "What revenue types are included in the forecast?",
+          "answer_type": "multi_select",
+          "required": true,
+          "options": [
+            "New customer acquisition revenue",
+            "Expansion and upsell revenue",
+            "Subscription renewals",
+            "Recurring revenue",
+            "One-time services",
+            "Partner revenue"
+          ],
+          "answer": ""
+        },
+        {
+          "question_id": "scope_exclusions",
+          "question": "What is explicitly excluded from the forecast?",
+          "answer_type": "long_text",
+          "required": true,
+          "description": "List any revenue sources or activities excluded from this forecast",
+          "answer": ""
+        },
+        {
+          "question_id": "key_assumptions",
+          "question": "List the key assumptions underpinning this forecast",
+          "answer_type": "long_text",
+          "required": true,
+          "description": "E.g., market growth rate, win-rate assumptions, sales cycle length",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Historical Performance",
+      "order": 5,
+      "questions": [
+        {
+          "question_id": "historical_periods",
+          "question": "Provide historical performance data for recent periods",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Period",
+              "type": "text"
+            },
+            {
+              "name": "Revenue",
+              "type": "text"
+            },
+            {
+              "name": "Growth",
+              "type": "text"
+            },
+            {
+              "name": "Notes",
+              "type": "text"
+            }
+          ],
+          "description": "Add each historical period with revenue, growth %, and any notes",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Revenue Forecast by Period",
+      "order": 6,
+      "questions": [
+        {
+          "question_id": "forecast_by_period",
+          "question": "Enter forecast revenue by future period",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Period",
+              "type": "text"
+            },
+            {
+              "name": "Forecast Revenue",
+              "type": "text"
+            },
+            {
+              "name": "Expected Growth",
+              "type": "text"
+            },
+            {
+              "name": "Confidence",
+              "type": "select",
+              "options": [
+                "High",
+                "Medium",
+                "Low"
+              ]
+            }
+          ],
+          "description": "Add each future month/quarter with forecast revenue, growth %, and confidence",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Revenue Forecast by Segment",
+      "order": 7,
+      "questions": [
+        {
+          "question_id": "forecast_by_segment",
+          "question": "Break down forecast revenue by customer segment",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Segment",
+              "type": "text"
+            },
+            {
+              "name": "Forecast Revenue",
+              "type": "text"
+            },
+            {
+              "name": "Contribution %",
+              "type": "text"
+            },
+            {
+              "name": "Growth Driver",
+              "type": "text"
+            }
+          ],
+          "description": "E.g., New Customers, Existing Customers, Renewals",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Product Forecast (Optional)",
+      "order": 8,
+      "questions": [
+        {
+          "question_id": "forecast_by_product",
+          "question": "Break down forecast revenue by product (optional)",
+          "answer_type": "structured_list",
+          "required": false,
+          "fields": [
+            {
+              "name": "Product",
+              "type": "text"
+            },
+            {
+              "name": "Forecast Revenue",
+              "type": "text"
+            },
+            {
+              "name": "Growth Rate",
+              "type": "text"
+            },
+            {
+              "name": "Notes",
+              "type": "text"
+            }
+          ],
+          "description": "Add each product with forecast revenue, growth %, and notes",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Pipeline Metrics",
+      "order": 9,
+      "questions": [
+        {
+          "question_id": "pipeline_metrics",
+          "question": "Provide current pipeline metrics",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Metric",
+              "type": "text"
+            },
+            {
+              "name": "Value",
+              "type": "text"
+            }
+          ],
+          "description": "E.g., Total Pipeline Value, Coverage Ratio, Avg Deal Size, Avg Sales Cycle",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Pipeline Overview Narrative",
+      "order": 10,
+      "questions": [
+        {
+          "question_id": "pipeline_overview",
+          "question": "Describe the current pipeline situation and coverage",
+          "answer_type": "long_text",
+          "required": true,
+          "description": "Summarize pipeline health, coverage ratio, and key opportunities",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Risks and Mitigation",
+      "order": 11,
+      "questions": [
+        {
+          "question_id": "risks",
+          "question": "List identified risks to the forecast and mitigation plans",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Risk",
+              "type": "text"
+            },
+            {
+              "name": "Impact",
+              "type": "select",
+              "options": [
+                "High",
+                "Medium",
+                "Low"
+              ]
+            },
+            {
+              "name": "Likelihood",
+              "type": "select",
+              "options": [
+                "High",
+                "Medium",
+                "Low"
+              ]
+            },
+            {
+              "name": "Mitigation",
+              "type": "text"
+            }
+          ],
+          "description": "Add each risk with impact, likelihood, and mitigation action",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Sales Targets",
+      "order": 12,
+      "questions": [
+        {
+          "question_id": "sales_targets",
+          "question": "Enter sales targets by team or region",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Team / Region",
+              "type": "text"
+            },
+            {
+              "name": "Target Revenue",
+              "type": "text"
+            },
+            {
+              "name": "Contribution %",
+              "type": "text"
+            }
+          ],
+          "description": "E.g., Enterprise Sales, SMB Sales, Channel / Partners",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    }
+  ],
+  "_metadata": {
+    "page_id": "2fc89db1-5e5b-802b-9383-fa55a8e2cef4",
+    "extraction_date": "2026-02-09T17:15:32.684193",
+    "model_used": "moonshotai/kimi-k2-instruct-0905"
+  }
+}

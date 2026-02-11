@@ -1,0 +1,318 @@
+{
+  "document_name": "Incident Post-Mortem Report",
+  "document_type": "Incident Post-Mortem Report",
+  "estimated_completion_time": "20-30 minutes",
+  "total_questions": 15,
+  "question_categories": [
+    {
+      "category": "Basic Incident Information",
+      "order": 1,
+      "questions": [
+        {
+          "question_id": "incident_title",
+          "question": "What is the title of this incident?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Database connection failure during peak traffic",
+          "description": "A clear, concise title that summarizes the incident",
+          "answer": ""
+        },
+        {
+          "question_id": "incident_id",
+          "question": "What is the Incident ID?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "INC-2024-001",
+          "description": "Unique identifier for tracking this incident",
+          "answer": ""
+        },
+        {
+          "question_id": "incident_date",
+          "question": "What date did the incident occur?",
+          "answer_type": "date",
+          "required": true,
+          "description": "The date when the incident started",
+          "answer": ""
+        },
+        {
+          "question_id": "report_author",
+          "question": "Who is the author of this post-mortem report?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Jane Smith, SRE Lead",
+          "description": "Person responsible for creating this report",
+          "answer": ""
+        },
+        {
+          "question_id": "teams_involved",
+          "question": "Which teams were involved in this incident?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "SRE, Engineering, DevOps",
+          "description": "List all teams that participated in response or were affected",
+          "answer": ""
+        },
+        {
+          "question_id": "severity_level",
+          "question": "What is the severity level of this incident?",
+          "answer_type": "select",
+          "required": true,
+          "options": [
+            "SEV-1",
+            "SEV-2",
+            "SEV-3"
+          ],
+          "description": "Classification based on impact and urgency",
+          "answer": ""
+        },
+        {
+          "question_id": "incident_status",
+          "question": "What is the current status of this incident?",
+          "answer_type": "select",
+          "required": true,
+          "options": [
+            "Closed",
+            "Monitoring",
+            "Follow-up Required"
+          ],
+          "description": "Current state of incident resolution",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Issue Summary Details",
+      "order": 2,
+      "questions": [
+        {
+          "question_id": "issue_summary_fields",
+          "question": "Provide the following incident details:",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Start Time",
+              "type": "text",
+              "options": []
+            },
+            {
+              "name": "End Time",
+              "type": "text",
+              "options": []
+            },
+            {
+              "name": "Duration",
+              "type": "text",
+              "options": []
+            },
+            {
+              "name": "Affected Services",
+              "type": "text",
+              "options": []
+            },
+            {
+              "name": "Affected Users",
+              "type": "text",
+              "options": []
+            },
+            {
+              "name": "Detection Method",
+              "type": "select",
+              "options": [
+                "Monitoring",
+                "User Reports",
+                "Internal Testing"
+              ]
+            },
+            {
+              "name": "Reported By",
+              "type": "text",
+              "options": []
+            },
+            {
+              "name": "Incident Commander",
+              "type": "text",
+              "options": []
+            }
+          ],
+          "description": "Basic facts about the incident timing, scope, and detection",
+          "answer": "",
+          "answers": []
+        },
+        {
+          "question_id": "summary_description",
+          "question": "Provide a brief summary description of the incident",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "Users were unable to complete checkout transactions due to database connection failures in the payments service.",
+          "description": "Short description in clear, non-technical language",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Incident Timeline",
+      "order": 3,
+      "questions": [
+        {
+          "question_id": "timeline_events",
+          "question": "What key events occurred during the incident?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Time (UTC)",
+              "type": "text",
+              "options": []
+            },
+            {
+              "name": "Event",
+              "type": "text",
+              "options": []
+            },
+            {
+              "name": "Owner",
+              "type": "text",
+              "options": []
+            }
+          ],
+          "description": "Chronological sequence of major events during the incident",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Root Cause Analysis",
+      "order": 4,
+      "questions": [
+        {
+          "question_id": "root_cause",
+          "question": "What was the root cause of this incident?",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "A database connection pool misconfiguration caused connection exhaustion during peak traffic.",
+          "description": "Technical or operational reason the incident occurred",
+          "answer": ""
+        },
+        {
+          "question_id": "root_cause_category",
+          "question": "What category best describes the root cause?",
+          "answer_type": "select",
+          "required": true,
+          "options": [
+            "Configuration Error",
+            "Code Defect",
+            "Infrastructure Failure",
+            "Third-Party Dependency",
+            "Process Gap"
+          ],
+          "description": "Primary category for the root cause",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Impact Assessment",
+      "order": 5,
+      "questions": [
+        {
+          "question_id": "impact_areas",
+          "question": "Describe the impact in each area:",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Area",
+              "type": "select",
+              "options": [
+                "Customer Impact",
+                "Business Impact",
+                "System Impact",
+                "Duration of Impact"
+              ]
+            },
+            {
+              "name": "Description",
+              "type": "text",
+              "options": []
+            }
+          ],
+          "description": "How the incident affected different areas",
+          "answer": "",
+          "answers": []
+        },
+        {
+          "question_id": "mitigation_actions",
+          "question": "What immediate mitigation actions were taken?",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "Restarted database service, increased connection pool size, notified customers via status page",
+          "description": "Actions taken to reduce or stop the impact",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Action Items",
+      "order": 6,
+      "questions": [
+        {
+          "question_id": "action_items",
+          "question": "What corrective and preventative action items should be tracked?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Action ID",
+              "type": "text",
+              "options": []
+            },
+            {
+              "name": "Action Description",
+              "type": "text",
+              "options": []
+            },
+            {
+              "name": "Owner",
+              "type": "text",
+              "options": []
+            },
+            {
+              "name": "Priority",
+              "type": "select",
+              "options": [
+                "High",
+                "Medium",
+                "Low"
+              ]
+            },
+            {
+              "name": "Target Date",
+              "type": "date",
+              "options": []
+            },
+            {
+              "name": "Status",
+              "type": "select",
+              "options": [
+                "Open",
+                "Planned",
+                "In Progress",
+                "Completed"
+              ]
+            }
+          ],
+          "description": "Specific actions to prevent recurrence of similar incidents",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    }
+  ],
+  "_metadata": {
+    "page_id": "2fc89db1-5e5b-8061-ad39-d2ec97338d51",
+    "extraction_date": "2026-02-09T15:53:57.674726",
+    "model_used": "moonshotai/kimi-k2-instruct-0905"
+  }
+}

@@ -1,0 +1,200 @@
+{
+  "document_name": "Website Content Guidelines",
+  "document_type": "Website Content Guidelines",
+  "estimated_completion_time": "15-20 minutes",
+  "total_questions": 13,
+  "question_categories": [
+    {
+      "category": "Document Metadata",
+      "order": 1,
+      "questions": [
+        {
+          "question_id": "company_name",
+          "question": "What is your company name?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Acme Corporation",
+          "description": "Used throughout the document to personalize the guidelines",
+          "answer": ""
+        },
+        {
+          "question_id": "website_url",
+          "question": "What is your company website URL?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "https://www.acme.com",
+          "description": "Used in document metadata to identify the website these guidelines apply to",
+          "answer": ""
+        },
+        {
+          "question_id": "document_version",
+          "question": "What version number should this document be?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "1.0",
+          "description": "Used for version control and tracking document updates",
+          "answer": ""
+        },
+        {
+          "question_id": "effective_date",
+          "question": "When should these guidelines go into effect?",
+          "answer_type": "date",
+          "required": true,
+          "description": "Used to track when the guidelines become active",
+          "answer": ""
+        },
+        {
+          "question_id": "last_review_date",
+          "question": "When was this document last reviewed?",
+          "answer_type": "date",
+          "required": true,
+          "description": "Used to track document review history",
+          "answer": ""
+        },
+        {
+          "question_id": "approved_by",
+          "question": "Who approved this document?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Marketing Director",
+          "description": "Used to identify who has authority over these guidelines",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Target Audience",
+      "order": 2,
+      "questions": [
+        {
+          "question_id": "target_audience",
+          "question": "Describe your primary target audience for the website",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "Mid-market B2B technology companies looking for enterprise software solutions...",
+          "description": "Used to align content with audience needs and expectations",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Visitor Intent Categories",
+      "order": 3,
+      "questions": [
+        {
+          "question_id": "intent_categories",
+          "question": "What visitor intent categories should your website address?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Intent Type",
+              "type": "text"
+            },
+            {
+              "name": "Content Objective",
+              "type": "text"
+            }
+          ],
+          "description": "Define how your content should align with different visitor intents",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Performance Metrics",
+      "order": 4,
+      "questions": [
+        {
+          "question_id": "performance_metrics",
+          "question": "What metrics will you use to measure website content performance?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Metric",
+              "type": "text"
+            },
+            {
+              "name": "Purpose",
+              "type": "text"
+            }
+          ],
+          "description": "Define how you'll measure the effectiveness of your content",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Review Process",
+      "order": 5,
+      "questions": [
+        {
+          "question_id": "review_frequency",
+          "question": "How often should these guidelines be reviewed?",
+          "answer_type": "select",
+          "required": true,
+          "options": [
+            "Monthly",
+            "Quarterly",
+            "Semi-annually",
+            "Annually"
+          ],
+          "description": "Used to establish a regular review schedule",
+          "answer": ""
+        },
+        {
+          "question_id": "review_responsible_parties",
+          "question": "Who is responsible for reviewing and updating these guidelines?",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "Content Marketing Manager, Marketing Director, Product Marketing",
+          "description": "Used to assign ownership for maintaining the guidelines",
+          "answer": ""
+        },
+        {
+          "question_id": "approval_process",
+          "question": "What is the approval process for updates to these guidelines?",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "Draft by Content Manager, review by Marketing Director, final approval by VP Marketing",
+          "description": "Used to define the workflow for making changes to the guidelines",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Scope Customization",
+      "order": 6,
+      "questions": [
+        {
+          "question_id": "applicable_page_types",
+          "question": "Which specific page types on your website should these guidelines apply to?",
+          "answer_type": "multi_select",
+          "required": true,
+          "options": [
+            "Homepage",
+            "Product pages",
+            "Solution pages",
+            "Landing pages",
+            "Pricing pages",
+            "Resource pages",
+            "Blog posts",
+            "Conversion-focused pages",
+            "About pages",
+            "Contact pages"
+          ],
+          "description": "Used to define the scope of where these guidelines apply",
+          "answer": ""
+        }
+      ]
+    }
+  ],
+  "_metadata": {
+    "page_id": "2fc89db1-5e5b-80ea-8ad5-d50679d8629d",
+    "extraction_date": "2026-02-09T17:22:06.435928",
+    "model_used": "moonshotai/kimi-k2-instruct-0905"
+  }
+}

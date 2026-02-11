@@ -1,0 +1,355 @@
+{
+  "document_name": "Product Requirements Document (PRD)",
+  "document_type": "Product Requirements Document",
+  "estimated_completion_time": "25-35 minutes",
+  "total_questions": 17,
+  "question_categories": [
+    {
+      "category": "Product Overview",
+      "order": 1,
+      "questions": [
+        {
+          "question_id": "product_name",
+          "question": "What is the name of the product or feature being developed?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "e.g., SmartDashboard 2.0",
+          "description": "This will be the main identifier for your product",
+          "answer": ""
+        },
+        {
+          "question_id": "product_vision",
+          "question": "Where do you want your product to be in the future?",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "Describe the long-term vision and ultimate impact on users and business",
+          "description": "Helps align stakeholders on the end goal",
+          "answer": ""
+        },
+        {
+          "question_id": "product_description",
+          "question": "Provide a brief overview of what your product does and for whom",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "Summarize the problem being solved and target users",
+          "description": "Gives context for all subsequent decisions",
+          "answer": ""
+        },
+        {
+          "question_id": "timing",
+          "question": "When do you plan to ship the new customer experience?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "e.g., Q3 2026, phased rollout starting June 2026",
+          "description": "Sets expectations for delivery timeline",
+          "answer": ""
+        },
+        {
+          "question_id": "status",
+          "question": "What is the current state of the product or feature?",
+          "answer_type": "select",
+          "required": true,
+          "options": [
+            "NOT STARTED",
+            "IN DISCOVERY",
+            "ON TRACK",
+            "AT RISK",
+            "BLOCKED",
+            "RELEASED"
+          ],
+          "description": "Communicates current progress to stakeholders",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Team & Stakeholders",
+      "order": 2,
+      "questions": [
+        {
+          "question_id": "team_members",
+          "question": "Who are the key team members involved in delivering this product?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Role",
+              "type": "select",
+              "options": [
+                "Product Manager",
+                "Engineering Lead",
+                "Designer",
+                "QA Engineer",
+                "Developer",
+                "Other"
+              ]
+            },
+            {
+              "name": "Name",
+              "type": "text"
+            },
+            {
+              "name": "Responsibility",
+              "type": "text"
+            }
+          ],
+          "description": "Ensures all stakeholders know who's responsible for what",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Success Metrics",
+      "order": 3,
+      "questions": [
+        {
+          "question_id": "success_metrics",
+          "question": "How will you measure the success of this product?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Metric Type",
+              "type": "select",
+              "options": [
+                "Adoption",
+                "Engagement",
+                "Retention",
+                "Revenue",
+                "Performance",
+                "Other"
+              ]
+            },
+            {
+              "name": "Metric Name",
+              "type": "text"
+            },
+            {
+              "name": "Target Value",
+              "type": "text"
+            },
+            {
+              "name": "Measurement Method",
+              "type": "text"
+            }
+          ],
+          "description": "Defines clear success criteria for the product",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Assumptions & Hypotheses",
+      "order": 4,
+      "questions": [
+        {
+          "question_id": "assumptions",
+          "question": "What assumptions are you making about your solution and market?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Assumption Type",
+              "type": "select",
+              "options": [
+                "Customer Problem",
+                "Technical Feasibility",
+                "Market Condition",
+                "User Behavior",
+                "Other"
+              ]
+            },
+            {
+              "name": "Assumption",
+              "type": "text"
+            },
+            {
+              "name": "Impact if Wrong",
+              "type": "text"
+            }
+          ],
+          "description": "Documents key hypotheses that need validation",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Core Features",
+      "order": 5,
+      "questions": [
+        {
+          "question_id": "core_features",
+          "question": "What are the core features that will deliver value to users?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Feature Name",
+              "type": "text"
+            },
+            {
+              "name": "Description",
+              "type": "text"
+            },
+            {
+              "name": "User Value",
+              "type": "text"
+            },
+            {
+              "name": "Priority",
+              "type": "select",
+              "options": [
+                "High",
+                "Medium",
+                "Low"
+              ]
+            }
+          ],
+          "description": "Defines the functional elements of your product",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Scope Definition",
+      "order": 6,
+      "questions": [
+        {
+          "question_id": "out_of_scope",
+          "question": "What is explicitly out of scope for this release?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Item Type",
+              "type": "select",
+              "options": [
+                "Feature",
+                "User Segment",
+                "Platform",
+                "Integration",
+                "Other"
+              ]
+            },
+            {
+              "name": "Item Description",
+              "type": "text"
+            },
+            {
+              "name": "Reason for Exclusion",
+              "type": "text"
+            }
+          ],
+          "description": "Prevents scope creep by clarifying boundaries",
+          "answer": "",
+          "answers": []
+        },
+        {
+          "question_id": "dependencies",
+          "question": "What dependencies and risks could impact delivery?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Type",
+              "type": "select",
+              "options": [
+                "Dependency",
+                "Risk"
+              ]
+            },
+            {
+              "name": "Description",
+              "type": "text"
+            },
+            {
+              "name": "Impact",
+              "type": "select",
+              "options": [
+                "High",
+                "Medium",
+                "Low"
+              ]
+            },
+            {
+              "name": "Mitigation Plan",
+              "type": "text"
+            }
+          ],
+          "description": "Identifies potential blockers and mitigation strategies",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Additional Context",
+      "order": 7,
+      "questions": [
+        {
+          "question_id": "background",
+          "question": "What background research led to this initiative?",
+          "answer_type": "long_text",
+          "required": false,
+          "placeholder": "Include competitive landscape, user interviews, market research",
+          "description": "Provides context for product decisions",
+          "answer": ""
+        },
+        {
+          "question_id": "strategic_alignment",
+          "question": "How does this product align with company strategy?",
+          "answer_type": "long_text",
+          "required": false,
+          "placeholder": "Explain alignment with OKRs, business outcomes",
+          "description": "Justifies the investment in this product",
+          "answer": ""
+        },
+        {
+          "question_id": "target_users",
+          "question": "Who will benefit from this product?",
+          "answer_type": "long_text",
+          "required": false,
+          "placeholder": "Describe target users, link to personas if available",
+          "description": "Clarifies the intended beneficiaries",
+          "answer": ""
+        },
+        {
+          "question_id": "use_cases",
+          "question": "What are the key use cases for your product?",
+          "answer_type": "long_text",
+          "required": false,
+          "placeholder": "Step-by-step scenarios of users solving challenges",
+          "description": "Illustrates how users will interact with the product",
+          "answer": ""
+        },
+        {
+          "question_id": "investment_required",
+          "question": "What resources are needed to deliver this product?",
+          "answer_type": "long_text",
+          "required": false,
+          "placeholder": "Budget, headcount, and other resource requirements",
+          "description": "Helps secure necessary resources",
+          "answer": ""
+        },
+        {
+          "question_id": "open_questions",
+          "question": "What questions still need to be answered?",
+          "answer_type": "long_text",
+          "required": false,
+          "placeholder": "List unresolved questions for development",
+          "description": "Identifies areas needing further research",
+          "answer": ""
+        }
+      ]
+    }
+  ],
+  "_metadata": {
+    "page_id": "2fc89db1-5e5b-80bc-b808-f483fd6d7d96",
+    "extraction_date": "2026-02-09T15:39:23.852373",
+    "model_used": "moonshotai/kimi-k2-instruct-0905"
+  }
+}

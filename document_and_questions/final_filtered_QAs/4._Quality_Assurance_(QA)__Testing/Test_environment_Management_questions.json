@@ -1,0 +1,228 @@
+{
+  "document_name": "Test Environment Management Plan",
+  "document_type": "Test Environment Management Plan",
+  "estimated_completion_time": "20-25 minutes",
+  "total_questions": 12,
+  "question_categories": [
+    {
+      "category": "Document Metadata",
+      "order": 1,
+      "questions": [
+        {
+          "question_id": "product_name",
+          "question": "What is the name of the product or system this plan covers?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "e.g., MyApp Platform, Billing Service",
+          "description": "Used in document header and scope definition",
+          "answer": ""
+        },
+        {
+          "question_id": "document_version",
+          "question": "What is the version number for this document?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "e.g., 1.0, 2.3",
+          "description": "Version tracking for document control",
+          "answer": ""
+        },
+        {
+          "question_id": "approver_name",
+          "question": "Who is the approver for this document?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "e.g., Jane Smith, QA Director",
+          "description": "Person who signs off the final plan",
+          "answer": ""
+        },
+        {
+          "question_id": "approval_date",
+          "question": "What is the approval date?",
+          "answer_type": "date",
+          "required": true,
+          "description": "Date when the document is approved",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Environment Inventory",
+      "order": 2,
+      "questions": [
+        {
+          "question_id": "environments",
+          "question": "What test environments does your organization use?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Environment",
+              "type": "text"
+            },
+            {
+              "name": "Purpose",
+              "type": "text"
+            },
+            {
+              "name": "Owner",
+              "type": "text"
+            },
+            {
+              "name": "Refresh Frequency",
+              "type": "text"
+            }
+          ],
+          "description": "Complete list of all non-production environments",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Environment Characteristics",
+      "order": 3,
+      "questions": [
+        {
+          "question_id": "hosting_type",
+          "question": "How are your environments hosted?",
+          "answer_type": "select",
+          "required": true,
+          "options": [
+            "Cloud",
+            "On-Prem",
+            "Hybrid"
+          ],
+          "description": "Infrastructure hosting model",
+          "answer": ""
+        },
+        {
+          "question_id": "deployment_method",
+          "question": "What deployment method is used?",
+          "answer_type": "select",
+          "required": true,
+          "options": [
+            "CI/CD Pipeline",
+            "Manual",
+            "Mixed"
+          ],
+          "description": "How code is deployed to environments",
+          "answer": ""
+        },
+        {
+          "question_id": "data_type",
+          "question": "What type of test data is used?",
+          "answer_type": "select",
+          "required": true,
+          "options": [
+            "Masked Production",
+            "Synthetic",
+            "Mixed"
+          ],
+          "description": "Source and nature of test data",
+          "answer": ""
+        },
+        {
+          "question_id": "access_level",
+          "question": "What is the access control level?",
+          "answer_type": "select",
+          "required": true,
+          "options": [
+            "Restricted",
+            "Team-based",
+            "Open"
+          ],
+          "description": "Security access model for environments",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Roles and Responsibilities",
+      "order": 4,
+      "questions": [
+        {
+          "question_id": "roles_responsibilities",
+          "question": "Define the roles and their responsibilities for environment management.",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Role",
+              "type": "text"
+            },
+            {
+              "name": "Responsibility",
+              "type": "text"
+            }
+          ],
+          "description": "Who does what in environment governance",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Risk Management",
+      "order": 5,
+      "questions": [
+        {
+          "question_id": "risks",
+          "question": "Identify key risks to your test environments and their mitigation.",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Risk",
+              "type": "text"
+            },
+            {
+              "name": "Impact",
+              "type": "text"
+            },
+            {
+              "name": "Mitigation",
+              "type": "text"
+            }
+          ],
+          "description": "Proactive risk identification and mitigation planning",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Review and Approval",
+      "order": 6,
+      "questions": [
+        {
+          "question_id": "reviewers",
+          "question": "Who are the reviewers and approvers for this plan?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Role",
+              "type": "text"
+            },
+            {
+              "name": "Name",
+              "type": "text"
+            },
+            {
+              "name": "Date",
+              "type": "date"
+            }
+          ],
+          "description": "Sign-off table for document approval",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    }
+  ],
+  "_metadata": {
+    "page_id": "2fc89db1-5e5b-8017-b093-d153e1ce472c",
+    "extraction_date": "2026-02-09T16:29:57.107404",
+    "model_used": "moonshotai/kimi-k2-instruct-0905"
+  }
+}

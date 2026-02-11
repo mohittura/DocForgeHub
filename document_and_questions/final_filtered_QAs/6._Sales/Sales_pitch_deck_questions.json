@@ -1,0 +1,193 @@
+{
+  "document_name": "Sales Pitch Deck",
+  "document_type": "Sales pitch deck",
+  "estimated_completion_time": "15-20 minutes",
+  "total_questions": 13,
+  "question_categories": [
+    {
+      "category": "Basic Information",
+      "order": 1,
+      "questions": [
+        {
+          "question_id": "company_name",
+          "question": "What is your company name?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Acme Corp",
+          "description": "Company name that will appear on the cover slide",
+          "answer": ""
+        },
+        {
+          "question_id": "presentation_date",
+          "question": "What date will this presentation be delivered?",
+          "answer_type": "date",
+          "required": true,
+          "description": "Date to display on the cover slide",
+          "answer": ""
+        },
+        {
+          "question_id": "sales_contact",
+          "question": "What sales contact information should be included?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "sales@company.com | (555) 123-4567",
+          "description": "Contact details for prospects to reach out",
+          "answer": ""
+        },
+        {
+          "question_id": "product_name",
+          "question": "What is the name of your product or service?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "ProductX",
+          "description": "Main product name used throughout the deck",
+          "answer": ""
+        },
+        {
+          "question_id": "tagline",
+          "question": "What is your one-line value proposition or tagline?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Automate your workflow in minutes",
+          "description": "Concise statement of value that appears on the cover",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Customer Pain Points",
+      "order": 2,
+      "questions": [
+        {
+          "question_id": "primary_pain",
+          "question": "What is the primary pain point your customers face?",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "Manual data entry takes 40% of employees' time",
+          "description": "Main problem your product solves",
+          "answer": ""
+        },
+        {
+          "question_id": "operational_inefficiency",
+          "question": "What operational inefficiency or limitation do they experience?",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "Legacy systems can't integrate with modern tools",
+          "description": "Secondary challenge that amplifies the pain",
+          "answer": ""
+        },
+        {
+          "question_id": "business_risk",
+          "question": "What business risk or cost impact results from this problem?",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "Delays cost $50K per month in lost revenue",
+          "description": "Quantifiable impact that motivates change",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Solution Details",
+      "order": 3,
+      "questions": [
+        {
+          "question_id": "product_category",
+          "question": "What category does your product fall into?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Cloud-based workflow automation platform",
+          "description": "Helps prospects understand what type of solution you offer",
+          "answer": ""
+        },
+        {
+          "question_id": "key_features",
+          "question": "What are the top 3 key features of your product?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Feature 1",
+              "type": "text"
+            },
+            {
+              "name": "Feature 2",
+              "type": "text"
+            },
+            {
+              "name": "Feature 3",
+              "type": "text"
+            }
+          ],
+          "description": "Core capabilities that solve the customer's problem",
+          "answer": "",
+          "answers": []
+        },
+        {
+          "question_id": "business_benefit",
+          "question": "What is the main business benefit customers achieve?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Reduce operational costs by 30%",
+          "description": "High-level outcome that resonates with executives",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Value Proposition Table",
+      "order": 4,
+      "questions": [
+        {
+          "question_id": "benefit_outcome_pairs",
+          "question": "What benefits and outcomes should be highlighted in the value proposition table?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Benefit",
+              "type": "text"
+            },
+            {
+              "name": "Outcome",
+              "type": "text"
+            }
+          ],
+          "description": "Each benefit should have a corresponding measurable outcome",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Competitive Differentiation",
+      "order": 5,
+      "questions": [
+        {
+          "question_id": "competitive_advantages",
+          "question": "How do you differentiate from competitors? Provide competitor approaches and your advantages.",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Competitor Approach",
+              "type": "text"
+            },
+            {
+              "name": "Our Advantage",
+              "type": "text"
+            }
+          ],
+          "description": "Side-by-side comparison showing why you're better",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    }
+  ],
+  "_metadata": {
+    "page_id": "2fc89db1-5e5b-80c5-95a3-db5aed860a15",
+    "extraction_date": "2026-02-09T17:10:28.011917",
+    "model_used": "moonshotai/kimi-k2-instruct-0905"
+  }
+}

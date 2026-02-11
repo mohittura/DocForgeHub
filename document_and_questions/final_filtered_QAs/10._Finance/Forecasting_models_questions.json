@@ -1,0 +1,344 @@
+{
+  "document_name": "Forecasting Models Documentation",
+  "document_type": "Forecasting Models Documentation",
+  "estimated_completion_time": "20-25 minutes",
+  "total_questions": 20,
+  "question_categories": [
+    {
+      "category": "Document Metadata",
+      "order": 1,
+      "questions": [
+        {
+          "question_id": "company_name",
+          "question": "What is your company name?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Acme Corp",
+          "description": "Used throughout the document for company-specific references",
+          "answer": ""
+        },
+        {
+          "question_id": "department",
+          "question": "Which department owns this document?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Finance / Operations",
+          "description": "Identifies the department responsible for forecasting",
+          "answer": ""
+        },
+        {
+          "question_id": "document_owner",
+          "question": "Who is the document owner?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Finance / Strategy Team",
+          "description": "Team or individual responsible for maintaining this document",
+          "answer": ""
+        },
+        {
+          "question_id": "prepared_by",
+          "question": "Who is preparing this document?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "John Smith",
+          "description": "Name of person creating this documentation",
+          "answer": ""
+        },
+        {
+          "question_id": "version",
+          "question": "What is the document version?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "1.0",
+          "description": "Version number for document control",
+          "answer": ""
+        },
+        {
+          "question_id": "effective_date",
+          "question": "What is the effective date?",
+          "answer_type": "date",
+          "required": true,
+          "description": "Date when this document becomes effective",
+          "answer": ""
+        },
+        {
+          "question_id": "approved_by",
+          "question": "Who approves this document?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "CFO Name",
+          "description": "Person who approves this forecasting documentation",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Document Overview",
+      "order": 2,
+      "questions": [
+        {
+          "question_id": "document_objectives",
+          "question": "What are the specific objectives of this forecasting document for your organization?",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "Standardize forecasting approaches, support data-driven decisions, enable scenario analysis...",
+          "description": "Custom objectives beyond the standard template",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Forecasting Scope",
+      "order": 3,
+      "questions": [
+        {
+          "question_id": "revenue_types",
+          "question": "What revenue types do you forecast?",
+          "answer_type": "multi_select",
+          "required": true,
+          "options": [
+            "Subscription",
+            "Recurring",
+            "Professional Services",
+            "One-time",
+            "Usage-based",
+            "License"
+          ],
+          "description": "Types of revenue your company needs to forecast",
+          "answer": ""
+        },
+        {
+          "question_id": "expense_categories",
+          "question": "Which expense categories do you forecast?",
+          "answer_type": "multi_select",
+          "required": true,
+          "options": [
+            "OPEX",
+            "CAPEX",
+            "Payroll",
+            "Marketing Spend",
+            "R&D",
+            "Sales & Marketing",
+            "General & Administrative",
+            "Infrastructure"
+          ],
+          "description": "Categories of expenses to include in forecasts",
+          "answer": ""
+        },
+        {
+          "question_id": "time_horizons",
+          "question": "What time horizons do you forecast?",
+          "answer_type": "multi_select",
+          "required": true,
+          "options": [
+            "Weekly",
+            "Monthly",
+            "Quarterly",
+            "Annual",
+            "3-Year",
+            "5-Year"
+          ],
+          "description": "Time periods covered by your forecasting models",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Revenue Forecasting Inputs",
+      "order": 4,
+      "questions": [
+        {
+          "question_id": "revenue_inputs",
+          "question": "What inputs do you use for revenue forecasting?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Input",
+              "type": "text"
+            },
+            {
+              "name": "Source / Description",
+              "type": "text"
+            }
+          ],
+          "description": "Data sources and inputs for revenue forecasting",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Expense Forecasting Inputs",
+      "order": 5,
+      "questions": [
+        {
+          "question_id": "expense_inputs",
+          "question": "What inputs do you use for expense forecasting?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Input",
+              "type": "text"
+            },
+            {
+              "name": "Source / Description",
+              "type": "text"
+            }
+          ],
+          "description": "Data sources and inputs for expense forecasting",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Headcount Forecasting Inputs",
+      "order": 6,
+      "questions": [
+        {
+          "question_id": "headcount_inputs",
+          "question": "What inputs do you use for headcount forecasting?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Input",
+              "type": "text"
+            },
+            {
+              "name": "Source / Description",
+              "type": "text"
+            }
+          ],
+          "description": "Data sources and inputs for workforce planning",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "SaaS Metrics",
+      "order": 7,
+      "questions": [
+        {
+          "question_id": "saas_metrics",
+          "question": "Which SaaS metrics do you track and how are they calculated?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Metric",
+              "type": "text"
+            },
+            {
+              "name": "Description",
+              "type": "text"
+            },
+            {
+              "name": "Formula / Source",
+              "type": "text"
+            }
+          ],
+          "description": "Define your SaaS metrics and their formulas",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Reporting and Monitoring",
+      "order": 8,
+      "questions": [
+        {
+          "question_id": "reporting_metrics",
+          "question": "What metrics do you report and monitor?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Metric",
+              "type": "text"
+            },
+            {
+              "name": "Reporting Frequency",
+              "type": "select",
+              "options": [
+                "Weekly",
+                "Monthly",
+                "Quarterly",
+                "Annually"
+              ]
+            },
+            {
+              "name": "Owner",
+              "type": "text"
+            }
+          ],
+          "description": "Define your reporting cadence and ownership",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Assumptions and Constraints",
+      "order": 9,
+      "questions": [
+        {
+          "question_id": "key_assumptions",
+          "question": "What are your key forecasting assumptions?",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "Market growth rates, customer behavior, economic conditions...",
+          "description": "Core assumptions that drive your forecasting models",
+          "answer": ""
+        },
+        {
+          "question_id": "business_constraints",
+          "question": "What business constraints affect your forecasts?",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "Budget limits, resource availability, regulatory requirements...",
+          "description": "Limitations that impact forecasting accuracy",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Review Process",
+      "order": 10,
+      "questions": [
+        {
+          "question_id": "review_frequency",
+          "question": "How often is this document reviewed?",
+          "answer_type": "select",
+          "required": true,
+          "options": [
+            "Monthly",
+            "Quarterly",
+            "Semi-annually",
+            "Annually"
+          ],
+          "description": "Frequency of document review and updates",
+          "answer": ""
+        },
+        {
+          "question_id": "update_triggers",
+          "question": "What triggers updates to this document?",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "Model changes, new metrics, process improvements...",
+          "description": "Events that require document revision",
+          "answer": ""
+        }
+      ]
+    }
+  ],
+  "_metadata": {
+    "page_id": "2fc89db1-5e5b-8071-ba46-f85293a74ec1",
+    "extraction_date": "2026-02-09T18:10:33.068085",
+    "model_used": "moonshotai/kimi-k2-instruct-0905"
+  }
+}

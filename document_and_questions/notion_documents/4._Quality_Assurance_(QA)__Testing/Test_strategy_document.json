@@ -1,0 +1,115 @@
+{
+  "document_name": "Test strategy document",
+  "sections": [
+    {
+      "title": "Document Information",
+      "subsections": [
+        {
+          "title": "Description",
+          "type": "table",
+          "columns": [
+            "Field",
+            "Value"
+          ]
+        },
+        {
+          "title": "1. Introduction",
+          "type": "text"
+        },
+        {
+          "title": "1.1 Background",
+          "type": "text"
+        },
+        {
+          "title": "2. Testing Strategy Overview",
+          "type": "text"
+        },
+        {
+          "title": "2.1 Objectives",
+          "type": "list"
+        },
+        {
+          "title": "2.2 Testing Levels",
+          "type": "table",
+          "columns": [
+            "Testing Level",
+            "Description",
+            "Responsibility"
+          ]
+        },
+        {
+          "title": "3. Scope",
+          "type": "text"
+        },
+        {
+          "title": "3.1 In Scope",
+          "type": "list"
+        },
+        {
+          "title": "3.2 Out of Scope",
+          "type": "list"
+        },
+        {
+          "title": "4. Test Approach",
+          "type": "text"
+        },
+        {
+          "title": "4.1 Entry and Exit Criteria",
+          "type": "text"
+        },
+        {
+          "title": "Entry Criteria",
+          "type": "list"
+        },
+        {
+          "title": "Exit Criteria",
+          "type": "list"
+        },
+        {
+          "title": "4.2 Team Responsibilities",
+          "type": "table",
+          "columns": [
+            "Role",
+            "Responsibility"
+          ]
+        },
+        {
+          "title": "4.3 Testing Environments",
+          "type": "table",
+          "columns": [
+            "Environment",
+            "Purpose"
+          ]
+        },
+        {
+          "title": "4.4 Testing Tools",
+          "type": "list"
+        },
+        {
+          "title": "4.5 Defect Management",
+          "type": "table",
+          "columns": [
+            "Severity",
+            "Description"
+          ]
+        },
+        {
+          "title": "5. Release Information",
+          "type": "list"
+        },
+        {
+          "title": "6. Reporting and Metrics",
+          "type": "list"
+        },
+        {
+          "title": "7. Risk",
+          "type": "list"
+        },
+        {
+          "title": "8. Summary",
+          "type": "text"
+        }
+      ]
+    }
+  ]
+}

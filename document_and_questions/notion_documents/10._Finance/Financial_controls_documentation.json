@@ -1,0 +1,95 @@
+{
+  "document_name": "Financial controls documentation",
+  "sections": [
+    {
+      "title": "1. Document Overview",
+      "subsections": [
+        {
+          "title": "Description",
+          "type": "text"
+        },
+        {
+          "title": "Document Information",
+          "type": "table",
+          "columns": [
+            "Field",
+            "Value"
+          ]
+        },
+        {
+          "title": "2. Purpose",
+          "type": "list"
+        },
+        {
+          "title": "3. Scope",
+          "type": "list"
+        },
+        {
+          "title": "4. Control Categories",
+          "type": "table",
+          "columns": [
+            "Control Category",
+            "Purpose",
+            "Examples"
+          ]
+        },
+        {
+          "title": "5. Key Financial Processes and Controls",
+          "type": "text"
+        },
+        {
+          "title": "5.1 Revenue Recognition & Billing",
+          "type": "list"
+        },
+        {
+          "title": "5.2 Accounts Payable",
+          "type": "list"
+        },
+        {
+          "title": "5.3 Accounts Receivable",
+          "type": "list"
+        },
+        {
+          "title": "5.4 Expense Reimbursements",
+          "type": "list"
+        },
+        {
+          "title": "5.5 Payroll & Compensation",
+          "type": "list"
+        },
+        {
+          "title": "5.6 General Ledger & Journal Entries",
+          "type": "list"
+        },
+        {
+          "title": "5.7 Asset Management",
+          "type": "list"
+        },
+        {
+          "title": "6. Roles and Responsibilities",
+          "type": "table",
+          "columns": [
+            "Role",
+            "Responsibility"
+          ]
+        },
+        {
+          "title": "7. Control Monitoring and Testing",
+          "type": "list"
+        },
+        {
+          "title": "8. Policy Compliance",
+          "type": "list"
+        },
+        {
+          "title": "9. Record-Keeping",
+          "type": "list"
+        },
+        {
+          "title": "10. Review and Updates",
+          "type": "list"
+        }
+      ]
+    }
+  ]
+}

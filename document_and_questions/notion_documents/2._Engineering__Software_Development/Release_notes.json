@@ -1,0 +1,85 @@
+{
+  "document_name": "Release notes",
+  "sections": [
+    {
+      "title": "Header Information",
+      "subsections": [
+        {
+          "title": "Description",
+          "type": "text"
+        },
+        {
+          "title": "1. Release Summary",
+          "type": "text"
+        },
+        {
+          "title": "2. New Features & Enhancements",
+          "type": "text"
+        },
+        {
+          "title": "2.1 New Features",
+          "type": "table",
+          "columns": [
+            "Feature Name",
+            "Description",
+            "Impacted Users",
+            "Notes"
+          ]
+        },
+        {
+          "title": "2.2 Enhancements",
+          "type": "table",
+          "columns": [
+            "Enhancement",
+            "Description",
+            "Benefit"
+          ]
+        },
+        {
+          "title": "3. Bug Fixes",
+          "type": "table",
+          "columns": [
+            "Issue ID",
+            "Description",
+            "Resolution"
+          ]
+        },
+        {
+          "title": "4. Known Issues",
+          "type": "table",
+          "columns": [
+            "Issue ID",
+            "Description",
+            "Workaround"
+          ]
+        },
+        {
+          "title": "5. Action Required / Instructions",
+          "type": "list"
+        },
+        {
+          "title": "6. Deprecated or Removed Features",
+          "type": "table",
+          "columns": [
+            "Feature",
+            "Status",
+            "Replacement",
+            "Effective Date"
+          ]
+        },
+        {
+          "title": "7. Compatibility Notes (Optional)",
+          "type": "list"
+        },
+        {
+          "title": "8. Support & Contact Information",
+          "type": "list"
+        },
+        {
+          "title": "9. Additional Resources",
+          "type": "list"
+        }
+      ]
+    }
+  ]
+}

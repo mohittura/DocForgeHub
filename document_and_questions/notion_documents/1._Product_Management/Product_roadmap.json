@@ -1,0 +1,57 @@
+{
+  "document_name": "Product roadmap",
+  "sections": [
+    {
+      "title": "PRODUCT ROADMAP",
+      "subsections": [
+        {
+          "title": "Description",
+          "type": "text"
+        },
+        {
+          "title": "1. Purpose",
+          "type": "text"
+        },
+        {
+          "title": "2. Scope",
+          "type": "text"
+        },
+        {
+          "title": "3. Roadmap Overview",
+          "type": "list"
+        },
+        {
+          "title": "4. Product Roadmap",
+          "type": "table",
+          "columns": [
+            "Timeframe",
+            "Initiative / Feature",
+            "Description",
+            "Priority",
+            "Owner",
+            "Status"
+          ]
+        },
+        {
+          "title": "5. Risks and Dependencies",
+          "type": "list"
+        },
+        {
+          "title": "6. Change Control",
+          "type": "text"
+        },
+        {
+          "title": "7. Version History",
+          "type": "table",
+          "columns": [
+            "Version",
+            "Date",
+            "Description of Change",
+            "Author",
+            "Approval"
+          ]
+        }
+      ]
+    }
+  ]
+}

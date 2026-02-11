@@ -1,0 +1,107 @@
+{
+  "document_name": "Deployment & Release Runbook",
+  "sections": [
+    {
+      "title": "Document Overview",
+      "subsections": [
+        {
+          "title": "Description",
+          "type": "text"
+        },
+        {
+          "title": "1. Deployment Overview",
+          "type": "text"
+        },
+        {
+          "title": "1.1 Deployment Type",
+          "type": "list"
+        },
+        {
+          "title": "1.2 Deployment Frequency",
+          "type": "list"
+        },
+        {
+          "title": "2. Roles & Responsibilities",
+          "type": "table",
+          "columns": [
+            "Role",
+            "Responsibility"
+          ]
+        },
+        {
+          "title": "3. Pre-Deployment Checklist",
+          "type": "list"
+        },
+        {
+          "title": "4. Deployment Procedure",
+          "type": "text"
+        },
+        {
+          "title": "Step 1 — Preparation",
+          "type": "list"
+        },
+        {
+          "title": "Step 2 — Build & Package",
+          "type": "list"
+        },
+        {
+          "title": "Step 3 — Deploy to Staging",
+          "type": "list"
+        },
+        {
+          "title": "Step 4 — Production Deployment",
+          "type": "list"
+        },
+        {
+          "title": "5. Post-Deployment Validation",
+          "type": "table",
+          "columns": [
+            "Check",
+            "Owner",
+            "Status"
+          ]
+        },
+        {
+          "title": "6. Rollback Procedure",
+          "type": "text"
+        },
+        {
+          "title": "Rollback Triggers",
+          "type": "list"
+        },
+        {
+          "title": "Rollback Steps",
+          "type": "list"
+        },
+        {
+          "title": "7. Monitoring & Alerts",
+          "type": "list"
+        },
+        {
+          "title": "8. Communication Plan",
+          "type": "table",
+          "columns": [
+            "Stage",
+            "Audience",
+            "Communication Method"
+          ]
+        },
+        {
+          "title": "9. Known Risks for Deployment",
+          "type": "list"
+        },
+        {
+          "title": "10. Deployment History (Optional)",
+          "type": "table",
+          "columns": [
+            "Version",
+            "Date",
+            "Environment",
+            "Owner",
+            "Result"
+          ]
+        }
+      ]
+    }
+  ]
+}

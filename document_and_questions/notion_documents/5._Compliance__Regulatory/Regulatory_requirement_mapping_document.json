@@ -1,0 +1,86 @@
+{
+  "document_name": "Regulatory requirement mapping document",
+  "sections": [
+    {
+      "title": "1. Document Information",
+      "subsections": [
+        {
+          "title": "Description",
+          "type": "table",
+          "columns": [
+            "Field",
+            "Value"
+          ]
+        },
+        {
+          "title": "2. Purpose",
+          "type": "list"
+        },
+        {
+          "title": "3. Regulatory Scope Overview",
+          "type": "table",
+          "columns": [
+            "Regulation / Standard",
+            "Description",
+            "Applicability"
+          ]
+        },
+        {
+          "title": "4. Requirement Mapping Methodology (Standardized)",
+          "type": "list"
+        },
+        {
+          "title": "5. Regulatory Requirement Mapping Matrix",
+          "type": "text"
+        },
+        {
+          "title": "Core Mapping Table",
+          "type": "table",
+          "columns": [
+            "Mapping ID",
+            "Regulation",
+            "Requirement ID",
+            "Requirement Summary",
+            "Internal Control / Policy",
+            "Control Owner",
+            "Evidence Reference",
+            "Compliance Status"
+          ]
+        },
+        {
+          "title": "6. Control Coverage Summary",
+          "type": "table",
+          "columns": [
+            "Regulation",
+            "Total Requirements",
+            "Covered",
+            "Partial",
+            "Gap Identified"
+          ]
+        },
+        {
+          "title": "7. Gap Identification and Action Tracking",
+          "type": "table",
+          "columns": [
+            "Gap ID",
+            "Requirement",
+            "Gap Description",
+            "Risk Level",
+            "Action Required",
+            "Owner",
+            "Target Date",
+            "Status"
+          ]
+        },
+        {
+          "title": "8. Evidence and Documentation References",
+          "type": "list"
+        },
+        {
+          "title": "9. Review and Maintenance",
+          "type": "list"
+        }
+      ]
+    }
+  ]
+}

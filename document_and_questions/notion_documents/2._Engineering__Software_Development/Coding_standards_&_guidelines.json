@@ -1,0 +1,135 @@
+{
+  "document_name": "Coding standards & guidelines",
+  "sections": [
+    {
+      "title": "📌 Document Overview",
+      "subsections": [
+        {
+          "title": "Description",
+          "type": "text"
+        },
+        {
+          "title": "1. Objective",
+          "type": "list"
+        },
+        {
+          "title": "2. Guiding Principles",
+          "type": "list"
+        },
+        {
+          "title": "3. General Coding Standards",
+          "type": "text"
+        },
+        {
+          "title": "3.1 Code Readability",
+          "type": "list"
+        },
+        {
+          "title": "3.2 Code Formatting",
+          "type": "list"
+        },
+        {
+          "title": "4. Naming Conventions",
+          "type": "table",
+          "columns": [
+            "Element",
+            "Convention",
+            "Example"
+          ]
+        },
+        {
+          "title": "5. Language-Specific Guidelines",
+          "type": "text"
+        },
+        {
+          "title": "5.1 Backend Development",
+          "type": "list"
+        },
+        {
+          "title": "5.2 Frontend Development",
+          "type": "list"
+        },
+        {
+          "title": "5.3 Database & Data Access",
+          "type": "list"
+        },
+        {
+          "title": "6. Error Handling & Logging",
+          "type": "text"
+        },
+        {
+          "title": "Error Handling",
+          "type": "list"
+        },
+        {
+          "title": "Logging",
+          "type": "list"
+        },
+        {
+          "title": "7. Security Best Practices",
+          "type": "list"
+        },
+        {
+          "title": "8. Performance Guidelines",
+          "type": "list"
+        },
+        {
+          "title": "9. Code Comments & Documentation",
+          "type": "list"
+        },
+        {
+          "title": "10. Testing Standards",
+          "type": "table",
+          "columns": [
+            "Test Type",
+            "Requirement"
+          ]
+        },
+        {
+          "title": "11. Code Review Guidelines",
+          "type": "list"
+        },
+        {
+          "title": "12. Version Control Practices",
+          "type": "text"
+        },
+        {
+          "title": "Branching Strategy",
+          "type": "list"
+        },
+        {
+          "title": "Commit Messages",
+          "type": "list"
+        },
+        {
+          "title": "13. Dependency Management",
+          "type": "list"
+        },
+        {
+          "title": "14. DevOps & CI/CD Guidelines",
+          "type": "list"
+        },
+        {
+          "title": "15. Anti-Patterns to Avoid",
+          "type": "list"
+        },
+        {
+          "title": "16. Exceptions & Deviations",
+          "type": "list"
+        },
+        {
+          "title": "17. Change Management",
+          "type": "list"
+        },
+        {
+          "title": "18. Approval & Sign-off",
+          "type": "text"
+        },
+        {
+          "title": "",
+          "type": "text"
+        }
+      ]
+    }
+  ]
+}

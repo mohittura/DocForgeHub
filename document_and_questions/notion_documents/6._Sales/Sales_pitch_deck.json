@@ -1,0 +1,110 @@
+{
+  "document_name": "Sales pitch deck",
+  "sections": [
+    {
+      "title": "1. Cover Slide",
+      "subsections": [
+        {
+          "title": "Description",
+          "type": "text"
+        },
+        {
+          "title": "2. The Problem",
+          "type": "text"
+        },
+        {
+          "title": "Title: The Challenge",
+          "type": "list"
+        },
+        {
+          "title": "3. The Opportunity",
+          "type": "text"
+        },
+        {
+          "title": "Title: Why Change Now",
+          "type": "list"
+        },
+        {
+          "title": "4. The Solution",
+          "type": "text"
+        },
+        {
+          "title": "Title: Introducing {{Product Name}}",
+          "type": "list"
+        },
+        {
+          "title": "5. How It Works",
+          "type": "text"
+        },
+        {
+          "title": "Title: Product Overview",
+          "type": "list"
+        },
+        {
+          "title": "6. Value Proposition",
+          "type": "text"
+        },
+        {
+          "title": "Title: Business Value",
+          "type": "table",
+          "columns": [
+            "Benefit",
+            "Outcome"
+          ]
+        },
+        {
+          "title": "7. Use Cases",
+          "type": "text"
+        },
+        {
+          "title": "Title: Common Customer Scenarios",
+          "type": "list"
+        },
+        {
+          "title": "8. Differentiation",
+          "type": "text"
+        },
+        {
+          "title": "Title: Why {{Product Name}}",
+          "type": "table",
+          "columns": [
+            "Competitor Approach",
+            "Our Advantage"
+          ]
+        },
+        {
+          "title": "9. Customer Success / Proof Points",
+          "type": "text"
+        },
+        {
+          "title": "Title: Results Delivered",
+          "type": "list"
+        },
+        {
+          "title": "10. Pricing Overview",
+          "type": "text"
+        },
+        {
+          "title": "Title: Flexible Pricing",
+          "type": "list"
+        },
+        {
+          "title": "11. Implementation and Support",
+          "type": "text"
+        },
+        {
+          "title": "Title: Easy Onboarding",
+          "type": "list"
+        },
+        {
+          "title": "12. Call to Action",
+          "type": "text"
+        },
+        {
+          "title": "Title: Next Steps",
+          "type": "list"
+        }
+      ]
+    }
+  ]
+}

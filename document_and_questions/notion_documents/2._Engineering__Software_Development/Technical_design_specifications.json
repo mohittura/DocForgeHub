@@ -1,0 +1,237 @@
+{
+  "document_name": "Technical design specifications",
+  "sections": [
+    {
+      "title": "0 Preface",
+      "subsections": [
+        {
+          "title": "Description",
+          "type": "text"
+        },
+        {
+          "title": "0.1 Purpose of this Document",
+          "type": "text"
+        },
+        {
+          "title": "0.2 Use of this Document",
+          "type": "list"
+        },
+        {
+          "title": "0.3 Overview",
+          "type": "list"
+        },
+        {
+          "title": "0.4 Basis of this Document",
+          "type": "list"
+        },
+        {
+          "title": "0.5 A Reference Architecture for the Programme",
+          "type": "list"
+        },
+        {
+          "title": "0.6 Specific Design Considerations",
+          "type": "list"
+        }
+      ]
+    },
+    {
+      "title": "1 Introduction",
+      "subsections": [
+        {
+          "title": "Description",
+          "type": "text"
+        },
+        {
+          "title": "1.1 Purpose",
+          "type": "text"
+        },
+        {
+          "title": "1.2 Scope",
+          "type": "list"
+        },
+        {
+          "title": "1.3 Definitions, Acronyms and Abbreviations",
+          "type": "table",
+          "columns": [
+            "Term",
+            "Definition"
+          ]
+        },
+        {
+          "title": "1.4 References",
+          "type": "list"
+        },
+        {
+          "title": "1.5 Overview",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "title": "2 System Overview",
+      "subsections": [
+        {
+          "title": "Description",
+          "type": "text"
+        },
+        {
+          "title": "2.1 System Characteristics",
+          "type": "list"
+        },
+        {
+          "title": "2.2 System Architecture",
+          "type": "text"
+        },
+        {
+          "title": "Presentation Layer",
+          "type": "list"
+        },
+        {
+          "title": "Application Layer",
+          "type": "list"
+        },
+        {
+          "title": "Data Layer",
+          "type": "list"
+        },
+        {
+          "title": "Integration Layer",
+          "type": "list"
+        },
+        {
+          "title": "2.3 Infrastructure Services",
+          "type": "list"
+        }
+      ]
+    },
+    {
+      "title": "3 System Context",
+      "subsections": [
+        {
+          "title": "Description",
+          "type": "list"
+        }
+      ]
+    },
+    {
+      "title": "4 System Design",
+      "subsections": [
+        {
+          "title": "Description",
+          "type": "text"
+        },
+        {
+          "title": "4.1 Design Method and Standards",
+          "type": "list"
+        },
+        {
+          "title": "4.2 Documentation Standards",
+          "type": "list"
+        },
+        {
+          "title": "4.3 Naming Conventions",
+          "type": "table",
+          "columns": [
+            "Element",
+            "Standard"
+          ]
+        },
+        {
+          "title": "4.4 Programming Standards",
+          "type": "list"
+        },
+        {
+          "title": "4.5 Software Development Tools",
+          "type": "table",
+          "columns": [
+            "Tool Type",
+            "Example"
+          ]
+        },
+        {
+          "title": "4.6 Outstanding Issues",
+          "type": "table",
+          "columns": [
+            "Issue",
+            "Owner",
+            "Status"
+          ]
+        },
+        {
+          "title": "4.7 Decomposition Description",
+          "type": "list"
+        }
+      ]
+    },
+    {
+      "title": "5 Component Description",
+      "subsections": [
+        {
+          "title": "Description",
+          "type": "text"
+        },
+        {
+          "title": "5.1 Component Identifier",
+          "type": "text"
+        },
+        {
+          "title": "Component: Authentication Service",
+          "type": "list"
+        }
+      ]
+    },
+    {
+      "title": "6 Software Requirements Traceability Matrix",
+      "subsections": [
+        {
+          "title": "Description",
+          "type": "table",
+          "columns": [
+            "Requirement ID",
+            "Requirement Description",
+            "Component",
+            "Verification Method"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Document Control",
+      "subsections": [
+        {
+          "title": "Description",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "title": "Document Signoff",
+      "subsections": [
+        {
+          "title": "Description",
+          "type": "table",
+          "columns": [
+            "Role",
+            "Name",
+            "Date"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Document Change Record",
+      "subsections": [
+        {
+          "title": "Description",
+          "type": "table",
+          "columns": [
+            "Version",
+            "Date",
+            "Description",
+            "Author"
+          ]
+        }
+      ]
+    }
+  ]
+}

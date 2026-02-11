@@ -1,0 +1,149 @@
+{
+  "document_name": "Sales forecast reports",
+  "sections": [
+    {
+      "title": "1. Document Information",
+      "subsections": [
+        {
+          "title": "Description",
+          "type": "table",
+          "columns": [
+            "Field",
+            "Value"
+          ]
+        },
+        {
+          "title": "2. Executive Summary",
+          "type": "text"
+        },
+        {
+          "title": "Key Highlights",
+          "type": "list"
+        },
+        {
+          "title": "Forecast Confidence Level",
+          "type": "table",
+          "columns": [
+            "Level",
+            "Description"
+          ]
+        },
+        {
+          "title": "3. Forecast Objectives",
+          "type": "list"
+        },
+        {
+          "title": "4. Forecast Scope and Assumptions",
+          "type": "text"
+        },
+        {
+          "title": "4.1 Scope",
+          "type": "list"
+        },
+        {
+          "title": "4.2 Key Assumptions",
+          "type": "list"
+        },
+        {
+          "title": "5. Historical Sales Performance Summary",
+          "type": "text"
+        },
+        {
+          "title": "5.1 Previous Period Performance",
+          "type": "table",
+          "columns": [
+            "Period",
+            "Revenue",
+            "Growth",
+            "Notes"
+          ]
+        },
+        {
+          "title": "5.2 Key Observations",
+          "type": "list"
+        },
+        {
+          "title": "6. Sales Forecast Breakdown",
+          "type": "text"
+        },
+        {
+          "title": "6.1 Revenue Forecast by Period",
+          "type": "table",
+          "columns": [
+            "Period",
+            "Forecast Revenue",
+            "Expected Growth",
+            "Confidence"
+          ]
+        },
+        {
+          "title": "6.2 Revenue Forecast by Segment",
+          "type": "table",
+          "columns": [
+            "Segment",
+            "Forecast Revenue",
+            "Contribution",
+            "Growth Driver"
+          ]
+        },
+        {
+          "title": "6.3 Revenue Forecast by Product (Optional)",
+          "type": "table",
+          "columns": [
+            "Product",
+            "Forecast Revenue",
+            "Growth Rate",
+            "Notes"
+          ]
+        },
+        {
+          "title": "7. Sales Pipeline Analysis",
+          "type": "text"
+        },
+        {
+          "title": "7.1 Pipeline Overview",
+          "type": "table",
+          "columns": [
+            "Metric",
+            "Value"
+          ]
+        },
+        {
+          "title": "7.2 Pipeline Health Assessment",
+          "type": "list"
+        },
+        {
+          "title": "8. Forecast Methodology",
+          "type": "list"
+        },
+        {
+          "title": "9. Risks and Mitigation",
+          "type": "table",
+          "columns": [
+            "Risk",
+            "Impact",
+            "Likelihood",
+            "Mitigation"
+          ]
+        },
+        {
+          "title": "10. Opportunities",
+          "type": "list"
+        },
+        {
+          "title": "11. Sales Targets and Alignment",
+          "type": "table",
+          "columns": [
+            "Team / Region",
+            "Target Revenue",
+            "Contribution"
+          ]
+        },
+        {
+          "title": "12. Conclusion",
+          "type": "text"
+        }
+      ]
+    }
+  ]
+}

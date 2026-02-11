@@ -1,0 +1,126 @@
+{
+  "document_name": "HR policies & procedures",
+  "sections": [
+    {
+      "title": "1. Document Overview",
+      "subsections": [
+        {
+          "title": "Description",
+          "type": "text"
+        },
+        {
+          "title": "Document Information",
+          "type": "table",
+          "columns": [
+            "Field",
+            "Value"
+          ]
+        },
+        {
+          "title": "2. Purpose",
+          "type": "list"
+        },
+        {
+          "title": "3. Scope",
+          "type": "list"
+        },
+        {
+          "title": "4. HR Policy Principles",
+          "type": "list"
+        },
+        {
+          "title": "5. Recruitment and Hiring Policy",
+          "type": "text"
+        },
+        {
+          "title": "5.1 Recruitment Principles",
+          "type": "list"
+        },
+        {
+          "title": "5.2 Hiring Procedure",
+          "type": "list"
+        },
+        {
+          "title": "6. Employee Onboarding Procedure",
+          "type": "list"
+        },
+        {
+          "title": "7. Employment Classification and Probation",
+          "type": "text"
+        },
+        {
+          "title": "7.1 Employment Types",
+          "type": "list"
+        },
+        {
+          "title": "7.2 Probation Period",
+          "type": "text"
+        },
+        {
+          "title": "8. Attendance and Working Hours Policy",
+          "type": "list"
+        },
+        {
+          "title": "9. Leave Management Policy",
+          "type": "text"
+        },
+        {
+          "title": "9.1 Leave Types",
+          "type": "list"
+        },
+        {
+          "title": "9.2 Leave Procedure",
+          "type": "list"
+        },
+        {
+          "title": "10. Compensation and Benefits Policy",
+          "type": "list"
+        },
+        {
+          "title": "11. Performance Management Procedure",
+          "type": "text"
+        },
+        {
+          "title": "11.1 Performance Expectations",
+          "type": "text"
+        },
+        {
+          "title": "11.2 Performance Review Process",
+          "type": "list"
+        },
+        {
+          "title": "12. Code of Conduct and Workplace Behavior",
+          "type": "list"
+        },
+        {
+          "title": "13. Information Security and Confidentiality Policy",
+          "type": "list"
+        },
+        {
+          "title": "14. Disciplinary Procedure",
+          "type": "list"
+        },
+        {
+          "title": "15. Grievance Handling Procedure",
+          "type": "list"
+        },
+        {
+          "title": "16. Separation and Exit Procedure",
+          "type": "list"
+        },
+        {
+          "title": "17. Documentation and Record Management",
+          "type": "text"
+        },
+        {
+          "title": "18. Governance and Ownership",
+          "type": "text"
+        },
+        {
+          "title": "19. Review and Revision",
+          "type": "text"
+        }
+      ]
+    }
+  ]
+}

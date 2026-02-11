@@ -1,0 +1,84 @@
+{
+  "document_name": "Code of conduct",
+  "sections": [
+    {
+      "title": "1. Document Overview",
+      "subsections": [
+        {
+          "title": "Description",
+          "type": "text"
+        },
+        {
+          "title": "Document Information",
+          "type": "table",
+          "columns": [
+            "Field",
+            "Value"
+          ]
+        },
+        {
+          "title": "2. Purpose",
+          "type": "list"
+        },
+        {
+          "title": "3. Scope",
+          "type": "list"
+        },
+        {
+          "title": "4. Core Principles",
+          "type": "list"
+        },
+        {
+          "title": "5. Professional Conduct Standards",
+          "type": "list"
+        },
+        {
+          "title": "6. Workplace Respect and Inclusion",
+          "type": "list"
+        },
+        {
+          "title": "7. Conflict of Interest",
+          "type": "list"
+        },
+        {
+          "title": "8. Confidentiality and Data Protection",
+          "type": "list"
+        },
+        {
+          "title": "9. Use of Company Assets and Systems",
+          "type": "list"
+        },
+        {
+          "title": "10. Communication and Representation",
+          "type": "list"
+        },
+        {
+          "title": "11. Reporting Concerns and Violations",
+          "type": "list"
+        },
+        {
+          "title": "12. Disciplinary Actions",
+          "type": "list"
+        },
+        {
+          "title": "13. Acknowledgement",
+          "type": "table",
+          "columns": [
+            "Role",
+            "Name",
+            "Signature",
+            "Date"
+          ]
+        },
+        {
+          "title": "14. Governance and Updates",
+          "type": "text"
+        },
+        {
+          "title": "15. Review and Revision",
+          "type": "text"
+        }
+      ]
+    }
+  ]
+}

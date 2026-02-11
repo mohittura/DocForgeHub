@@ -1,0 +1,165 @@
+{
+  "document_name": "Product messaging documents",
+  "sections": [
+    {
+      "title": "1. Document Overview",
+      "subsections": [
+        {
+          "title": "Description",
+          "type": "text"
+        },
+        {
+          "title": "Document Information",
+          "type": "table",
+          "columns": [
+            "Field",
+            "Value"
+          ]
+        },
+        {
+          "title": "2. Purpose",
+          "type": "list"
+        },
+        {
+          "title": "3. Scope",
+          "type": "list"
+        },
+        {
+          "title": "4. Product Overview",
+          "type": "text"
+        },
+        {
+          "title": "4.1 Product Description",
+          "type": "text"
+        },
+        {
+          "title": "4.2 Product Category",
+          "type": "text"
+        },
+        {
+          "title": "4.3 Target Customer",
+          "type": "table",
+          "columns": [
+            "Attribute",
+            "Description"
+          ]
+        },
+        {
+          "title": "5. Customer Problem Statement",
+          "type": "list"
+        },
+        {
+          "title": "6. Product Positioning Statement",
+          "type": "text"
+        },
+        {
+          "title": "7. Core Value Proposition",
+          "type": "text"
+        },
+        {
+          "title": "Primary Value Proposition",
+          "type": "text"
+        },
+        {
+          "title": "Supporting Value Pillars",
+          "type": "table",
+          "columns": [
+            "Value Pillar",
+            "Description",
+            "Customer Outcome"
+          ]
+        },
+        {
+          "title": "8. Feature-to-Benefit Mapping",
+          "type": "table",
+          "columns": [
+            "Product Feature",
+            "Capability Description",
+            "Customer Benefit"
+          ]
+        },
+        {
+          "title": "9. Differentiation Framework",
+          "type": "text"
+        },
+        {
+          "title": "9.1 Competitive Alternatives",
+          "type": "list"
+        },
+        {
+          "title": "9.2 Key Differentiators",
+          "type": "table",
+          "columns": [
+            "Differentiator",
+            "Description",
+            "Customer Impact"
+          ]
+        },
+        {
+          "title": "9.3 Reasons to Believe",
+          "type": "list"
+        },
+        {
+          "title": "10. Audience-Based Messaging",
+          "type": "text"
+        },
+        {
+          "title": "10.1 Executive Buyers",
+          "type": "list"
+        },
+        {
+          "title": "10.2 Operational Users",
+          "type": "list"
+        },
+        {
+          "title": "10.3 Technical Stakeholders",
+          "type": "list"
+        },
+        {
+          "title": "11. Key Messaging Statements",
+          "type": "text"
+        },
+        {
+          "title": "11.1 Primary Message",
+          "type": "text"
+        },
+        {
+          "title": "11.2 Supporting Messages",
+          "type": "list"
+        },
+        {
+          "title": "11.3 Elevator Pitch",
+          "type": "text"
+        },
+        {
+          "title": "12. Messaging Do’s and Don’ts",
+          "type": "text"
+        },
+        {
+          "title": "Do",
+          "type": "list"
+        },
+        {
+          "title": "Don’t",
+          "type": "list"
+        },
+        {
+          "title": "13. Channel Application Guidance",
+          "type": "table",
+          "columns": [
+            "Channel",
+            "Messaging Focus"
+          ]
+        },
+        {
+          "title": "14. Governance and Ownership",
+          "type": "list"
+        },
+        {
+          "title": "15. Review and Revision",
+          "type": "text"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,171 @@
+{
+  "document_name": "Product vision & strategy document",
+  "sections": [
+    {
+      "title": "📌 Document Overview",
+      "subsections": [
+        {
+          "title": "Description",
+          "type": "text"
+        },
+        {
+          "title": "1. Product Vision",
+          "type": "text"
+        },
+        {
+          "title": "Vision Statement",
+          "type": "text"
+        },
+        {
+          "title": "What Success Looks Like",
+          "type": "list"
+        },
+        {
+          "title": "2. Problem Statement",
+          "type": "text"
+        },
+        {
+          "title": "Customer Problems We Are Solving",
+          "type": "list"
+        },
+        {
+          "title": "Market Gap",
+          "type": "list"
+        },
+        {
+          "title": "3. Target Customers & Personas",
+          "type": "text"
+        },
+        {
+          "title": "Primary Customer Segments",
+          "type": "list"
+        },
+        {
+          "title": "Key Personas",
+          "type": "table",
+          "columns": [
+            "Persona",
+            "Role",
+            "Primary Needs"
+          ]
+        },
+        {
+          "title": "4. Strategic Product Principles",
+          "type": "list"
+        },
+        {
+          "title": "5. Business Goals & Objectives",
+          "type": "text"
+        },
+        {
+          "title": "High-Level Objectives",
+          "type": "list"
+        },
+        {
+          "title": "Success Metrics",
+          "type": "table",
+          "columns": [
+            "Objective",
+            "Metric",
+            "Target"
+          ]
+        },
+        {
+          "title": "6. Product Strategy Overview",
+          "type": "text"
+        },
+        {
+          "title": "Strategic Pillars",
+          "type": "table",
+          "columns": [
+            "Pillar",
+            "Description"
+          ]
+        },
+        {
+          "title": "7. Key Initiatives (Next 12–24 Months)",
+          "type": "table",
+          "columns": [
+            "Initiative",
+            "Description",
+            "Strategic Pillar"
+          ]
+        },
+        {
+          "title": "8. Competitive Differentiation",
+          "type": "text"
+        },
+        {
+          "title": "How We Win",
+          "type": "list"
+        },
+        {
+          "title": "Competitive Landscape",
+          "type": "table",
+          "columns": [
+            "Competitor",
+            "Strength",
+            "Weakness"
+          ]
+        },
+        {
+          "title": "9. Product Roadmap Alignment",
+          "type": "text"
+        },
+        {
+          "title": "Roadmap Themes",
+          "type": "list"
+        },
+        {
+          "title": "10. Risks & Assumptions",
+          "type": "text"
+        },
+        {
+          "title": "Key Assumptions",
+          "type": "list"
+        },
+        {
+          "title": "Risks & Mitigations",
+          "type": "table",
+          "columns": [
+            "Risk",
+            "Impact",
+            "Mitigation"
+          ]
+        },
+        {
+          "title": "11. Go-To-Market Considerations",
+          "type": "text"
+        },
+        {
+          "title": "Launch Strategy",
+          "type": "list"
+        },
+        {
+          "title": "Internal Readiness",
+          "type": "list"
+        },
+        {
+          "title": "12. Governance & Decision-Making",
+          "type": "text"
+        },
+        {
+          "title": "Ownership",
+          "type": "list"
+        },
+        {
+          "title": "Change Management",
+          "type": "list"
+        },
+        {
+          "title": "13. Open Questions",
+          "type": "list"
+        },
+        {
+          "title": "14. Approval & Sign-off",
+          "type": "text"
+        }
+      ]
+    }
+  ]
+}

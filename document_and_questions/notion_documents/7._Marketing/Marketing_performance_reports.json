@@ -1,0 +1,193 @@
+{
+  "document_name": "Marketing performance reports",
+  "sections": [
+    {
+      "title": "1. Document Overview",
+      "subsections": [
+        {
+          "title": "Description",
+          "type": "text"
+        },
+        {
+          "title": "Document Information",
+          "type": "table",
+          "columns": [
+            "Field",
+            "Value"
+          ]
+        },
+        {
+          "title": "2. Purpose",
+          "type": "list"
+        },
+        {
+          "title": "3. Executive Summary",
+          "type": "text"
+        },
+        {
+          "title": "3.1 Performance Overview",
+          "type": "list"
+        },
+        {
+          "title": "3.2 Key Highlights",
+          "type": "list"
+        },
+        {
+          "title": "3.3 Key Challenges",
+          "type": "list"
+        },
+        {
+          "title": "4. Marketing Goals and Targets",
+          "type": "table",
+          "columns": [
+            "Goal",
+            "Target",
+            "Actual",
+            "Status",
+            "Notes"
+          ]
+        },
+        {
+          "title": "5. Funnel Performance Overview",
+          "type": "text"
+        },
+        {
+          "title": "5.1 Funnel Metrics Summary",
+          "type": "table",
+          "columns": [
+            "Funnel Stage",
+            "Volume",
+            "Conversion Rate",
+            "Change vs Previous Period"
+          ]
+        },
+        {
+          "title": "5.2 Funnel Insights",
+          "type": "text"
+        },
+        {
+          "title": "6. Channel Performance Analysis",
+          "type": "text"
+        },
+        {
+          "title": "6.1 Channel Performance Summary",
+          "type": "table",
+          "columns": [
+            "Channel",
+            "Spend",
+            "Leads",
+            "Pipeline Generated",
+            "CAC",
+            "Performance Rating"
+          ]
+        },
+        {
+          "title": "6.2 Channel Insights",
+          "type": "list"
+        },
+        {
+          "title": "7. Campaign Performance",
+          "type": "text"
+        },
+        {
+          "title": "7.1 Campaign Summary",
+          "type": "table",
+          "columns": [
+            "Campaign Name",
+            "Objective",
+            "Leads",
+            "Pipeline",
+            "ROI",
+            "Status"
+          ]
+        },
+        {
+          "title": "7.2 Top Performing Campaigns",
+          "type": "text"
+        },
+        {
+          "title": "7.3 Underperforming Campaigns",
+          "type": "text"
+        },
+        {
+          "title": "8. Content Performance",
+          "type": "text"
+        },
+        {
+          "title": "8.1 Content Metrics",
+          "type": "table",
+          "columns": [
+            "Content Type",
+            "Published",
+            "Engagement",
+            "Leads Generated",
+            "Notes"
+          ]
+        },
+        {
+          "title": "8.2 Content Insights",
+          "type": "text"
+        },
+        {
+          "title": "9. Revenue and Pipeline Attribution",
+          "type": "text"
+        },
+        {
+          "title": "9.1 Marketing Contribution",
+          "type": "table",
+          "columns": [
+            "Metric",
+            "Value"
+          ]
+        },
+        {
+          "title": "9.2 Attribution Insights",
+          "type": "text"
+        },
+        {
+          "title": "10. Performance Analysis and Insights",
+          "type": "text"
+        },
+        {
+          "title": "10.1 What Worked Well",
+          "type": "list"
+        },
+        {
+          "title": "10.2 What Needs Improvement",
+          "type": "list"
+        },
+        {
+          "title": "10.3 Emerging Trends",
+          "type": "list"
+        },
+        {
+          "title": "11. Optimization and Action Plan",
+          "type": "table",
+          "columns": [
+            "Area",
+            "Action",
+            "Owner",
+            "Priority",
+            "Timeline"
+          ]
+        },
+        {
+          "title": "12. KPI Snapshot (Quick Reference)",
+          "type": "table",
+          "columns": [
+            "Category",
+            "Metric"
+          ]
+        },
+        {
+          "title": "13. Governance and Updates",
+          "type": "text"
+        },
+        {
+          "title": "14. Review and Revision",
+          "type": "text"
+        }
+      ]
+    }
+  ]
+}

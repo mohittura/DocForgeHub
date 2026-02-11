@@ -1,0 +1,107 @@
+{
+  "document_name": "Compliance policy framework",
+  "sections": [
+    {
+      "title": "1. Document Information",
+      "subsections": [
+        {
+          "title": "Description",
+          "type": "table",
+          "columns": [
+            "Field",
+            "Value"
+          ]
+        },
+        {
+          "title": "2. Purpose",
+          "type": "list"
+        },
+        {
+          "title": "3. Scope",
+          "type": "list"
+        },
+        {
+          "title": "4. Compliance Objectives",
+          "type": "list"
+        },
+        {
+          "title": "5. Compliance Domains",
+          "type": "table",
+          "columns": [
+            "Domain",
+            "Description"
+          ]
+        },
+        {
+          "title": "6. Policy Hierarchy and Structure",
+          "type": "table",
+          "columns": [
+            "Level",
+            "Description",
+            "Example"
+          ]
+        },
+        {
+          "title": "7. Roles and Responsibilities",
+          "type": "table",
+          "columns": [
+            "Role",
+            "Responsibility"
+          ]
+        },
+        {
+          "title": "8. Compliance Requirements and Alignment",
+          "type": "table",
+          "columns": [
+            "Standard / Regulation",
+            "Applicability"
+          ]
+        },
+        {
+          "title": "9. Policy Lifecycle Management",
+          "type": "text"
+        },
+        {
+          "title": "9.1 Policy Creation",
+          "type": "text"
+        },
+        {
+          "title": "9.2 Review and Approval",
+          "type": "text"
+        },
+        {
+          "title": "9.3 Communication",
+          "type": "text"
+        },
+        {
+          "title": "9.4 Review Cycle",
+          "type": "text"
+        },
+        {
+          "title": "10. Compliance Monitoring and Enforcement",
+          "type": "list"
+        },
+        {
+          "title": "11. Training and Awareness",
+          "type": "list"
+        },
+        {
+          "title": "12. Exceptions Management",
+          "type": "list"
+        },
+        {
+          "title": "13. Documentation and Record Keeping",
+          "type": "list"
+        },
+        {
+          "title": "14. Continuous Improvement",
+          "type": "list"
+        },
+        {
+          "title": "",
+          "type": "text"
+        }
+      ]
+    }
+  ]
+}

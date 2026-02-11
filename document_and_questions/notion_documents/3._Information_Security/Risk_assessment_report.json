@@ -1,0 +1,109 @@
+{
+  "document_name": "Risk assessment report",
+  "sections": [
+    {
+      "title": "1. Document Information",
+      "subsections": [
+        {
+          "title": "Description",
+          "type": "table",
+          "columns": [
+            "Field",
+            "Value"
+          ]
+        },
+        {
+          "title": "2. Assessment Overview",
+          "type": "text"
+        },
+        {
+          "title": "2.1 Objective",
+          "type": "text"
+        },
+        {
+          "title": "2.2 Assessment Scope",
+          "type": "list"
+        },
+        {
+          "title": "3. Risk Rating Model (Standardized)",
+          "type": "text"
+        },
+        {
+          "title": "Likelihood",
+          "type": "table",
+          "columns": [
+            "Level",
+            "Definition"
+          ]
+        },
+        {
+          "title": "Impact",
+          "type": "table",
+          "columns": [
+            "Level",
+            "Definition"
+          ]
+        },
+        {
+          "title": "Risk Level Formula",
+          "type": "text"
+        },
+        {
+          "title": "4. System Summary (AI-Generated Section)",
+          "type": "table",
+          "columns": [
+            "Item",
+            "Description"
+          ]
+        },
+        {
+          "title": "5. Risk Register (Primary Section)",
+          "type": "table",
+          "columns": [
+            "Risk ID",
+            "Risk Description",
+            "Affected Component",
+            "Likelihood",
+            "Impact",
+            "Risk Level",
+            "Existing Control",
+            "Recommended Action",
+            "Owner",
+            "Status"
+          ]
+        },
+        {
+          "title": "6. Risk Treatment Summary (Auto-Derived)",
+          "type": "table",
+          "columns": [
+            "Risk Level",
+            "Treatment Strategy"
+          ]
+        },
+        {
+          "title": "7. Top Risks Summary (Optional Auto-Generated)",
+          "type": "table",
+          "columns": [
+            "Rank",
+            "Risk ID",
+            "Risk Title",
+            "Reason for Priority"
+          ]
+        },
+        {
+          "title": "8. Assumptions",
+          "type": "list"
+        },
+        {
+          "title": "9. Approval",
+          "type": "table",
+          "columns": [
+            "Role",
+            "Name",
+            "Date"
+          ]
+        }
+      ]
+    }
+  ]
+}

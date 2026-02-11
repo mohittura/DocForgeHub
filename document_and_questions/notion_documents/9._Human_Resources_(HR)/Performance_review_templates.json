@@ -1,0 +1,147 @@
+{
+  "document_name": "Performance review templates",
+  "sections": [
+    {
+      "title": "1. Document Overview",
+      "subsections": [
+        {
+          "title": "Description",
+          "type": "text"
+        },
+        {
+          "title": "Document Information",
+          "type": "table",
+          "columns": [
+            "Field",
+            "Value"
+          ]
+        },
+        {
+          "title": "2. Purpose",
+          "type": "list"
+        },
+        {
+          "title": "3. Scope",
+          "type": "list"
+        },
+        {
+          "title": "4. Employee Information",
+          "type": "table",
+          "columns": [
+            "Field",
+            "Details"
+          ]
+        },
+        {
+          "title": "5. Role Summary",
+          "type": "text"
+        },
+        {
+          "title": "5.1 Role Overview",
+          "type": "text"
+        },
+        {
+          "title": "5.2 Key Responsibilities",
+          "type": "list"
+        },
+        {
+          "title": "6. Performance Goals Review",
+          "type": "text"
+        },
+        {
+          "title": "6.1 Goals and Outcomes",
+          "type": "table",
+          "columns": [
+            "Goal",
+            "Expected Outcome",
+            "Actual Outcome",
+            "Status",
+            "Comments"
+          ]
+        },
+        {
+          "title": "7. Performance Evaluation Areas",
+          "type": "text"
+        },
+        {
+          "title": "7.1 Core Performance Areas",
+          "type": "table",
+          "columns": [
+            "Evaluation Area",
+            "Rating",
+            "Comments"
+          ]
+        },
+        {
+          "title": "7.2 Role-Specific Competencies",
+          "type": "table",
+          "columns": [
+            "Competency",
+            "Rating",
+            "Comments"
+          ]
+        },
+        {
+          "title": "8. Achievements and Contributions",
+          "type": "list"
+        },
+        {
+          "title": "9. Areas for Improvement",
+          "type": "list"
+        },
+        {
+          "title": "10. Employee Self-Assessment (Optional)",
+          "type": "list"
+        },
+        {
+          "title": "11. Development and Growth Plan",
+          "type": "table",
+          "columns": [
+            "Development Area",
+            "Action",
+            "Owner",
+            "Timeline"
+          ]
+        },
+        {
+          "title": "12. Overall Performance Summary",
+          "type": "text"
+        },
+        {
+          "title": "12.1 Manager Summary",
+          "type": "text"
+        },
+        {
+          "title": "12.2 Overall Rating",
+          "type": "list"
+        },
+        {
+          "title": "13. Compensation or Role Considerations (Optional)",
+          "type": "table",
+          "columns": [
+            "Area",
+            "Notes"
+          ]
+        },
+        {
+          "title": "14. Acknowledgement",
+          "type": "table",
+          "columns": [
+            "Role",
+            "Name",
+            "Signature",
+            "Date"
+          ]
+        },
+        {
+          "title": "15. Governance and Updates",
+          "type": "text"
+        },
+        {
+          "title": "16. Review and Revision",
+          "type": "text"
+        }
+      ]
+    }
+  ]
+}

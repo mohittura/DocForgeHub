@@ -1,0 +1,110 @@
+{
+  "document_name": "Incident communication templates",
+  "sections": [
+    {
+      "title": "1. Document Overview",
+      "subsections": [
+        {
+          "title": "Description",
+          "type": "text"
+        },
+        {
+          "title": "Document Information",
+          "type": "table",
+          "columns": [
+            "Field",
+            "Value"
+          ]
+        },
+        {
+          "title": "2. Purpose",
+          "type": "list"
+        },
+        {
+          "title": "3. Incident Summary (Initial Communication)",
+          "type": "table",
+          "columns": [
+            "Field",
+            "Description"
+          ]
+        },
+        {
+          "title": "Initial Message Template",
+          "type": "text"
+        },
+        {
+          "title": "4. Incident Update Communication",
+          "type": "text"
+        },
+        {
+          "title": "Update Information",
+          "type": "table",
+          "columns": [
+            "Field",
+            "Value"
+          ]
+        },
+        {
+          "title": "Update Message Template",
+          "type": "text"
+        },
+        {
+          "title": "5. Incident Resolution Communication",
+          "type": "table",
+          "columns": [
+            "Field",
+            "Description"
+          ]
+        },
+        {
+          "title": "Resolution Message Template",
+          "type": "text"
+        },
+        {
+          "title": "6. Post-Incident Communication (Optional)",
+          "type": "text"
+        },
+        {
+          "title": "Post-Incident Summary",
+          "type": "table",
+          "columns": [
+            "Field",
+            "Description"
+          ]
+        },
+        {
+          "title": "Post-Incident Message Template",
+          "type": "text"
+        },
+        {
+          "title": "7. Communication Channels",
+          "type": "table",
+          "columns": [
+            "Channel",
+            "Purpose"
+          ]
+        },
+        {
+          "title": "8. Communication Responsibilities",
+          "type": "table",
+          "columns": [
+            "Role",
+            "Responsibility"
+          ]
+        },
+        {
+          "title": "9. Communication Principles",
+          "type": "list"
+        },
+        {
+          "title": "10. Governance and Approval",
+          "type": "text"
+        },
+        {
+          "title": "11. Review and Revision",
+          "type": "text"
+        }
+      ]
+    }
+  ]
+}

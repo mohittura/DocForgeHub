@@ -1,0 +1,127 @@
+{
+  "document_name": "Product usage guides",
+  "sections": [
+    {
+      "title": "1. Document Overview",
+      "subsections": [
+        {
+          "title": "Description",
+          "type": "text"
+        },
+        {
+          "title": "Document Information",
+          "type": "table",
+          "columns": [
+            "Field",
+            "Value"
+          ]
+        },
+        {
+          "title": "2. Purpose",
+          "type": "list"
+        },
+        {
+          "title": "3. Scope",
+          "type": "list"
+        },
+        {
+          "title": "4. Target User and Context",
+          "type": "text"
+        },
+        {
+          "title": "4.1 Intended User",
+          "type": "table",
+          "columns": [
+            "Attribute",
+            "Description"
+          ]
+        },
+        {
+          "title": "4.2 Usage Context",
+          "type": "list"
+        },
+        {
+          "title": "5. Feature Overview",
+          "type": "text"
+        },
+        {
+          "title": "5.1 Feature Description",
+          "type": "text"
+        },
+        {
+          "title": "5.2 Key Outcomes",
+          "type": "list"
+        },
+        {
+          "title": "5.3 When to Use This Feature",
+          "type": "list"
+        },
+        {
+          "title": "6. Prerequisites",
+          "type": "list"
+        },
+        {
+          "title": "7. Step-by-Step Usage Instructions",
+          "type": "text"
+        },
+        {
+          "title": "7.1 Accessing the Feature",
+          "type": "list"
+        },
+        {
+          "title": "7.2 Performing the Primary Task",
+          "type": "list"
+        },
+        {
+          "title": "7.3 Editing or Updating Existing Entries",
+          "type": "list"
+        },
+        {
+          "title": "7.4 Deleting or Reverting Actions (If Applicable)",
+          "type": "list"
+        },
+        {
+          "title": "8. Best Practices and Recommendations",
+          "type": "list"
+        },
+        {
+          "title": "9. Common User Mistakes",
+          "type": "table",
+          "columns": [
+            "Issue",
+            "Cause",
+            "Recommended Action"
+          ]
+        },
+        {
+          "title": "10. Expected System Behavior",
+          "type": "list"
+        },
+        {
+          "title": "11. Related Documentation",
+          "type": "list"
+        },
+        {
+          "title": "12. Support and Escalation",
+          "type": "list"
+        },
+        {
+          "title": "13. Usage Metrics and Feedback (Internal)",
+          "type": "table",
+          "columns": [
+            "Metric",
+            "Purpose"
+          ]
+        },
+        {
+          "title": "14. Governance and Updates",
+          "type": "text"
+        },
+        {
+          "title": "15. Review and Revision",
+          "type": "text"
+        }
+      ]
+    }
+  ]
+}

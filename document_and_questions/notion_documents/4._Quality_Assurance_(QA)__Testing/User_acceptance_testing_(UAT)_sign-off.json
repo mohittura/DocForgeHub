@@ -1,0 +1,74 @@
+{
+  "document_name": "User acceptance testing (UAT) sign-off",
+  "sections": [
+    {
+      "title": "1. Document Information",
+      "subsections": [
+        {
+          "title": "Description",
+          "type": "table",
+          "columns": [
+            "Field",
+            "Value"
+          ]
+        },
+        {
+          "title": "2. UAT Objective",
+          "type": "text"
+        },
+        {
+          "title": "3. Scope of UAT (Minimal Input Section)",
+          "type": "table",
+          "columns": [
+            "Field",
+            "Value"
+          ]
+        },
+        {
+          "title": "4. UAT Execution Summary",
+          "type": "table",
+          "columns": [
+            "Metric",
+            "Value"
+          ]
+        },
+        {
+          "title": "5. Acceptance Criteria",
+          "type": "list"
+        },
+        {
+          "title": "6. Known Issues (If Any)",
+          "type": "table",
+          "columns": [
+            "Issue ID",
+            "Description",
+            "Severity",
+            "Decision"
+          ]
+        },
+        {
+          "title": "7. Business Approval Statement",
+          "type": "list"
+        },
+        {
+          "title": "8. Sign-Off",
+          "type": "table",
+          "columns": [
+            "Role",
+            "Name",
+            "Signature",
+            "Date"
+          ]
+        },
+        {
+          "title": "9. Final Decision",
+          "type": "table",
+          "columns": [
+            "Status",
+            "Selection"
+          ]
+        }
+      ]
+    }
+  ]
+}

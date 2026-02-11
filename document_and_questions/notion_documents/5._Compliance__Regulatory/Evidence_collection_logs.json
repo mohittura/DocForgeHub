@@ -1,0 +1,84 @@
+{
+  "document_name": "Evidence collection logs",
+  "sections": [
+    {
+      "title": "1. Document Information",
+      "subsections": [
+        {
+          "title": "Description",
+          "type": "table",
+          "columns": [
+            "Field",
+            "Value"
+          ]
+        },
+        {
+          "title": "2. Purpose",
+          "type": "list"
+        },
+        {
+          "title": "3. Evidence Collection Summary",
+          "type": "table",
+          "columns": [
+            "Category",
+            "Description"
+          ]
+        },
+        {
+          "title": "4. Evidence Collection Log",
+          "type": "text"
+        },
+        {
+          "title": "Core Evidence Register",
+          "type": "table",
+          "columns": [
+            "Evidence ID",
+            "Control ID",
+            "Control Area",
+            "Evidence Name",
+            "Description",
+            "Source System",
+            "Owner",
+            "Collection Frequency",
+            "Evidence Location",
+            "Collected Date",
+            "Reviewer",
+            "Status"
+          ]
+        },
+        {
+          "title": "5. Evidence Types (Standardized)",
+          "type": "table",
+          "columns": [
+            "Evidence Type",
+            "Examples"
+          ]
+        },
+        {
+          "title": "6. Evidence Quality Requirements",
+          "type": "list"
+        },
+        {
+          "title": "7. Evidence Review and Approval",
+          "type": "table",
+          "columns": [
+            "Role",
+            "Responsibility"
+          ]
+        },
+        {
+          "title": "8. Status Definitions",
+          "type": "table",
+          "columns": [
+            "Status",
+            "Meaning"
+          ]
+        },
+        {
+          "title": "9. Maintenance and Updates",
+          "type": "list"
+        }
+      ]
+    }
+  ]
+}

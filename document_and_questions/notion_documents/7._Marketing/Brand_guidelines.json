@@ -1,0 +1,194 @@
+{
+  "document_name": "Brand guidelines",
+  "sections": [
+    {
+      "title": "1. Document Overview",
+      "subsections": [
+        {
+          "title": "Description",
+          "type": "text"
+        },
+        {
+          "title": "Document Information",
+          "type": "table",
+          "columns": [
+            "Field",
+            "Value"
+          ]
+        },
+        {
+          "title": "2. Purpose",
+          "type": "list"
+        },
+        {
+          "title": "3. Scope",
+          "type": "list"
+        },
+        {
+          "title": "4. Brand Overview",
+          "type": "text"
+        },
+        {
+          "title": "4.1 Brand Mission",
+          "type": "text"
+        },
+        {
+          "title": "4.2 Brand Vision",
+          "type": "text"
+        },
+        {
+          "title": "4.3 Brand Values",
+          "type": "list"
+        },
+        {
+          "title": "4.4 Brand Positioning",
+          "type": "text"
+        },
+        {
+          "title": "5. Brand Personality and Tone of Voice",
+          "type": "text"
+        },
+        {
+          "title": "5.1 Brand Personality",
+          "type": "list"
+        },
+        {
+          "title": "5.2 Tone of Voice Guidelines",
+          "type": "table",
+          "columns": [
+            "Context",
+            "Tone Guidance"
+          ]
+        },
+        {
+          "title": "5.3 Writing Principles",
+          "type": "list"
+        },
+        {
+          "title": "6. Logo Usage Guidelines",
+          "type": "text"
+        },
+        {
+          "title": "6.1 Primary Logo",
+          "type": "text"
+        },
+        {
+          "title": "6.2 Logo Variations",
+          "type": "list"
+        },
+        {
+          "title": "6.3 Logo Clear Space",
+          "type": "text"
+        },
+        {
+          "title": "6.4 Incorrect Usage",
+          "type": "list"
+        },
+        {
+          "title": "7. Color System",
+          "type": "text"
+        },
+        {
+          "title": "7.1 Primary Colors",
+          "type": "table",
+          "columns": [
+            "Color Name",
+            "HEX",
+            "RGB",
+            "Usage"
+          ]
+        },
+        {
+          "title": "7.2 Secondary Colors",
+          "type": "table",
+          "columns": [
+            "Color Name",
+            "HEX",
+            "RGB",
+            "Usage"
+          ]
+        },
+        {
+          "title": "7.3 Usage Rules",
+          "type": "list"
+        },
+        {
+          "title": "8. Typography",
+          "type": "text"
+        },
+        {
+          "title": "8.1 Primary Typeface",
+          "type": "table",
+          "columns": [
+            "Usage",
+            "Font"
+          ]
+        },
+        {
+          "title": "8.2 Fallback Fonts",
+          "type": "table",
+          "columns": [
+            "Usage",
+            "Font"
+          ]
+        },
+        {
+          "title": "8.3 Typography Rules",
+          "type": "list"
+        },
+        {
+          "title": "9. Imagery and Visual Style",
+          "type": "text"
+        },
+        {
+          "title": "9.1 Photography Style",
+          "type": "list"
+        },
+        {
+          "title": "9.2 Illustration Style (If Applicable)",
+          "type": "list"
+        },
+        {
+          "title": "9.3 Iconography",
+          "type": "list"
+        },
+        {
+          "title": "10. Brand Application Guidelines",
+          "type": "text"
+        },
+        {
+          "title": "10.1 Website and Product UI",
+          "type": "list"
+        },
+        {
+          "title": "10.2 Marketing Materials",
+          "type": "list"
+        },
+        {
+          "title": "10.3 Social Media",
+          "type": "list"
+        },
+        {
+          "title": "11. Brand Governance",
+          "type": "text"
+        },
+        {
+          "title": "11.1 Approval Requirements",
+          "type": "list"
+        },
+        {
+          "title": "11.2 Brand Ownership",
+          "type": "list"
+        },
+        {
+          "title": "12. Exceptions and Deviations",
+          "type": "text"
+        },
+        {
+          "title": "13. Review and Revision",
+          "type": "text"
+        }
+      ]
+    }
+  ]
+}

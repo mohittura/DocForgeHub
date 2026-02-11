@@ -1,0 +1,231 @@
+{
+  "document_name": "Competitive analysis documents",
+  "sections": [
+    {
+      "title": "1. Document Information",
+      "subsections": [
+        {
+          "title": "Description",
+          "type": "table",
+          "columns": [
+            "Field",
+            "Value"
+          ]
+        },
+        {
+          "title": "2. Executive Summary",
+          "type": "text"
+        },
+        {
+          "title": "2.1 Purpose",
+          "type": "text"
+        },
+        {
+          "title": "2.2 Key Insights",
+          "type": "list"
+        },
+        {
+          "title": "2.3 Strategic Summary",
+          "type": "table",
+          "columns": [
+            "Priority",
+            "Recommendation",
+            "Expected Impact"
+          ]
+        },
+        {
+          "title": "3. Market Overview",
+          "type": "text"
+        },
+        {
+          "title": "3.1 Industry Overview",
+          "type": "table",
+          "columns": [
+            "Metric",
+            "Summary"
+          ]
+        },
+        {
+          "title": "3.2 Key Market Trends",
+          "type": "list"
+        },
+        {
+          "title": "3.3 Customer Needs & Pain Points",
+          "type": "list"
+        },
+        {
+          "title": "4. Competitive Landscape Overview",
+          "type": "text"
+        },
+        {
+          "title": "4.1 Competitor Categories",
+          "type": "table",
+          "columns": [
+            "Category",
+            "Description",
+            "Example Competitors"
+          ]
+        },
+        {
+          "title": "4.2 Competitive Intensity Assessment",
+          "type": "table",
+          "columns": [
+            "Factor",
+            "Rating (1–5)",
+            "Notes"
+          ]
+        },
+        {
+          "title": "5. Competitor Profiles",
+          "type": "text"
+        },
+        {
+          "title": "5.1 Competitor: {{Company Name}}",
+          "type": "text"
+        },
+        {
+          "title": "Overview",
+          "type": "table",
+          "columns": [
+            "Field",
+            "Details"
+          ]
+        },
+        {
+          "title": "Product & Pricing",
+          "type": "list"
+        },
+        {
+          "title": "Target Customers",
+          "type": "list"
+        },
+        {
+          "title": "Strengths",
+          "type": "list"
+        },
+        {
+          "title": "Weaknesses",
+          "type": "list"
+        },
+        {
+          "title": "Strategic Direction",
+          "type": "text"
+        },
+        {
+          "title": "6. Competitive Comparison",
+          "type": "text"
+        },
+        {
+          "title": "6.1 Feature Comparison",
+          "type": "table",
+          "columns": [
+            "Feature",
+            "Your Company",
+            "Comp 1",
+            "Comp 2",
+            "Comp 3"
+          ]
+        },
+        {
+          "title": "6.2 Competitive Scoring Matrix",
+          "type": "table",
+          "columns": [
+            "Criteria",
+            "Your Company",
+            "Comp 1",
+            "Comp 2",
+            "Comp 3"
+          ]
+        },
+        {
+          "title": "7. SWOT Analysis",
+          "type": "text"
+        },
+        {
+          "title": "Strengths",
+          "type": "list"
+        },
+        {
+          "title": "Weaknesses",
+          "type": "list"
+        },
+        {
+          "title": "Opportunities",
+          "type": "list"
+        },
+        {
+          "title": "Threats",
+          "type": "list"
+        },
+        {
+          "title": "8. Competitive Positioning",
+          "type": "text"
+        },
+        {
+          "title": "Value Proposition Comparison",
+          "type": "table",
+          "columns": [
+            "Company",
+            "Primary Value Proposition",
+            "Target Customer"
+          ]
+        },
+        {
+          "title": "9. Win / Loss Analysis",
+          "type": "text"
+        },
+        {
+          "title": "Common Win Reasons",
+          "type": "list"
+        },
+        {
+          "title": "Common Loss Reasons",
+          "type": "list"
+        },
+        {
+          "title": "10. Strategic Recommendations",
+          "type": "text"
+        },
+        {
+          "title": "Recommendation 1: Strengthen Differentiation",
+          "type": "list"
+        },
+        {
+          "title": "Recommendation 2: Pricing Optimization",
+          "type": "list"
+        },
+        {
+          "title": "Recommendation 3: Market Expansion",
+          "type": "list"
+        },
+        {
+          "title": "11. Implementation Roadmap",
+          "type": "table",
+          "columns": [
+            "Phase",
+            "Timeline",
+            "Key Actions",
+            "Owner"
+          ]
+        },
+        {
+          "title": "12. Monitoring & Review",
+          "type": "text"
+        },
+        {
+          "title": "Key Metrics",
+          "type": "list"
+        },
+        {
+          "title": "Review Frequency",
+          "type": "table",
+          "columns": [
+            "Review Type",
+            "Frequency",
+            "Owner"
+          ]
+        }
+      ]
+    }
+  ]
+}

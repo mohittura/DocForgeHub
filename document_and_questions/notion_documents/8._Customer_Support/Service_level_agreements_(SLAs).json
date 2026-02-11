@@ -1,0 +1,111 @@
+{
+  "document_name": "Service level agreements (SLAs)",
+  "sections": [
+    {
+      "title": "1. Document Overview",
+      "subsections": [
+        {
+          "title": "Description",
+          "type": "text"
+        },
+        {
+          "title": "Document Information",
+          "type": "table",
+          "columns": [
+            "Field",
+            "Value"
+          ]
+        },
+        {
+          "title": "2. Purpose",
+          "type": "list"
+        },
+        {
+          "title": "3. Scope",
+          "type": "list"
+        },
+        {
+          "title": "4. Service Availability (Uptime Commitment)",
+          "type": "text"
+        },
+        {
+          "title": "4.1 Service Availability Definition",
+          "type": "text"
+        },
+        {
+          "title": "4.2 Availability Target",
+          "type": "table",
+          "columns": [
+            "Service Tier",
+            "Availability Commitment"
+          ]
+        },
+        {
+          "title": "4.3 Scheduled Maintenance",
+          "type": "list"
+        },
+        {
+          "title": "5. Support Hours and Coverage",
+          "type": "table",
+          "columns": [
+            "Support Tier",
+            "Support Hours"
+          ]
+        },
+        {
+          "title": "6. Issue Severity Levels",
+          "type": "table",
+          "columns": [
+            "Severity Level",
+            "Description",
+            "Example"
+          ]
+        },
+        {
+          "title": "7. Response Time Targets",
+          "type": "table",
+          "columns": [
+            "Severity",
+            "Initial Response Time"
+          ]
+        },
+        {
+          "title": "8. Resolution Time Targets",
+          "type": "table",
+          "columns": [
+            "Severity",
+            "Target Resolution Time"
+          ]
+        },
+        {
+          "title": "9. Incident Management SLA",
+          "type": "list"
+        },
+        {
+          "title": "10. Customer Responsibilities",
+          "type": "list"
+        },
+        {
+          "title": "11. SLA Exclusions",
+          "type": "list"
+        },
+        {
+          "title": "12. SLA Monitoring and Reporting",
+          "type": "table",
+          "columns": [
+            "Metric",
+            "Description"
+          ]
+        },
+        {
+          "title": "13. Service Credits (Optional)",
+          "type": "list"
+        },
+        {
+          "title": "14. Review and Governance",
+          "type": "text"
+        }
+      ]
+    }
+  ]
+}

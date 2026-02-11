@@ -1,0 +1,82 @@
+{
+  "document_name": "Employment contracts",
+  "sections": [
+    {
+      "title": "EMPLOYMENT AGREEMENT",
+      "subsections": [
+        {
+          "title": "Description",
+          "type": "text"
+        },
+        {
+          "title": "1. Position and Employment",
+          "type": "text"
+        },
+        {
+          "title": "2. Employment Commencement",
+          "type": "text"
+        },
+        {
+          "title": "3. Place of Work",
+          "type": "text"
+        },
+        {
+          "title": "4. Compensation",
+          "type": "text"
+        },
+        {
+          "title": "5. Working Hours",
+          "type": "text"
+        },
+        {
+          "title": "6. Probation Period",
+          "type": "text"
+        },
+        {
+          "title": "7. Duties and Responsibilities",
+          "type": "list"
+        },
+        {
+          "title": "8. Confidentiality and Data Protection",
+          "type": "text"
+        },
+        {
+          "title": "9. Intellectual Property",
+          "type": "text"
+        },
+        {
+          "title": "10. Leave and Benefits",
+          "type": "text"
+        },
+        {
+          "title": "11. Code of Conduct and Policies",
+          "type": "list"
+        },
+        {
+          "title": "12. Termination of Employment",
+          "type": "text"
+        },
+        {
+          "title": "13. Return of Company Property",
+          "type": "text"
+        },
+        {
+          "title": "14. Governing Law",
+          "type": "text"
+        },
+        {
+          "title": "15. Entire Agreement",
+          "type": "text"
+        },
+        {
+          "title": "16. Acceptance and Signatures",
+          "type": "table",
+          "columns": [
+            "For the Company",
+            "Employee"
+          ]
+        }
+      ]
+    }
+  ]
+}

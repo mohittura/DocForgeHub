@@ -1,0 +1,81 @@
+{
+  "document_name": "Compliance training records",
+  "sections": [
+    {
+      "title": "1. Document Information",
+      "subsections": [
+        {
+          "title": "Description",
+          "type": "table",
+          "columns": [
+            "Field",
+            "Value"
+          ]
+        },
+        {
+          "title": "2. Purpose",
+          "type": "list"
+        },
+        {
+          "title": "3. Training Program Overview",
+          "type": "table",
+          "columns": [
+            "Training Name",
+            "Description",
+            "Frequency",
+            "Mandatory For"
+          ]
+        },
+        {
+          "title": "4. Training Completion Record",
+          "type": "text"
+        },
+        {
+          "title": "Core Training Log",
+          "type": "table",
+          "columns": [
+            "Record ID",
+            "Employee Name",
+            "Department",
+            "Training Name",
+            "Training Type",
+            "Assigned Date",
+            "Completion Date",
+            "Status",
+            "Score (If Applicable)",
+            "Trainer / Platform"
+          ]
+        },
+        {
+          "title": "5. Training Status Summary",
+          "type": "table",
+          "columns": [
+            "Status",
+            "Count"
+          ]
+        },
+        {
+          "title": "6. Compliance Requirements Mapping",
+          "type": "table",
+          "columns": [
+            "Training Name",
+            "Compliance Requirement",
+            "Evidence Type"
+          ]
+        },
+        {
+          "title": "7. Roles and Responsibilities",
+          "type": "table",
+          "columns": [
+            "Role",
+            "Responsibility"
+          ]
+        },
+        {
+          "title": "8. Review and Maintenance",
+          "type": "list"
+        }
+      ]
+    }
+  ]
+}

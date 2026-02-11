@@ -1,0 +1,101 @@
+{
+  "document_name": "Risk register",
+  "sections": [
+    {
+      "title": "1. Document Information",
+      "subsections": [
+        {
+          "title": "Description",
+          "type": "table",
+          "columns": [
+            "Field",
+            "Value"
+          ]
+        },
+        {
+          "title": "2. Purpose",
+          "type": "list"
+        },
+        {
+          "title": "3. Risk Assessment Methodology (Standardized)",
+          "type": "text"
+        },
+        {
+          "title": "3.1 Impact Levels",
+          "type": "table",
+          "columns": [
+            "Level",
+            "Description"
+          ]
+        },
+        {
+          "title": "3.2 Likelihood Levels",
+          "type": "table",
+          "columns": [
+            "Level",
+            "Description"
+          ]
+        },
+        {
+          "title": "3.3 Risk Rating",
+          "type": "table",
+          "columns": [
+            "Impact \\ Likelihood",
+            "Low",
+            "Medium",
+            "High"
+          ]
+        },
+        {
+          "title": "4. Risk Register Table",
+          "type": "text"
+        },
+        {
+          "title": "Core Risk Log",
+          "type": "table",
+          "columns": [
+            "Risk ID",
+            "Risk Title",
+            "Category",
+            "Description",
+            "Impact",
+            "Likelihood",
+            "Risk Rating",
+            "Owner",
+            "Mitigation Strategy",
+            "Target Date",
+            "Status"
+          ]
+        },
+        {
+          "title": "5. Risk Categories (Standardized)",
+          "type": "table",
+          "columns": [
+            "Category",
+            "Examples"
+          ]
+        },
+        {
+          "title": "6. Risk Treatment Options",
+          "type": "table",
+          "columns": [
+            "Treatment Type",
+            "Description"
+          ]
+        },
+        {
+          "title": "7. Risk Status Definitions",
+          "type": "table",
+          "columns": [
+            "Status",
+            "Meaning"
+          ]
+        },
+        {
+          "title": "8. Review and Maintenance",
+          "type": "list"
+        }
+      ]
+    }
+  ]
+}

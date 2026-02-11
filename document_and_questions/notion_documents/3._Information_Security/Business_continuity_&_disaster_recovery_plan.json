@@ -1,0 +1,153 @@
+{
+  "document_name": "Business continuity & disaster recovery plan",
+  "sections": [
+    {
+      "title": "0. Required Inputs (Minimal for AI Generation)",
+      "subsections": [
+        {
+          "title": "Description",
+          "type": "list"
+        },
+        {
+          "title": "1. Document Information",
+          "type": "table",
+          "columns": [
+            "Field",
+            "Value"
+          ]
+        },
+        {
+          "title": "2. Purpose",
+          "type": "list"
+        },
+        {
+          "title": "3. Scope",
+          "type": "list"
+        },
+        {
+          "title": "4. BC/DR Objectives",
+          "type": "text"
+        },
+        {
+          "title": "4.1 Recovery Objectives",
+          "type": "table",
+          "columns": [
+            "System Type",
+            "Default RTO",
+            "Default RPO"
+          ]
+        },
+        {
+          "title": "5. Business Impact Overview",
+          "type": "text"
+        },
+        {
+          "title": "5.1 Critical Security Functions",
+          "type": "table",
+          "columns": [
+            "Function",
+            "Impact if Unavailable",
+            "Priority"
+          ]
+        },
+        {
+          "title": "6. Risk Scenarios Considered",
+          "type": "list"
+        },
+        {
+          "title": "7. Continuity Strategy",
+          "type": "text"
+        },
+        {
+          "title": "7.1 Preventive Controls",
+          "type": "list"
+        },
+        {
+          "title": "7.2 Continuity Measures",
+          "type": "table",
+          "columns": [
+            "Area",
+            "Strategy"
+          ]
+        },
+        {
+          "title": "8. Disaster Recovery Procedures",
+          "type": "text"
+        },
+        {
+          "title": "8.1 Incident Declaration",
+          "type": "list"
+        },
+        {
+          "title": "8.2 Recovery Phases",
+          "type": "text"
+        },
+        {
+          "title": "Phase 1 — Assessment",
+          "type": "list"
+        },
+        {
+          "title": "Phase 2 — Containment",
+          "type": "list"
+        },
+        {
+          "title": "Phase 3 — Restoration",
+          "type": "list"
+        },
+        {
+          "title": "Phase 4 — Verification",
+          "type": "list"
+        },
+        {
+          "title": "9. Backup and Data Recovery",
+          "type": "text"
+        },
+        {
+          "title": "9.1 Backup Requirements",
+          "type": "list"
+        },
+        {
+          "title": "9.2 Backup Frequency (Example)",
+          "type": "table",
+          "columns": [
+            "Data Type",
+            "Frequency"
+          ]
+        },
+        {
+          "title": "10. Communication Plan",
+          "type": "text"
+        },
+        {
+          "title": "10.1 Internal Communication",
+          "type": "table",
+          "columns": [
+            "Stage",
+            "Audience",
+            "Method"
+          ]
+        },
+        {
+          "title": "10.2 External Communication",
+          "type": "list"
+        },
+        {
+          "title": "11. Testing and Maintenance",
+          "type": "list"
+        },
+        {
+          "title": "12. Roles and Responsibilities",
+          "type": "table",
+          "columns": [
+            "Role",
+            "Responsibility"
+          ]
+        },
+        {
+          "title": "13. Post-Recovery Activities",
+          "type": "list"
+        }
+      ]
+    }
+  ]
+}

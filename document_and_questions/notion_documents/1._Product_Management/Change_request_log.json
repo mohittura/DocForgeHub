@@ -1,0 +1,20 @@
+{
+  "document_name": "Change request log",
+  "sections": [
+    {
+      "type": "table",
+      "columns":[
+        "CRID",
+        "Date", 
+        "Raised",	
+        "Requested By",	
+        "Change Description",	
+        "Impact Area",	
+        "Priority",	
+        "Status",	
+        "Decision",	
+        "Target Release"
+      ]
+    }
+  ]
+}

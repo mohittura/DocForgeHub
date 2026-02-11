@@ -1,0 +1,98 @@
+{
+  "document_name": "Regression testing checklist",
+  "sections": [
+    {
+      "title": "1. Document Information",
+      "subsections": [
+        {
+          "title": "Description",
+          "type": "table",
+          "columns": [
+            "Field",
+            "Value"
+          ]
+        },
+        {
+          "title": "2. Change Summary (Minimal Input Section)",
+          "type": "table",
+          "columns": [
+            "Input Field",
+            "Value"
+          ]
+        },
+        {
+          "title": "3. Regression Scope (Auto-Generated)",
+          "type": "text"
+        },
+        {
+          "title": "Always Included (Core Stability)",
+          "type": "list"
+        },
+        {
+          "title": "Conditionally Included (Based on Changes)",
+          "type": "table",
+          "columns": [
+            "Condition",
+            "Add to Regression"
+          ]
+        },
+        {
+          "title": "4. Regression Checklist",
+          "type": "text"
+        },
+        {
+          "title": "4.1 Critical Workflow Validation",
+          "type": "table",
+          "columns": [
+            "Check Item",
+            "Expected Outcome",
+            "Status",
+            "Notes"
+          ]
+        },
+        {
+          "title": "4.2 Functional Regression",
+          "type": "table",
+          "columns": [
+            "Check Item",
+            "Expected Outcome",
+            "Status",
+            "Notes"
+          ]
+        },
+        {
+          "title": "4.3 Integration & API Checks (Auto-Included if Applicable)",
+          "type": "table",
+          "columns": [
+            "Check Item",
+            "Expected Outcome",
+            "Status",
+            "Notes"
+          ]
+        },
+        {
+          "title": "4.4 UI & Compatibility Checks",
+          "type": "table",
+          "columns": [
+            "Check Item",
+            "Expected Outcome",
+            "Status",
+            "Notes"
+          ]
+        },
+        {
+          "title": "5. Execution Summary",
+          "type": "table",
+          "columns": [
+            "Field",
+            "Value"
+          ]
+        },
+        {
+          "title": "6. Exit Criteria (Default Rules)",
+          "type": "list"
+        }
+      ]
+    }
+  ]
+}

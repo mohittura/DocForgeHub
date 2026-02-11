@@ -1,0 +1,98 @@
+{
+  "document_name": "SOC 2 control matrix",
+  "sections": [
+    {
+      "title": "1. Document Information",
+      "subsections": [
+        {
+          "title": "Description",
+          "type": "table",
+          "columns": [
+            "Field",
+            "Value"
+          ]
+        },
+        {
+          "title": "2. Purpose",
+          "type": "list"
+        },
+        {
+          "title": "3. SOC 2 Trust Service Criteria Overview",
+          "type": "table",
+          "columns": [
+            "Category",
+            "Description"
+          ]
+        },
+        {
+          "title": "4. SOC 2 Control Matrix",
+          "type": "text"
+        },
+        {
+          "title": "4.1 Control Mapping Table",
+          "type": "table",
+          "columns": [
+            "Control ID",
+            "Trust Service Criteria",
+            "Control Objective",
+            "Control Description",
+            "Control Owner",
+            "Frequency",
+            "Evidence",
+            "Status"
+          ]
+        },
+        {
+          "title": "4.2 Availability Controls (If Applicable)",
+          "type": "table",
+          "columns": [
+            "Control ID",
+            "Criteria",
+            "Objective",
+            "Description",
+            "Owner",
+            "Evidence",
+            "Status"
+          ]
+        },
+        {
+          "title": "4.3 Confidentiality Controls (If Applicable)",
+          "type": "table",
+          "columns": [
+            "Control ID",
+            "Criteria",
+            "Objective",
+            "Description",
+            "Owner",
+            "Evidence",
+            "Status"
+          ]
+        },
+        {
+          "title": "5. Control Ownership Summary",
+          "type": "table",
+          "columns": [
+            "Department",
+            "Control Areas"
+          ]
+        },
+        {
+          "title": "6. Evidence Management",
+          "type": "list"
+        },
+        {
+          "title": "7. Control Status Definitions",
+          "type": "table",
+          "columns": [
+            "Status",
+            "Meaning"
+          ]
+        },
+        {
+          "title": "8. Review and Maintenance",
+          "type": "list"
+        }
+      ]
+    }
+  ]
+}

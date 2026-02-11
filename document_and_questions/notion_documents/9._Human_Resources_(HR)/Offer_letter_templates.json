@@ -1,0 +1,51 @@
+{
+  "document_name": "Offer letter templates",
+  "sections": [
+    {
+      "title": "OFFER LETTER",
+      "subsections": [
+        {
+          "title": "Description",
+          "type": "text"
+        },
+        {
+          "title": "Position Details",
+          "type": "table",
+          "columns": [
+            "Field",
+            "Details"
+          ]
+        },
+        {
+          "title": "Compensation",
+          "type": "text"
+        },
+        {
+          "title": "Probation Period",
+          "type": "text"
+        },
+        {
+          "title": "Company Policies",
+          "type": "text"
+        },
+        {
+          "title": "Confidentiality",
+          "type": "text"
+        },
+        {
+          "title": "Acceptance of Offer",
+          "type": "text"
+        },
+        {
+          "title": "Acceptance",
+          "type": "table",
+          "columns": [
+            "Name",
+            "Signature",
+            "Date"
+          ]
+        }
+      ]
+    }
+  ]
+}

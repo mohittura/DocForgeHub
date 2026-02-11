@@ -1,0 +1,66 @@
+{
+  "document_name": "Vendor payment records",
+  "sections": [
+    {
+      "title": "1. Document Overview",
+      "subsections": [
+        {
+          "title": "Description",
+          "type": "text"
+        },
+        {
+          "title": "Document Information",
+          "type": "table",
+          "columns": [
+            "Field",
+            "Value"
+          ]
+        },
+        {
+          "title": "2. Purpose",
+          "type": "list"
+        },
+        {
+          "title": "3. Scope",
+          "type": "list"
+        },
+        {
+          "title": "4. Vendor Payment Process",
+          "type": "list"
+        },
+        {
+          "title": "5. Payment Record Components",
+          "type": "table",
+          "columns": [
+            "Field",
+            "Description"
+          ]
+        },
+        {
+          "title": "6. Payment Approval Workflow",
+          "type": "table",
+          "columns": [
+            "Invoice Amount",
+            "Approver Required"
+          ]
+        },
+        {
+          "title": "7. Record-Keeping and Retention",
+          "type": "list"
+        },
+        {
+          "title": "8. Reporting and Reconciliation",
+          "type": "list"
+        },
+        {
+          "title": "9. Compliance",
+          "type": "list"
+        },
+        {
+          "title": "10. Review and Updates",
+          "type": "list"
+        }
+      ]
+    }
+  ]
+}

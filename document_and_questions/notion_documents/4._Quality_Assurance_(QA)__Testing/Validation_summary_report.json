@@ -1,0 +1,116 @@
+{
+  "document_name": "Validation summary report",
+  "sections": [
+    {
+      "title": "Document Information",
+      "subsections": [
+        {
+          "title": "Description",
+          "type": "table",
+          "columns": [
+            "Field",
+            "Value"
+          ]
+        },
+        {
+          "title": "1. Executive Summary",
+          "type": "text"
+        },
+        {
+          "title": "2. Summary Report Introduction",
+          "type": "text"
+        },
+        {
+          "title": "2.1 Objectives",
+          "type": "list"
+        },
+        {
+          "title": "2.2 Scope",
+          "type": "list"
+        },
+        {
+          "title": "2.3 Assumptions",
+          "type": "list"
+        },
+        {
+          "title": "2.4 Exclusions",
+          "type": "list"
+        },
+        {
+          "title": "3. Acronyms and References",
+          "type": "text"
+        },
+        {
+          "title": "3.1 Acronyms and Definitions",
+          "type": "table",
+          "columns": [
+            "Acronym",
+            "Definition"
+          ]
+        },
+        {
+          "title": "3.2 References",
+          "type": "table",
+          "columns": [
+            "Document",
+            "Version"
+          ]
+        },
+        {
+          "title": "4. Testing Summary",
+          "type": "text"
+        },
+        {
+          "title": "4.1 General",
+          "type": "text"
+        },
+        {
+          "title": "4.2 Documentation",
+          "type": "list"
+        },
+        {
+          "title": "4.3 Equipment / Materials",
+          "type": "table",
+          "columns": [
+            "Item",
+            "Description"
+          ]
+        },
+        {
+          "title": "4.4 Testing Exclusions",
+          "type": "list"
+        },
+        {
+          "title": "5. Results of Validation Testing",
+          "type": "text"
+        },
+        {
+          "title": "5.1 Installation Qualification Tests (IQ)",
+          "type": "table",
+          "columns": [
+            "Test Area",
+            "Result",
+            "Comments"
+          ]
+        },
+        {
+          "title": "5.2 Approval to Proceed to Operational Qualification",
+          "type": "text"
+        },
+        {
+          "title": "5.3 Operational Qualification Tests (OQ)",
+          "type": "table",
+          "columns": [
+            "Test Area",
+            "Result",
+            "Comments"
+          ]
+        },
+        {
+          "title": "6. Conclusion",
+          "type": "text"
+        }
+      ]
+    }
+  ]
+}

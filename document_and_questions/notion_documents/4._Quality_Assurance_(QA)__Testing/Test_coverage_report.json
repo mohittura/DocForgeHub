@@ -1,0 +1,112 @@
+{
+  "document_name": "Test coverage report",
+  "sections": [
+    {
+      "title": "1. Document Information",
+      "subsections": [
+        {
+          "title": "Description",
+          "type": "table",
+          "columns": [
+            "Field",
+            "Value"
+          ]
+        },
+        {
+          "title": "2. Purpose",
+          "type": "text"
+        },
+        {
+          "title": "3. Testing Overview (Minimal Input Section)",
+          "type": "table",
+          "columns": [
+            "Metric",
+            "Value"
+          ]
+        },
+        {
+          "title": "4. Test Execution Metrics",
+          "type": "text"
+        },
+        {
+          "title": "4.1 Execution Summary",
+          "type": "table",
+          "columns": [
+            "Metric",
+            "Count",
+            "Percentage"
+          ]
+        },
+        {
+          "title": "4.2 Defect Metrics",
+          "type": "table",
+          "columns": [
+            "Severity",
+            "Open",
+            "Closed",
+            "Total"
+          ]
+        },
+        {
+          "title": "5. Test Coverage Summary",
+          "type": "text"
+        },
+        {
+          "title": "5.1 Requirement Coverage",
+          "type": "table",
+          "columns": [
+            "Requirement Area",
+            "Covered",
+            "Test Cases Linked",
+            "Coverage Status"
+          ]
+        },
+        {
+          "title": "5.2 Feature Coverage",
+          "type": "table",
+          "columns": [
+            "Feature / Module",
+            "Tested",
+            "Automated",
+            "Risk Level"
+          ]
+        },
+        {
+          "title": "5.3 Automation Coverage (Optional)",
+          "type": "table",
+          "columns": [
+            "Area",
+            "Automated Tests",
+            "Manual Tests",
+            "Coverage %"
+          ]
+        },
+        {
+          "title": "6. Quality Indicators",
+          "type": "list"
+        },
+        {
+          "title": "7. Risks and Observations",
+          "type": "table",
+          "columns": [
+            "Observation",
+            "Impact",
+            "Recommendation"
+          ]
+        },
+        {
+          "title": "8. Release Readiness Assessment",
+          "type": "table",
+          "columns": [
+            "Criteria",
+            "Status"
+          ]
+        },
+        {
+          "title": "9. Conclusion",
+          "type": "text"
+        }
+      ]
+    }
+  ]
+}

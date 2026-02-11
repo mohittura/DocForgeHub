@@ -1,0 +1,58 @@
+{
+  "document_name": "Bug reports",
+  "sections": [
+    {
+      "title": "1. Bug Information",
+      "subsections": [
+        {
+          "title": "Description",
+          "type": "table",
+          "columns": [
+            "Field",
+            "Value"
+          ]
+        },
+        {
+          "title": "2. Environment",
+          "type": "table",
+          "columns": [
+            "Field",
+            "Details"
+          ]
+        },
+        {
+          "title": "3. Steps to Reproduce",
+          "type": "list"
+        },
+        {
+          "title": "4. Expected Result",
+          "type": "text"
+        },
+        {
+          "title": "5. Actual Result",
+          "type": "text"
+        },
+        {
+          "title": "6. Visual Proof",
+          "type": "table",
+          "columns": [
+            "Type",
+            "Link / File"
+          ]
+        },
+        {
+          "title": "7. Severity and Priority",
+          "type": "list",
+          "columns": [
+            "Field",
+            "Value"
+          ]
+        },
+        {
+          "title": "8. Additional Information (Optional)",
+          "type": "list"
+        }
+      ]
+    }
+  ]
+}

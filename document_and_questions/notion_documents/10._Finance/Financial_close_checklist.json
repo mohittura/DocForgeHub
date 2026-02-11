@@ -1,0 +1,84 @@
+{
+  "document_name": "Financial close checklist",
+  "sections": [
+    {
+      "title": "1. Document Overview",
+      "subsections": [
+        {
+          "title": "Description",
+          "type": "text"
+        },
+        {
+          "title": "Document Information",
+          "type": "table",
+          "columns": [
+            "Field",
+            "Value"
+          ]
+        },
+        {
+          "title": "2. Purpose",
+          "type": "list"
+        },
+        {
+          "title": "3. Scope",
+          "type": "list"
+        },
+        {
+          "title": "4. Financial Close Process",
+          "type": "text"
+        },
+        {
+          "title": "4.1 Pre-Close Activities",
+          "type": "table",
+          "columns": [
+            "Task",
+            "Owner",
+            "Status",
+            "Notes"
+          ]
+        },
+        {
+          "title": "4.2 Close Activities",
+          "type": "table",
+          "columns": [
+            "Task",
+            "Owner",
+            "Status",
+            "Notes"
+          ]
+        },
+        {
+          "title": "4.3 Post-Close Activities",
+          "type": "table",
+          "columns": [
+            "Task",
+            "Owner",
+            "Status",
+            "Notes"
+          ]
+        },
+        {
+          "title": "5. Roles and Responsibilities",
+          "type": "table",
+          "columns": [
+            "Role",
+            "Responsibility"
+          ]
+        },
+        {
+          "title": "6. Timelines",
+          "type": "list"
+        },
+        {
+          "title": "7. Control Points",
+          "type": "list"
+        },
+        {
+          "title": "8. Review and Updates",
+          "type": "list"
+        }
+      ]
+    }
+  ]
+}

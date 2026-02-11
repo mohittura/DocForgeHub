@@ -1,0 +1,126 @@
+{
+  "document_name": "Test environment Management",
+  "sections": [
+    {
+      "title": "1. Document Information",
+      "subsections": [
+        {
+          "title": "Description",
+          "type": "table",
+          "columns": [
+            "Field",
+            "Value"
+          ]
+        },
+        {
+          "title": "2. Purpose",
+          "type": "list"
+        },
+        {
+          "title": "3. Scope",
+          "type": "list"
+        },
+        {
+          "title": "4. Environment Overview (Minimal Input Section)",
+          "type": "text"
+        },
+        {
+          "title": "4.1 Environment List",
+          "type": "table",
+          "columns": [
+            "Environment",
+            "Purpose",
+            "Owner",
+            "Refresh Frequency"
+          ]
+        },
+        {
+          "title": "4.2 Environment Characteristics",
+          "type": "table",
+          "columns": [
+            "Attribute",
+            "Description"
+          ]
+        },
+        {
+          "title": "5. Roles and Responsibilities",
+          "type": "table",
+          "columns": [
+            "Role",
+            "Responsibility"
+          ]
+        },
+        {
+          "title": "6. Environment Management Process",
+          "type": "text"
+        },
+        {
+          "title": "6.1 Environment Provisioning",
+          "type": "list"
+        },
+        {
+          "title": "6.2 Environment Access Management",
+          "type": "list"
+        },
+        {
+          "title": "6.3 Environment Scheduling and Usage",
+          "type": "table",
+          "columns": [
+            "Activity",
+            "Process"
+          ]
+        },
+        {
+          "title": "6.4 Deployment Management",
+          "type": "list"
+        },
+        {
+          "title": "6.5 Test Data Management",
+          "type": "table",
+          "columns": [
+            "Area",
+            "Practice"
+          ]
+        },
+        {
+          "title": "6.6 Infrastructure Management",
+          "type": "list"
+        },
+        {
+          "title": "7. Incident and Change Handling",
+          "type": "table",
+          "columns": [
+            "Scenario",
+            "Action"
+          ]
+        },
+        {
+          "title": "8. Status Reporting and Metrics",
+          "type": "list"
+        },
+        {
+          "title": "9. Risks and Mitigation",
+          "type": "table",
+          "columns": [
+            "Risk",
+            "Impact",
+            "Mitigation"
+          ]
+        },
+        {
+          "title": "10. Expected Outcomes",
+          "type": "list"
+        },
+        {
+          "title": "11. Review and Approval",
+          "type": "table",
+          "columns": [
+            "Role",
+            "Name",
+            "Date"
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,90 @@
+{
+  "document_name": "Pricing and discount guidelines",
+  "sections": [
+    {
+      "title": "1. Document Information",
+      "subsections": [
+        {
+          "title": "Description",
+          "type": "table",
+          "columns": [
+            "Field",
+            "Value"
+          ]
+        },
+        {
+          "title": "2. Purpose",
+          "type": "list"
+        },
+        {
+          "title": "3. Pricing Structure Overview",
+          "type": "table",
+          "columns": [
+            "Plan / Tier",
+            "Target Customer",
+            "Key Features",
+            "Billing Cycle",
+            "Standard Price"
+          ]
+        },
+        {
+          "title": "4. Pricing Principles (Standardized)",
+          "type": "list"
+        },
+        {
+          "title": "5. Standard Discount Guidelines",
+          "type": "text"
+        },
+        {
+          "title": "5.1 Discount Ranges",
+          "type": "table",
+          "columns": [
+            "Customer Type",
+            "Maximum Standard Discount",
+            "Typical Use Case"
+          ]
+        },
+        {
+          "title": "5.2 Approval Matrix",
+          "type": "table",
+          "columns": [
+            "Discount Range",
+            "Approval Required"
+          ]
+        },
+        {
+          "title": "6. Special Pricing Scenarios",
+          "type": "table",
+          "columns": [
+            "Scenario",
+            "Guideline"
+          ]
+        },
+        {
+          "title": "7. Non-Discount Incentives (Preferred Alternatives)",
+          "type": "list"
+        },
+        {
+          "title": "8. Pricing Exceptions",
+          "type": "table",
+          "columns": [
+            "Field",
+            "Description"
+          ]
+        },
+        {
+          "title": "9. Monitoring and Review",
+          "type": "list"
+        },
+        {
+          "title": "10. Metrics for Evaluation",
+          "type": "table",
+          "columns": [
+            "Metric",
+            "Purpose"
+          ]
+        }
+      ]
+    }
+  ]
+}

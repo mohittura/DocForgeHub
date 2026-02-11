@@ -1,0 +1,90 @@
+{
+  "document_name": "Product requirements document (PRD)",
+  "sections": [
+    {
+      "title": "Product Name",
+      "subsections": [
+        {
+          "title": "Description",
+          "type": "text"
+        },
+        {
+          "title": "Vision",
+          "type": "text"
+        },
+        {
+          "title": "Description",
+          "type": "text"
+        },
+        {
+          "title": "Timing",
+          "type": "text"
+        },
+        {
+          "title": "Status",
+          "type": "list"
+        },
+        {
+          "title": "Team",
+          "type": "text"
+        },
+        {
+          "title": "Background",
+          "type": "text"
+        },
+        {
+          "title": "Strategic Alignment",
+          "type": "text"
+        },
+        {
+          "title": "Metrics",
+          "type": "text"
+        },
+        {
+          "title": "Who It Benefits",
+          "type": "text"
+        },
+        {
+          "title": "Use Cases",
+          "type": "list"
+        },
+        {
+          "title": "Assumptions",
+          "type": "text"
+        },
+        {
+          "title": "Investment Required",
+          "type": "text"
+        },
+        {
+          "title": "Product Architecture and Components",
+          "type": "text"
+        },
+        {
+          "title": "Core Features",
+          "type": "list"
+        },
+        {
+          "title": "User Experience (UX) and User Flow",
+          "type": "text"
+        },
+        {
+          "title": "Out of Scope",
+          "type": "text"
+        },
+        {
+          "title": "Dependencies and Risks",
+          "type": "text"
+        },
+        {
+          "title": "Open Questions",
+          "type": "text"
+        },
+        {
+          "title": "Approval & Sign-off",
+          "type": "text"
+        }
+      ]
+    }
+  ]
+}

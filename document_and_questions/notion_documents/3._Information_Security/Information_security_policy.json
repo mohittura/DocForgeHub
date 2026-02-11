@@ -1,0 +1,98 @@
+{
+  "document_name": "Information security policy",
+  "sections": [
+    {
+      "title": "Document Control",
+      "subsections": [
+        {
+          "title": "Description",
+          "type": "text"
+        },
+        {
+          "title": "1.0 Purpose and Benefits",
+          "type": "list"
+        },
+        {
+          "title": "2.0 Authority",
+          "type": "text"
+        },
+        {
+          "title": "3.0 Scope",
+          "type": "list"
+        },
+        {
+          "title": "4.0 Information Security Statement",
+          "type": "text"
+        },
+        {
+          "title": "4.1 Organizational Security",
+          "type": "text"
+        },
+        {
+          "title": "4.2 Functional Responsibilities",
+          "type": "text"
+        },
+        {
+          "title": "4.2.1 Executive Management is Responsible For:",
+          "type": "list"
+        },
+        {
+          "title": "4.2.2 The ISO / Designated Security Representative is Responsible For:",
+          "type": "list"
+        },
+        {
+          "title": "4.2.3 IT Management is Responsible For:",
+          "type": "list"
+        },
+        {
+          "title": "4.2.4 The Workforce is Responsible For:",
+          "type": "list"
+        },
+        {
+          "title": "4.2.5 The CISO is Responsible For:",
+          "type": "list"
+        },
+        {
+          "title": "4.3 Separation of Duties",
+          "type": "text"
+        },
+        {
+          "title": "4.4 Information Risk Management",
+          "type": "text"
+        },
+        {
+          "title": "4.5 Information Classification and Handling",
+          "type": "table",
+          "columns": [
+            "Classification",
+            "Description"
+          ]
+        },
+        {
+          "title": "4.6 IT Asset Management",
+          "type": "list"
+        },
+        {
+          "title": "4.7 Personnel Security",
+          "type": "list"
+        },
+        {
+          "title": "4.8 Cyber Incident Management",
+          "type": "list"
+        },
+        {
+          "title": "4.9 Physical and Environmental Security",
+          "type": "list"
+        },
+        {
+          "title": "4.10 Account Management and Access Control",
+          "type": "list"
+        },
+        {
+          "title": "4.11 Systems Security",
+          "type": "list"
+        }
+      ]
+    }
+  ]
+}

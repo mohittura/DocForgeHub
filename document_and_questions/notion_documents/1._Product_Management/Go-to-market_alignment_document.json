@@ -1,0 +1,144 @@
+{
+  "document_name": "Go-to-market alignment document",
+  "sections": [
+    {
+      "title": "📌 Document Overview",
+      "subsections": [
+        {
+          "title": "Description",
+          "type": "text"
+        },
+        {
+          "title": "1. Objective",
+          "type": "list"
+        },
+        {
+          "title": "2. Launch Scope",
+          "type": "text"
+        },
+        {
+          "title": "What’s Included",
+          "type": "list"
+        },
+        {
+          "title": "What’s Not Included",
+          "type": "list"
+        },
+        {
+          "title": "3. Target Audience & Personas",
+          "type": "table",
+          "columns": [
+            "Persona",
+            "Role",
+            "Pain Points",
+            "Value Proposition"
+          ]
+        },
+        {
+          "title": "4. Customer Problem Statement",
+          "type": "list"
+        },
+        {
+          "title": "5. Value Proposition",
+          "type": "list"
+        },
+        {
+          "title": "6. Messaging & Positioning",
+          "type": "text"
+        },
+        {
+          "title": "Core Message",
+          "type": "text"
+        },
+        {
+          "title": "Supporting Messages",
+          "type": "list"
+        },
+        {
+          "title": "7. Competitive Positioning",
+          "type": "table",
+          "columns": [
+            "Competitor",
+            "Strength",
+            "Our Advantage"
+          ]
+        },
+        {
+          "title": "8. Pricing & Packaging",
+          "type": "table",
+          "columns": [
+            "Plan",
+            "Availability"
+          ]
+        },
+        {
+          "title": "9. Sales Enablement",
+          "type": "text"
+        },
+        {
+          "title": "Assets Required",
+          "type": "list"
+        },
+        {
+          "title": "Sales Talking Points",
+          "type": "list"
+        },
+        {
+          "title": "10. Marketing Plan",
+          "type": "table",
+          "columns": [
+            "Channel",
+            "Activity",
+            "Owner"
+          ]
+        },
+        {
+          "title": "11. Customer Success & Support Readiness",
+          "type": "text"
+        },
+        {
+          "title": "Customer Success",
+          "type": "list"
+        },
+        {
+          "title": "Support",
+          "type": "list"
+        },
+        {
+          "title": "12. Internal Communication Plan",
+          "type": "table",
+          "columns": [
+            "Audience",
+            "Channel",
+            "Timing"
+          ]
+        },
+        {
+          "title": "13. Success Metrics",
+          "type": "table",
+          "columns": [
+            "Metric",
+            "Target"
+          ]
+        },
+        {
+          "title": "14. Risks & Mitigation",
+          "type": "table",
+          "columns": [
+            "Risk",
+            "Impact",
+            "Mitigation"
+          ]
+        },
+        {
+          "title": "15. Go / No-Go Checklist",
+          "type": "text"
+        },
+        {
+          "title": "16. Approval & Sign-off",
+          "type": "text"
+        }
+      ]
+    }
+  ]
+}

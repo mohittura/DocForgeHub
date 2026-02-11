@@ -1,0 +1,109 @@
+{
+  "document_name": "Test plan",
+  "sections": [
+    {
+      "title": "Document Information",
+      "subsections": [
+        {
+          "title": "Description",
+          "type": "table",
+          "columns": [
+            "Field",
+            "Value"
+          ]
+        },
+        {
+          "title": "1. Scope and Objectives",
+          "type": "text"
+        },
+        {
+          "title": "1.1 Scope",
+          "type": "list"
+        },
+        {
+          "title": "1.2 Objectives",
+          "type": "list"
+        },
+        {
+          "title": "2. Test Cases and Scenarios",
+          "type": "list"
+        },
+        {
+          "title": "Example Test Case Structure",
+          "type": "list",
+          "columns": [
+            "Test Case ID",
+            "Scenario",
+            "Description",
+            "Expected Result",
+            "Status"
+          ]
+        },
+        {
+          "title": "3. Resource Allocation",
+          "type": "text"
+        },
+        {
+          "title": "3.1 Roles and Responsibilities",
+          "type": "table",
+          "columns": [
+            "Role",
+            "Responsibility"
+          ]
+        },
+        {
+          "title": "3.2 Resources Required",
+          "type": "list"
+        },
+        {
+          "title": "4. Testing Approach",
+          "type": "list",
+          "columns": [
+            "Testing Type",
+            "Purpose"
+          ]
+        },
+        {
+          "title": "5. Timeline and Schedule",
+          "type": "text"
+        },
+        {
+          "title": "5.1 Testing Phases",
+          "type": "table",
+          "columns": [
+            "Phase",
+            "Activity",
+            "Owner",
+            "Start Date",
+            "End Date"
+          ]
+        },
+        {
+          "title": "6. Risk Assessment and Mitigation",
+          "type": "text"
+        },
+        {
+          "title": "6.1 Identified Risks",
+          "type": "table",
+          "columns": [
+            "Risk",
+            "Impact",
+            "Mitigation"
+          ]
+        },
+        {
+          "title": "7. Success Criteria",
+          "type": "list"
+        },
+        {
+          "title": "8. Reporting Requirements",
+          "type": "list"
+        },
+        {
+          "title": "Metrics Tracked",
+          "type": "list"
+        }
+      ]
+    }
+  ]
+}

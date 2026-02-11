@@ -1,0 +1,98 @@
+{
+  "document_name": "Identity and Access Management",
+  "sections": [
+    {
+      "title": "0. Required Inputs (Only These Need to Be Provided)",
+      "subsections": [
+        {
+          "title": "Description",
+          "type": "list"
+        },
+        {
+          "title": "1. Document Information (Auto-Generated)",
+          "type": "table",
+          "columns": [
+            "Field",
+            "Value"
+          ]
+        },
+        {
+          "title": "2. Purpose (Standard Text)",
+          "type": "text"
+        },
+        {
+          "title": "3. Scope (Auto-Expanded)",
+          "type": "list"
+        },
+        {
+          "title": "4. IAM Principles (Default Content)",
+          "type": "list"
+        },
+        {
+          "title": "5. Identity Lifecycle Management",
+          "type": "text"
+        },
+        {
+          "title": "5.1 Identity Creation",
+          "type": "list"
+        },
+        {
+          "title": "5.2 Access Provisioning",
+          "type": "list"
+        },
+        {
+          "title": "5.3 Access Modification",
+          "type": "list"
+        },
+        {
+          "title": "5.4 Access Revocation",
+          "type": "list"
+        },
+        {
+          "title": "6. Authentication Standards",
+          "type": "text"
+        },
+        {
+          "title": "Default Rules (Auto-Applied)",
+          "type": "list"
+        },
+        {
+          "title": "7. Authorization Model",
+          "type": "text"
+        },
+        {
+          "title": "Standard Behavior",
+          "type": "list"
+        },
+        {
+          "title": "8. Privileged and Service Accounts",
+          "type": "list"
+        },
+        {
+          "title": "9. Access Review and Monitoring",
+          "type": "list"
+        },
+        {
+          "title": "10. Security Requirements (Standardized)",
+          "type": "list"
+        },
+        {
+          "title": "11. Roles and Responsibilities (Auto-Generated)",
+          "type": "table",
+          "columns": [
+            "Role",
+            "Responsibility"
+          ]
+        },
+        {
+          "title": "12. Exceptions",
+          "type": "list"
+        },
+        {
+          "title": "13. Review and Maintenance",
+          "type": "list"
+        }
+      ]
+    }
+  ]
+}

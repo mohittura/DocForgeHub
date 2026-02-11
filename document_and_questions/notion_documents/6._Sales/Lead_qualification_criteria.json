@@ -1,0 +1,126 @@
+{
+  "document_name": "Lead qualification criteria",
+  "sections": [
+    {
+      "title": "1. Document Information",
+      "subsections": [
+        {
+          "title": "Description",
+          "type": "table",
+          "columns": [
+            "Field",
+            "Value"
+          ]
+        },
+        {
+          "title": "2. Purpose",
+          "type": "text"
+        },
+        {
+          "title": "3. Qualification Framework Overview",
+          "type": "table",
+          "columns": [
+            "Category",
+            "Description",
+            "Action"
+          ]
+        },
+        {
+          "title": "4. Ideal Customer Profile (ICP)",
+          "type": "text"
+        },
+        {
+          "title": "4.1 Firmographic Criteria",
+          "type": "table",
+          "columns": [
+            "Attribute",
+            "Ideal Criteria"
+          ]
+        },
+        {
+          "title": "4.2 Behavioral Indicators",
+          "type": "list"
+        },
+        {
+          "title": "5. Qualification Criteria",
+          "type": "text"
+        },
+        {
+          "title": "5.1 Business Need",
+          "type": "table",
+          "columns": [
+            "Criteria",
+            "Evaluation Guidance",
+            "Score"
+          ]
+        },
+        {
+          "title": "5.2 Budget Alignment",
+          "type": "table",
+          "columns": [
+            "Criteria",
+            "Evaluation Guidance"
+          ]
+        },
+        {
+          "title": "5.3 Authority",
+          "type": "table",
+          "columns": [
+            "Role Type",
+            "Qualification Level"
+          ]
+        },
+        {
+          "title": "5.4 Timeline",
+          "type": "table",
+          "columns": [
+            "Timeline",
+            "Qualification Impact"
+          ]
+        },
+        {
+          "title": "5.5 Engagement Level",
+          "type": "list"
+        },
+        {
+          "title": "6. Lead Scoring Model (LLM-Friendly)",
+          "type": "table",
+          "columns": [
+            "Category",
+            "Weight",
+            "Example Indicators"
+          ]
+        },
+        {
+          "title": "Score Interpretation",
+          "type": "table",
+          "columns": [
+            "Score Range",
+            "Lead Status",
+            "Action"
+          ]
+        },
+        {
+          "title": "7. Qualification Process Flow",
+          "type": "list"
+        },
+        {
+          "title": "8. Disqualification Criteria",
+          "type": "list"
+        },
+        {
+          "title": "9. Responsibilities",
+          "type": "table",
+          "columns": [
+            "Role",
+            "Responsibility"
+          ]
+        },
+        {
+          "title": "10. Review and Continuous Improvement",
+          "type": "list"
+        }
+      ]
+    }
+  ]
+}

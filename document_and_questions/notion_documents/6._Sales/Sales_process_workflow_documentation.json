@@ -1,0 +1,102 @@
+{
+  "document_name": "Sales process workflow documentation",
+  "sections": [
+    {
+      "title": "1. Document Overview",
+      "subsections": [
+        {
+          "title": "Description",
+          "type": "text"
+        },
+        {
+          "title": "Document Information",
+          "type": "table",
+          "columns": [
+            "Field",
+            "Value"
+          ]
+        },
+        {
+          "title": "2. Purpose",
+          "type": "list"
+        },
+        {
+          "title": "3. Scope",
+          "type": "list"
+        },
+        {
+          "title": "4. Sales Process Overview",
+          "type": "list"
+        },
+        {
+          "title": "5. Sales Workflow Stages",
+          "type": "text"
+        },
+        {
+          "title": "Stage 1 — Lead Creation / Lead Capture",
+          "type": "list"
+        },
+        {
+          "title": "Stage 2 — Lead Qualification",
+          "type": "list"
+        },
+        {
+          "title": "Stage 3 — Discovery & Requirement Validation",
+          "type": "list"
+        },
+        {
+          "title": "Stage 4 — Solution Presentation / Demo",
+          "type": "list"
+        },
+        {
+          "title": "Stage 5 — Proposal & Commercial Discussion",
+          "type": "list"
+        },
+        {
+          "title": "Stage 6 — Negotiation & Approval",
+          "type": "list"
+        },
+        {
+          "title": "Stage 7 — Deal Closure",
+          "type": "list"
+        },
+        {
+          "title": "Stage 8 — Customer Handover",
+          "type": "list"
+        },
+        {
+          "title": "6. Roles and Responsibilities",
+          "type": "table",
+          "columns": [
+            "Role",
+            "Responsibility"
+          ]
+        },
+        {
+          "title": "7. CRM Requirements",
+          "type": "list"
+        },
+        {
+          "title": "8. Key Controls and Governance",
+          "type": "list"
+        },
+        {
+          "title": "9. Key Performance Indicators (KPIs)",
+          "type": "table",
+          "columns": [
+            "KPI",
+            "Description"
+          ]
+        },
+        {
+          "title": "10. Exceptions Handling",
+          "type": "text"
+        },
+        {
+          "title": "11. Review and Revision",
+          "type": "text"
+        }
+      ]
+    }
+  ]
+}

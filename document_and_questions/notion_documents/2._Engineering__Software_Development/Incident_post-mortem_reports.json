@@ -1,0 +1,107 @@
+{
+  "document_name": "Incident post-mortem reports",
+  "sections": [
+    {
+      "title": "1. Title and Introduction",
+      "subsections": [
+        {
+          "title": "Description",
+          "type": "text"
+        },
+        {
+          "title": "Introduction",
+          "type": "text"
+        },
+        {
+          "title": "2. Issue Summary",
+          "type": "table",
+          "columns": [
+            "Field",
+            "Description"
+          ]
+        },
+        {
+          "title": "Summary Description",
+          "type": "text"
+        },
+        {
+          "title": "3. Timeline",
+          "type": "table",
+          "columns": [
+            "Time (UTC)",
+            "Event",
+            "Owner"
+          ]
+        },
+        {
+          "title": "4. Root Cause Analysis",
+          "type": "text"
+        },
+        {
+          "title": "Root Cause",
+          "type": "text"
+        },
+        {
+          "title": "Root Cause Category",
+          "type": "list"
+        },
+        {
+          "title": "5. Impact and Mitigation",
+          "type": "text"
+        },
+        {
+          "title": "Impact",
+          "type": "table",
+          "columns": [
+            "Area",
+            "Description"
+          ]
+        },
+        {
+          "title": "Immediate Mitigation Actions",
+          "type": "list"
+        },
+        {
+          "title": "6. Contributing Factors",
+          "type": "list"
+        },
+        {
+          "title": "7. Resolution and Recovery",
+          "type": "list"
+        },
+        {
+          "title": "8. Corrective and Preventative Measures",
+          "type": "text"
+        },
+        {
+          "title": "Action Items",
+          "type": "table",
+          "columns": [
+            "Action ID",
+            "Action Description",
+            "Owner",
+            "Priority",
+            "Target Date",
+            "Status"
+          ]
+        },
+        {
+          "title": "9. Lessons Learned",
+          "type": "text"
+        },
+        {
+          "title": "What Went Well",
+          "type": "list"
+        },
+        {
+          "title": "What Could Be Improved",
+          "type": "list"
+        },
+        {
+          "title": "Future Improvements",
+          "type": "list"
+        }
+      ]
+    }
+  ]
+}

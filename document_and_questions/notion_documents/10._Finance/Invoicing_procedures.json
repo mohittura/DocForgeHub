@@ -1,0 +1,78 @@
+{
+  "document_name": "Invoicing procedures",
+  "sections": [
+    {
+      "title": "1. Document Overview",
+      "subsections": [
+        {
+          "title": "Description",
+          "type": "text"
+        },
+        {
+          "title": "Document Information",
+          "type": "table",
+          "columns": [
+            "Field",
+            "Value"
+          ]
+        },
+        {
+          "title": "2. Purpose",
+          "type": "list"
+        },
+        {
+          "title": "3. Scope",
+          "type": "list"
+        },
+        {
+          "title": "4. Invoicing Process Overview",
+          "type": "list"
+        },
+        {
+          "title": "5. Invoice Components",
+          "type": "table",
+          "columns": [
+            "Component",
+            "Description"
+          ]
+        },
+        {
+          "title": "6. Invoicing Frequency",
+          "type": "list"
+        },
+        {
+          "title": "7. Approval Workflow",
+          "type": "table",
+          "columns": [
+            "Invoice Amount",
+            "Required Approval"
+          ]
+        },
+        {
+          "title": "8. Payment Terms and Methods",
+          "type": "list"
+        },
+        {
+          "title": "9. Handling Invoice Disputes",
+          "type": "list"
+        },
+        {
+          "title": "10. Record-Keeping",
+          "type": "list"
+        },
+        {
+          "title": "11. Automation and SaaS Tools",
+          "type": "list"
+        },
+        {
+          "title": "12. Governance and Updates",
+          "type": "list"
+        },
+        {
+          "title": "13. Review and Revision",
+          "type": "list"
+        }
+      ]
+    }
+  ]
+}

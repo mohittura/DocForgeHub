@@ -1,0 +1,130 @@
+{
+  "document_name": "Third-party risk assessment records",
+  "sections": [
+    {
+      "title": "1. Record Information",
+      "subsections": [
+        {
+          "title": "Description",
+          "type": "table",
+          "columns": [
+            "Field",
+            "Value"
+          ]
+        },
+        {
+          "title": "2. Assessment Purpose",
+          "type": "text"
+        },
+        {
+          "title": "3. Vendor Overview (Minimal Input Section)",
+          "type": "table",
+          "columns": [
+            "Item",
+            "Description"
+          ]
+        },
+        {
+          "title": "4. Data Access and Processing",
+          "type": "text"
+        },
+        {
+          "title": "4.1 Data Types Accessed",
+          "type": "list"
+        },
+        {
+          "title": "4.2 Data Handling Summary",
+          "type": "table",
+          "columns": [
+            "Category",
+            "Yes / No",
+            "Notes"
+          ]
+        },
+        {
+          "title": "5. Security Assessment",
+          "type": "text"
+        },
+        {
+          "title": "5.1 Security Controls Overview",
+          "type": "table",
+          "columns": [
+            "Control Area",
+            "Status",
+            "Notes"
+          ]
+        },
+        {
+          "title": "5.2 Authentication & Access",
+          "type": "table",
+          "columns": [
+            "Item",
+            "Status"
+          ]
+        },
+        {
+          "title": "6. Compliance and Legal Considerations",
+          "type": "table",
+          "columns": [
+            "Requirement",
+            "Status",
+            "Notes"
+          ]
+        },
+        {
+          "title": "7. Risk Evaluation (Core Section)",
+          "type": "text"
+        },
+        {
+          "title": "7.1 Risk Factors",
+          "type": "table",
+          "columns": [
+            "Risk Area",
+            "Risk Level",
+            "Notes"
+          ]
+        },
+        {
+          "title": "7.2 Overall Risk Rating",
+          "type": "table",
+          "columns": [
+            "Overall Risk",
+            "Justification"
+          ]
+        },
+        {
+          "title": "8. Risk Treatment Decision",
+          "type": "table",
+          "columns": [
+            "Decision",
+            "Description"
+          ]
+        },
+        {
+          "title": "9. Mitigation Actions (If Required)",
+          "type": "table",
+          "columns": [
+            "Action ID",
+            "Description",
+            "Owner",
+            "Target Date",
+            "Status"
+          ]
+        },
+        {
+          "title": "10. Review and Monitoring",
+          "type": "list"
+        },
+        {
+          "title": "11. Approval",
+          "type": "table",
+          "columns": [
+            "Role",
+            "Name",
+            "Date"
+          ]
+        }
+      ]
+    }
+  ]
+}

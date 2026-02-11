@@ -1,0 +1,130 @@
+{
+  "document_name": "Market research reports",
+  "sections": [
+    {
+      "title": "1. Document Overview",
+      "subsections": [
+        {
+          "title": "Description",
+          "type": "text"
+        },
+        {
+          "title": "Document Information",
+          "type": "table",
+          "columns": [
+            "Field",
+            "Value"
+          ]
+        },
+        {
+          "title": "2. Purpose",
+          "type": "list"
+        },
+        {
+          "title": "3. Scope",
+          "type": "list"
+        },
+        {
+          "title": "4. Research Methodology",
+          "type": "list"
+        },
+        {
+          "title": "5. Market Overview",
+          "type": "text"
+        },
+        {
+          "title": "5.1 Market Definition",
+          "type": "text"
+        },
+        {
+          "title": "5.2 Market Size and Growth",
+          "type": "table",
+          "columns": [
+            "Metric",
+            "Value"
+          ]
+        },
+        {
+          "title": "5.3 Market Trends",
+          "type": "list"
+        },
+        {
+          "title": "6. Customer Analysis",
+          "type": "text"
+        },
+        {
+          "title": "6.1 Target Customer Segments",
+          "type": "table",
+          "columns": [
+            "Segment",
+            "Description",
+            "Needs"
+          ]
+        },
+        {
+          "title": "6.2 Customer Challenges",
+          "type": "list"
+        },
+        {
+          "title": "6.3 Buying Behavior Insights",
+          "type": "list"
+        },
+        {
+          "title": "7. Competitive Landscape",
+          "type": "text"
+        },
+        {
+          "title": "7.1 Competitive Categories",
+          "type": "list"
+        },
+        {
+          "title": "7.2 Competitive Comparison",
+          "type": "table",
+          "columns": [
+            "Competitor",
+            "Strength",
+            "Weakness",
+            "Market Position"
+          ]
+        },
+        {
+          "title": "7.3 Competitive Gaps",
+          "type": "list"
+        },
+        {
+          "title": "8. Market Opportunities",
+          "type": "list"
+        },
+        {
+          "title": "9. Risks and Market Challenges",
+          "type": "table",
+          "columns": [
+            "Risk",
+            "Impact",
+            "Mitigation Consideration"
+          ]
+        },
+        {
+          "title": "10. Strategic Implications",
+          "type": "list"
+        },
+        {
+          "title": "11. Key Insights Summary",
+          "type": "list"
+        },
+        {
+          "title": "12. Recommendations",
+          "type": "list"
+        },
+        {
+          "title": "13. Limitations",
+          "type": "text"
+        },
+        {
+          "title": "14. Review and Revision",
+          "type": "text"
+        }
+      ]
+    }
+  ]
+}

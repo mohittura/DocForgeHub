@@ -1,0 +1,123 @@
+{
+  "document_name": "Feature prioritization framework",
+  "sections": [
+    {
+      "title": "1. Objective",
+      "subsections": [
+        {
+          "title": "Description",
+          "type": "list"
+        },
+        {
+          "title": "2. Prioritization Principles",
+          "type": "list"
+        },
+        {
+          "title": "3. Framework Overview",
+          "type": "text"
+        },
+        {
+          "title": "Scoring Dimensions",
+          "type": "list"
+        },
+        {
+          "title": "4. Scoring Criteria",
+          "type": "text"
+        },
+        {
+          "title": "4.1 Customer Impact",
+          "type": "table",
+          "columns": [
+            "Score",
+            "Definition"
+          ]
+        },
+        {
+          "title": "4.2 Strategic Alignment",
+          "type": "table",
+          "columns": [
+            "Score",
+            "Definition"
+          ]
+        },
+        {
+          "title": "4.3 Revenue / Business Impact",
+          "type": "table",
+          "columns": [
+            "Score",
+            "Definition"
+          ]
+        },
+        {
+          "title": "4.4 Effort (Inverse Score)",
+          "type": "table",
+          "columns": [
+            "Score",
+            "Definition"
+          ]
+        },
+        {
+          "title": "4.5 Risk (Inverse Score)",
+          "type": "table",
+          "columns": [
+            "Score",
+            "Definition"
+          ]
+        },
+        {
+          "title": "5. Weighted Scoring Model",
+          "type": "table",
+          "columns": [
+            "Dimension",
+            "Weight"
+          ]
+        },
+        {
+          "title": "Scoring Formula",
+          "type": "text"
+        },
+        {
+          "title": "6. Feature Evaluation Table",
+          "type": "table",
+          "columns": [
+            "Feature",
+            "Customer Impact",
+            "Strategic Alignment",
+            "Revenue Impact",
+            "Effort",
+            "Risk",
+            "Total Score"
+          ]
+        },
+        {
+          "title": "7. Prioritization Bands",
+          "type": "table",
+          "columns": [
+            "Score Range",
+            "Priority"
+          ]
+        },
+        {
+          "title": "8. Decision Rules",
+          "type": "list"
+        },
+        {
+          "title": "9. Review & Governance",
+          "type": "text"
+        },
+        {
+          "title": "Review Cadence",
+          "type": "list"
+        },
+        {
+          "title": "Ownership",
+          "type": "list"
+        },
+        {
+          "title": "10. Approval & Sign-off",
+          "type": "text"
+        }
+      ]
+    }
+  ]
+}

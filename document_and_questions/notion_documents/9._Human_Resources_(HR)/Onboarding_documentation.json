@@ -1,0 +1,126 @@
+{
+  "document_name": "Onboarding documentation",
+  "sections": [
+    {
+      "title": "1. Document Overview",
+      "subsections": [
+        {
+          "title": "Description",
+          "type": "text"
+        },
+        {
+          "title": "Document Information",
+          "type": "table",
+          "columns": [
+            "Field",
+            "Value"
+          ]
+        },
+        {
+          "title": "2. Purpose",
+          "type": "list"
+        },
+        {
+          "title": "3. Onboarding Objectives",
+          "type": "list"
+        },
+        {
+          "title": "4. Onboarding Roles and Responsibilities",
+          "type": "text"
+        },
+        {
+          "title": "4.1 Human Resources",
+          "type": "list"
+        },
+        {
+          "title": "4.2 Hiring Manager",
+          "type": "list"
+        },
+        {
+          "title": "4.3 IT / Operations",
+          "type": "list"
+        },
+        {
+          "title": "4.4 New Employee",
+          "type": "list"
+        },
+        {
+          "title": "5. Onboarding Phases",
+          "type": "text"
+        },
+        {
+          "title": "5.1 Pre-Joining (Before Start Date)",
+          "type": "list"
+        },
+        {
+          "title": "5.2 Day 1 Orientation",
+          "type": "list"
+        },
+        {
+          "title": "5.3 First Week Integration",
+          "type": "list"
+        },
+        {
+          "title": "5.4 First 30 / 60 / 90 Days",
+          "type": "table",
+          "columns": [
+            "Timeline",
+            "Focus Area"
+          ]
+        },
+        {
+          "title": "6. Onboarding Checklist (LLM-Generated)",
+          "type": "text"
+        },
+        {
+          "title": "6.1 HR Checklist",
+          "type": "list"
+        },
+        {
+          "title": "6.2 Manager Checklist",
+          "type": "list"
+        },
+        {
+          "title": "6.3 IT Checklist",
+          "type": "list"
+        },
+        {
+          "title": "7. Tools and Systems Introduction",
+          "type": "list"
+        },
+        {
+          "title": "8. Company Culture and Values",
+          "type": "list"
+        },
+        {
+          "title": "9. Compliance and Policy Awareness",
+          "type": "list"
+        },
+        {
+          "title": "10. Feedback and Evaluation",
+          "type": "text"
+        },
+        {
+          "title": "10.1 New Hire Feedback",
+          "type": "text"
+        },
+        {
+          "title": "10.2 Manager Evaluation",
+          "type": "list"
+        },
+        {
+          "title": "11. Success Metrics",
+          "type": "list"
+        },
+        {
+          "title": "12. Governance and Updates",
+          "type": "text"
+        },
+        {
+          "title": "13. Review and Revision",
+          "type": "text"
+        }
+      ]
+    }
+  ]
+}

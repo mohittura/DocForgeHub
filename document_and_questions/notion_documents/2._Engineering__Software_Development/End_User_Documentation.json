@@ -1,0 +1,155 @@
+{
+  "document_name": "End User Documentation",
+  "sections": [
+    {
+      "title": "📌 Document Overview",
+      "subsections": [
+        {
+          "title": "Description",
+          "type": "text"
+        },
+        {
+          "title": "1. Introduction",
+          "type": "text"
+        },
+        {
+          "title": "1.1 What This Product Does",
+          "type": "text"
+        },
+        {
+          "title": "1.2 Who This Guide Is For",
+          "type": "list"
+        },
+        {
+          "title": "2. Getting Started",
+          "type": "text"
+        },
+        {
+          "title": "2.1 System Requirements",
+          "type": "list"
+        },
+        {
+          "title": "2.2 Account Setup",
+          "type": "list"
+        },
+        {
+          "title": "2.3 Logging In",
+          "type": "list"
+        },
+        {
+          "title": "3. Installation Guide (If Applicable)",
+          "type": "text"
+        },
+        {
+          "title": "3.1 Web Application",
+          "type": "text"
+        },
+        {
+          "title": "3.2 Mobile Application",
+          "type": "list"
+        },
+        {
+          "title": "4. User Interface Overview",
+          "type": "text"
+        },
+        {
+          "title": "Main Sections",
+          "type": "list"
+        },
+        {
+          "title": "5. How to Use the Product",
+          "type": "text"
+        },
+        {
+          "title": "5.1 Creating Your First Item",
+          "type": "list"
+        },
+        {
+          "title": "5.2 Managing Items",
+          "type": "list"
+        },
+        {
+          "title": "5.3 Sharing & Collaboration",
+          "type": "list"
+        },
+        {
+          "title": "6. Common Tasks",
+          "type": "table",
+          "columns": [
+            "Task",
+            "Steps"
+          ]
+        },
+        {
+          "title": "7. Frequently Asked Questions (FAQs)",
+          "type": "text"
+        },
+        {
+          "title": "Q1: I forgot my password. What should I do?",
+          "type": "text"
+        },
+        {
+          "title": "Q2: Can I access the product on mobile?",
+          "type": "text"
+        },
+        {
+          "title": "Q3: How do I contact support?",
+          "type": "text"
+        },
+        {
+          "title": "8. Troubleshooting",
+          "type": "text"
+        },
+        {
+          "title": "8.1 Login Issues",
+          "type": "list"
+        },
+        {
+          "title": "8.2 Performance Issues",
+          "type": "list"
+        },
+        {
+          "title": "8.3 Feature Not Available",
+          "type": "list"
+        },
+        {
+          "title": "9. Error Messages Explained",
+          "type": "table",
+          "columns": [
+            "Error Message",
+            "Meaning",
+            "What to Do"
+          ]
+        },
+        {
+          "title": "10. Tips & Best Practices",
+          "type": "list"
+        },
+        {
+          "title": "11. Accessibility & Support",
+          "type": "text"
+        },
+        {
+          "title": "Accessibility",
+          "type": "list"
+        },
+        {
+          "title": "Support Channels",
+          "type": "list"
+        },
+        {
+          "title": "12. Glossary",
+          "type": "table",
+          "columns": [
+            "Term",
+            "Meaning"
+          ]
+        },
+        {
+          "title": "13. Feedback & Updates",
+          "type": "text"
+        }
+      ]
+    }
+  ]
+}

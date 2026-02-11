@@ -1,0 +1,119 @@
+{
+  "document_name": "Escalation procedures",
+  "sections": [
+    {
+      "title": "1. Document Overview",
+      "subsections": [
+        {
+          "title": "Description",
+          "type": "text"
+        },
+        {
+          "title": "Document Information",
+          "type": "table",
+          "columns": [
+            "Field",
+            "Value"
+          ]
+        },
+        {
+          "title": "2. Purpose",
+          "type": "list"
+        },
+        {
+          "title": "3. Scope",
+          "type": "list"
+        },
+        {
+          "title": "4. Escalation Objectives",
+          "type": "text"
+        },
+        {
+          "title": "4.1 Primary Objectives",
+          "type": "list"
+        },
+        {
+          "title": "4.2 Success Criteria",
+          "type": "text"
+        },
+        {
+          "title": "5. Escalation Types",
+          "type": "table",
+          "columns": [
+            "Escalation Type",
+            "Description"
+          ]
+        },
+        {
+          "title": "6. Escalation Triggers",
+          "type": "list"
+        },
+        {
+          "title": "7. Escalation Levels and Ownership",
+          "type": "text"
+        },
+        {
+          "title": "7.1 Escalation Levels",
+          "type": "table",
+          "columns": [
+            "Level",
+            "Owner",
+            "Description"
+          ]
+        },
+        {
+          "title": "7.2 Ownership Rules",
+          "type": "list"
+        },
+        {
+          "title": "8. Escalation Workflow",
+          "type": "text"
+        },
+        {
+          "title": "8.1 Escalation Process Steps",
+          "type": "list"
+        },
+        {
+          "title": "9. Escalation Information Requirements",
+          "type": "table",
+          "columns": [
+            "Required Information",
+            "Description"
+          ]
+        },
+        {
+          "title": "10. Communication During Escalation",
+          "type": "text"
+        },
+        {
+          "title": "10.1 Internal Communication",
+          "type": "list"
+        },
+        {
+          "title": "10.2 Customer Communication",
+          "type": "list"
+        },
+        {
+          "title": "11. Incident Escalation (Multiple Customers Affected)",
+          "type": "list"
+        },
+        {
+          "title": "12. Performance Measurement",
+          "type": "table",
+          "columns": [
+            "Metric",
+            "Purpose"
+          ]
+        },
+        {
+          "title": "13. Governance and Maintenance",
+          "type": "list"
+        },
+        {
+          "title": "14. Review and Revision",
+          "type": "text"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,74 @@
+{
+  "document_name": "Expense reimbursement policy",
+  "sections": [
+    {
+      "title": "1. Document Overview",
+      "subsections": [
+        {
+          "title": "Description",
+          "type": "text"
+        },
+        {
+          "title": "Document Information",
+          "type": "table",
+          "columns": [
+            "Field",
+            "Value"
+          ]
+        },
+        {
+          "title": "2. Purpose",
+          "type": "list"
+        },
+        {
+          "title": "3. Scope",
+          "type": "list"
+        },
+        {
+          "title": "4. Reimbursable Expenses",
+          "type": "list",
+          "columns": [
+            "Expense Category",
+            "Description / Examples"
+          ]
+        },
+        {
+          "title": "5. Non-Reimbursable Expenses",
+          "type": "list"
+        },
+        {
+          "title": "6. Submission Procedure",
+          "type": "list"
+        },
+        {
+          "title": "7. Approval Workflow",
+          "type": "table",
+          "columns": [
+            "Expense Amount",
+            "Approver Required"
+          ]
+        },
+        {
+          "title": "8. Timelines",
+          "type": "list"
+        },
+        {
+          "title": "9. Documentation & Record-Keeping",
+          "type": "list"
+        },
+        {
+          "title": "10. Policy Compliance",
+          "type": "list"
+        },
+        {
+          "title": "11. Exceptions",
+          "type": "list"
+        },
+        {
+          "title": "12. Review and Updates",
+          "type": "list"
+        }
+      ]
+    }
+  ]
+}

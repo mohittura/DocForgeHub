@@ -1,0 +1,128 @@
+{
+  "document_name": "Access control policy",
+  "sections": [
+    {
+      "title": "Document Control",
+      "subsections": [
+        {
+          "title": "Description",
+          "type": "text"
+        },
+        {
+          "title": "1.0 Purpose",
+          "type": "text"
+        },
+        {
+          "title": "2.0 Scope",
+          "type": "list"
+        },
+        {
+          "title": "3.0 Policy Statement",
+          "type": "text"
+        },
+        {
+          "title": "4.0 Access Control Principles",
+          "type": "text"
+        },
+        {
+          "title": "4.1 Least Privilege",
+          "type": "text"
+        },
+        {
+          "title": "4.2 Need-to-Know",
+          "type": "text"
+        },
+        {
+          "title": "4.3 Role-Based Access Control (RBAC)",
+          "type": "text"
+        },
+        {
+          "title": "4.4 Accountability",
+          "type": "text"
+        },
+        {
+          "title": "5.0 User Access Management",
+          "type": "text"
+        },
+        {
+          "title": "5.1 User Registration and Provisioning",
+          "type": "list"
+        },
+        {
+          "title": "5.2 Access Modification",
+          "type": "list"
+        },
+        {
+          "title": "5.3 Access Revocation",
+          "type": "list"
+        },
+        {
+          "title": "6.0 Authentication Requirements",
+          "type": "text"
+        },
+        {
+          "title": "6.1 Password Requirements",
+          "type": "list"
+        },
+        {
+          "title": "6.2 Multi-Factor Authentication (MFA)",
+          "type": "list"
+        },
+        {
+          "title": "6.3 Session Management",
+          "type": "list"
+        },
+        {
+          "title": "7.0 Privileged Access Management",
+          "type": "list"
+        },
+        {
+          "title": "8.0 Access Review and Monitoring",
+          "type": "list"
+        },
+        {
+          "title": "9.0 Remote Access",
+          "type": "list"
+        },
+        {
+          "title": "10.0 Third-Party Access",
+          "type": "list"
+        },
+        {
+          "title": "11.0 Responsibilities",
+          "type": "text"
+        },
+        {
+          "title": "Executive Management",
+          "type": "list"
+        },
+        {
+          "title": "Information Security Team",
+          "type": "list"
+        },
+        {
+          "title": "IT Management",
+          "type": "list"
+        },
+        {
+          "title": "Users",
+          "type": "list"
+        },
+        {
+          "title": "12.0 Compliance and Enforcement",
+          "type": "text"
+        },
+        {
+          "title": "13.0 Review and Revision History",
+          "type": "table",
+          "columns": [
+            "Version",
+            "Date",
+            "Author",
+            "Changes"
+          ]
+        }
+      ]
+    }
+  ]
+}

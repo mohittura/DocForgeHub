@@ -1,0 +1,112 @@
+{
+  "document_name": "Sales playbook",
+  "sections": [
+    {
+      "title": "1. Document Information",
+      "subsections": [
+        {
+          "title": "Description",
+          "type": "table",
+          "columns": [
+            "Field",
+            "Value"
+          ]
+        },
+        {
+          "title": "2. Purpose",
+          "type": "text"
+        },
+        {
+          "title": "3. Product Overview",
+          "type": "table",
+          "columns": [
+            "Field",
+            "Description"
+          ]
+        },
+        {
+          "title": "4. Ideal Customer Profile (ICP)",
+          "type": "table",
+          "columns": [
+            "Attribute",
+            "Description"
+          ]
+        },
+        {
+          "title": "5. Sales Process Overview",
+          "type": "text"
+        },
+        {
+          "title": "Sales Stages",
+          "type": "table",
+          "columns": [
+            "Stage",
+            "Objective",
+            "Exit Criteria",
+            "Owner"
+          ]
+        },
+        {
+          "title": "6. Qualification Framework",
+          "type": "text"
+        },
+        {
+          "title": "Example (Standardized)",
+          "type": "table",
+          "columns": [
+            "Criteria",
+            "Description"
+          ]
+        },
+        {
+          "title": "7. Messaging and Positioning",
+          "type": "text"
+        },
+        {
+          "title": "Core Messaging",
+          "type": "list"
+        },
+        {
+          "title": "Common Value Statements",
+          "type": "table",
+          "columns": [
+            "Customer Problem",
+            "Recommended Messaging"
+          ]
+        },
+        {
+          "title": "8. Objection Handling Guide",
+          "type": "table",
+          "columns": [
+            "Objection",
+            "Recommended Response"
+          ]
+        },
+        {
+          "title": "9. Sales Tools and Resources",
+          "type": "table",
+          "columns": [
+            "Tool",
+            "Purpose"
+          ]
+        },
+        {
+          "title": "10. Sales Metrics and KPIs",
+          "type": "table",
+          "columns": [
+            "Metric",
+            "Description"
+          ]
+        },
+        {
+          "title": "11. Handover to Customer Success",
+          "type": "table",
+          "columns": [
+            "Step",
+            "Description"
+          ]
+        }
+      ]
+    }
+  ]
+}

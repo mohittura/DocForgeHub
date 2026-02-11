@@ -1,0 +1,207 @@
+{
+  "document_name": "System architecture document",
+  "sections": [
+    {
+      "title": "📌 Document Overview",
+      "subsections": [
+        {
+          "title": "Description",
+          "type": "text"
+        },
+        {
+          "title": "1. Introduction",
+          "type": "text"
+        },
+        {
+          "title": "1.1 Purpose",
+          "type": "text"
+        },
+        {
+          "title": "1.2 Scope",
+          "type": "list"
+        },
+        {
+          "title": "2. Architectural Goals & Principles",
+          "type": "text"
+        },
+        {
+          "title": "Goals",
+          "type": "list"
+        },
+        {
+          "title": "Principles",
+          "type": "list"
+        },
+        {
+          "title": "3. High-Level Architecture Overview",
+          "type": "text"
+        },
+        {
+          "title": "System Context",
+          "type": "text"
+        },
+        {
+          "title": "Key Users",
+          "type": "list"
+        },
+        {
+          "title": "4. Architecture Diagram",
+          "type": "text"
+        },
+        {
+          "title": "5. Major Components",
+          "type": "text"
+        },
+        {
+          "title": "5.1 Client Layer",
+          "type": "table",
+          "columns": [
+            "Component",
+            "Description"
+          ]
+        },
+        {
+          "title": "5.2 Application Layer",
+          "type": "table",
+          "columns": [
+            "Service",
+            "Responsibility"
+          ]
+        },
+        {
+          "title": "5.3 Data Layer",
+          "type": "table",
+          "columns": [
+            "Component",
+            "Description"
+          ]
+        },
+        {
+          "title": "5.4 Integration Layer",
+          "type": "table",
+          "columns": [
+            "Integration",
+            "Purpose"
+          ]
+        },
+        {
+          "title": "6. Data Flow Overview",
+          "type": "text"
+        },
+        {
+          "title": "Example: User Login Flow",
+          "type": "list"
+        },
+        {
+          "title": "7. Deployment Architecture",
+          "type": "text"
+        },
+        {
+          "title": "Environment Overview",
+          "type": "table",
+          "columns": [
+            "Environment",
+            "Purpose"
+          ]
+        },
+        {
+          "title": "Infrastructure",
+          "type": "list"
+        },
+        {
+          "title": "8. Security Architecture",
+          "type": "text"
+        },
+        {
+          "title": "Authentication & Authorization",
+          "type": "list"
+        },
+        {
+          "title": "Data Security",
+          "type": "list"
+        },
+        {
+          "title": "Network Security",
+          "type": "list"
+        },
+        {
+          "title": "9. Scalability & Performance",
+          "type": "text"
+        },
+        {
+          "title": "Scaling Strategy",
+          "type": "list"
+        },
+        {
+          "title": "Performance Optimization",
+          "type": "list"
+        },
+        {
+          "title": "10. Reliability & Availability",
+          "type": "table",
+          "columns": [
+            "Aspect",
+            "Approach"
+          ]
+        },
+        {
+          "title": "11. Monitoring & Observability",
+          "type": "text"
+        },
+        {
+          "title": "Monitoring",
+          "type": "list"
+        },
+        {
+          "title": "Logging",
+          "type": "list"
+        },
+        {
+          "title": "Alerting",
+          "type": "list"
+        },
+        {
+          "title": "12. Error Handling & Resilience",
+          "type": "list"
+        },
+        {
+          "title": "13. Assumptions & Constraints",
+          "type": "text"
+        },
+        {
+          "title": "Assumptions",
+          "type": "list"
+        },
+        {
+          "title": "Constraints",
+          "type": "list"
+        },
+        {
+          "title": "14. Open Issues & Future Considerations",
+          "type": "table",
+          "columns": [
+            "Issue",
+            "Owner",
+            "Status"
+          ]
+        },
+        {
+          "title": "15. Glossary",
+          "type": "table",
+          "columns": [
+            "Term",
+            "Definition"
+          ]
+        },
+        {
+          "title": "16. Approval & Sign-off",
+          "type": "text"
+        },
+        {
+          "title": "",
+          "type": "text"
+        }
+      ]
+    }
+  ]
+}

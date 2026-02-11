@@ -1,0 +1,105 @@
+{
+  "document_name": "Leave and benefits policies",
+  "sections": [
+    {
+      "title": "1. Document Overview",
+      "subsections": [
+        {
+          "title": "Description",
+          "type": "text"
+        },
+        {
+          "title": "Document Information",
+          "type": "table",
+          "columns": [
+            "Field",
+            "Value"
+          ]
+        },
+        {
+          "title": "2. Purpose",
+          "type": "list"
+        },
+        {
+          "title": "3. Scope",
+          "type": "list"
+        },
+        {
+          "title": "4. Leave Policy Overview",
+          "type": "text"
+        },
+        {
+          "title": "4.1 Leave Categories",
+          "type": "table",
+          "columns": [
+            "Leave Type",
+            "Description",
+            "Eligibility"
+          ]
+        },
+        {
+          "title": "4.2 Leave Entitlement",
+          "type": "table",
+          "columns": [
+            "Leave Type",
+            "Annual Entitlement",
+            "Carry Forward",
+            "Notes"
+          ]
+        },
+        {
+          "title": "4.3 Leave Application Process",
+          "type": "list"
+        },
+        {
+          "title": "4.4 Leave Approval Guidelines",
+          "type": "list"
+        },
+        {
+          "title": "5. Public Holidays",
+          "type": "text"
+        },
+        {
+          "title": "6. Employee Benefits Overview",
+          "type": "text"
+        },
+        {
+          "title": "6.1 Health and Wellness Benefits",
+          "type": "list"
+        },
+        {
+          "title": "6.2 Financial Benefits",
+          "type": "list"
+        },
+        {
+          "title": "6.3 Work Environment Benefits",
+          "type": "list"
+        },
+        {
+          "title": "7. Leave During Probation",
+          "type": "text"
+        },
+        {
+          "title": "8. Leave Without Pay (LWP)",
+          "type": "text"
+        },
+        {
+          "title": "9. Policy Compliance",
+          "type": "list"
+        },
+        {
+          "title": "10. Exceptions",
+          "type": "text"
+        },
+        {
+          "title": "11. Governance and Ownership",
+          "type": "text"
+        },
+        {
+          "title": "12. Review and Revision",
+          "type": "text"
+        }
+      ]
+    }
+  ]
+}

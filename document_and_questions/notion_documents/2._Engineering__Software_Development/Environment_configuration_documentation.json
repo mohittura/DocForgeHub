@@ -1,0 +1,159 @@
+{
+  "document_name": "Environment configuration documentation",
+  "sections": [
+    {
+      "title": "0. Document Metadata",
+      "subsections": [
+        {
+          "title": "Description",
+          "type": "table",
+          "columns": [
+            "Field",
+            "Value"
+          ]
+        },
+        {
+          "title": "1. Environment Summary",
+          "type": "text"
+        },
+        {
+          "title": "1.1 Environment List",
+          "type": "table",
+          "columns": [
+            "Environment",
+            "Purpose",
+            "Public Access",
+            "Notes"
+          ]
+        },
+        {
+          "title": "1.2 Environment Differences (High Level)",
+          "type": "table",
+          "columns": [
+            "Configuration Area",
+            "Development",
+            "Staging",
+            "Production"
+          ]
+        },
+        {
+          "title": "2. Configuration Sources",
+          "type": "table",
+          "columns": [
+            "Source",
+            "Purpose",
+            "Example"
+          ]
+        },
+        {
+          "title": "3. Core Configuration Parameters",
+          "type": "text"
+        },
+        {
+          "title": "3.1 Application Configuration",
+          "type": "table",
+          "columns": [
+            "Variable",
+            "Description",
+            "Example",
+            "Required"
+          ]
+        },
+        {
+          "title": "3.2 Database Configuration",
+          "type": "table",
+          "columns": [
+            "Variable",
+            "Description",
+            "Example",
+            "Required"
+          ]
+        },
+        {
+          "title": "3.3 External Services",
+          "type": "table",
+          "columns": [
+            "Service",
+            "Variable Prefix",
+            "Purpose"
+          ]
+        },
+        {
+          "title": "3.4 Caching Configuration",
+          "type": "table",
+          "columns": [
+            "Variable",
+            "Description",
+            "Example"
+          ]
+        },
+        {
+          "title": "4. File Structure",
+          "type": "text"
+        },
+        {
+          "title": "4.1 Environment Files",
+          "type": "text"
+        },
+        {
+          "title": "4.2 Example .env.example",
+          "type": "text"
+        },
+        {
+          "title": "5. Configuration Loading Order",
+          "type": "list"
+        },
+        {
+          "title": "6. Naming & Implementation Rules",
+          "type": "text"
+        },
+        {
+          "title": "6.1 Naming Convention",
+          "type": "list"
+        },
+        {
+          "title": "6.2 Security Rules",
+          "type": "list"
+        },
+        {
+          "title": "7. Infrastructure Configuration",
+          "type": "text"
+        },
+        {
+          "title": "7.1 Container Settings",
+          "type": "table",
+          "columns": [
+            "Setting",
+            "Value",
+            "Notes"
+          ]
+        },
+        {
+          "title": "7.2 Cloud Configuration",
+          "type": "table",
+          "columns": [
+            "Setting",
+            "Description"
+          ]
+        },
+        {
+          "title": "8. Operational Guidelines",
+          "type": "text"
+        },
+        {
+          "title": "8.1 Updating Configuration",
+          "type": "list"
+        },
+        {
+          "title": "8.2 Troubleshooting Reference",
+          "type": "table",
+          "columns": [
+            "Issue",
+            "Likely Cause",
+            "Action"
+          ]
+        }
+      ]
+    }
+  ]
+}

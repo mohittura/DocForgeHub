@@ -1,0 +1,166 @@
+{
+  "document_name": "Social media guidelines",
+  "sections": [
+    {
+      "title": "1. Document Overview",
+      "subsections": [
+        {
+          "title": "Description",
+          "type": "text"
+        },
+        {
+          "title": "Document Information",
+          "type": "table",
+          "columns": [
+            "Field",
+            "Value"
+          ]
+        },
+        {
+          "title": "2. Purpose",
+          "type": "list"
+        },
+        {
+          "title": "3. Scope",
+          "type": "list"
+        },
+        {
+          "title": "4. Social Media Objectives",
+          "type": "text"
+        },
+        {
+          "title": "4.1 Primary Objectives",
+          "type": "list"
+        },
+        {
+          "title": "4.2 Success Definition",
+          "type": "text"
+        },
+        {
+          "title": "5. Target Audience",
+          "type": "text"
+        },
+        {
+          "title": "5.1 Primary Audience",
+          "type": "text"
+        },
+        {
+          "title": "5.2 Audience Intent Categories",
+          "type": "table",
+          "columns": [
+            "Intent Type",
+            "Content Objective"
+          ]
+        },
+        {
+          "title": "6. Brand Voice and Tone",
+          "type": "text"
+        },
+        {
+          "title": "6.1 Voice Characteristics",
+          "type": "list"
+        },
+        {
+          "title": "6.2 Tone Adjustments by Platform",
+          "type": "table",
+          "columns": [
+            "Platform",
+            "Tone Adaptation"
+          ]
+        },
+        {
+          "title": "7. Content Strategy Guidelines",
+          "type": "text"
+        },
+        {
+          "title": "7.1 Content Pillars",
+          "type": "list"
+        },
+        {
+          "title": "7.2 Content Mix",
+          "type": "table",
+          "columns": [
+            "Content Type",
+            "Purpose"
+          ]
+        },
+        {
+          "title": "8. Content Creation Standards",
+          "type": "text"
+        },
+        {
+          "title": "8.1 Writing Guidelines",
+          "type": "list"
+        },
+        {
+          "title": "8.2 Visual Guidelines",
+          "type": "list"
+        },
+        {
+          "title": "9. Posting and Publishing Guidelines",
+          "type": "text"
+        },
+        {
+          "title": "9.1 Posting Frequency",
+          "type": "text"
+        },
+        {
+          "title": "9.2 Timing Considerations",
+          "type": "list"
+        },
+        {
+          "title": "9.3 Hashtag and Tagging Policy",
+          "type": "text"
+        },
+        {
+          "title": "10. Engagement and Community Management",
+          "type": "text"
+        },
+        {
+          "title": "10.1 Response Guidelines",
+          "type": "list"
+        },
+        {
+          "title": "10.2 Comment Handling",
+          "type": "table",
+          "columns": [
+            "Scenario",
+            "Action"
+          ]
+        },
+        {
+          "title": "11. Compliance and Risk Management",
+          "type": "list"
+        },
+        {
+          "title": "12. Governance and Approval Workflow",
+          "type": "text"
+        },
+        {
+          "title": "12.1 Content Workflow",
+          "type": "list"
+        },
+        {
+          "title": "12.2 Ownership",
+          "type": "text"
+        },
+        {
+          "title": "13. Performance Measurement",
+          "type": "table",
+          "columns": [
+            "Metric",
+            "Purpose"
+          ]
+        },
+        {
+          "title": "14. Exceptions and Updates",
+          "type": "text"
+        },
+        {
+          "title": "15. Review and Revision",
+          "type": "text"
+        }
+      ]
+    }
+  ]
+}

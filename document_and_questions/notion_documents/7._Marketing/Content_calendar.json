@@ -1,0 +1,105 @@
+{
+  "document_name": "Content calendar",
+  "sections": [
+    {
+      "title": "2. Purpose",
+      "subsections": [
+        {
+          "title": "Description",
+          "type": "list"
+        },
+        {
+          "title": "3. Scope",
+          "type": "list"
+        },
+        {
+          "title": "4. Content Objectives",
+          "type": "list"
+        },
+        {
+          "title": "5. Target Audience",
+          "type": "table",
+          "columns": [
+            "Attribute",
+            "Description"
+          ]
+        },
+        {
+          "title": "6. Content Themes and Pillars",
+          "type": "table",
+          "columns": [
+            "Content Pillar",
+            "Description",
+            "Objective"
+          ]
+        },
+        {
+          "title": "7. Content Calendar Schedule",
+          "type": "text"
+        },
+        {
+          "title": "7.1 Content Planning Table",
+          "type": "table",
+          "columns": [
+            "Publish Date",
+            "Content Title",
+            "Content Type",
+            "Channel",
+            "Funnel Stage",
+            "Owner",
+            "Status"
+          ]
+        },
+        {
+          "title": "7.2 Publishing Frequency (Optional)",
+          "type": "table",
+          "columns": [
+            "Channel",
+            "Frequency"
+          ]
+        },
+        {
+          "title": "8. Content Production Workflow",
+          "type": "text"
+        },
+        {
+          "title": "Standard Workflow",
+          "type": "list"
+        },
+        {
+          "title": "9. Roles and Responsibilities",
+          "type": "table",
+          "columns": [
+            "Role",
+            "Responsibility"
+          ]
+        },
+        {
+          "title": "10. Performance Tracking",
+          "type": "table",
+          "columns": [
+            "Metric",
+            "Purpose"
+          ]
+        },
+        {
+          "title": "11. Dependencies and Risks",
+          "type": "table",
+          "columns": [
+            "Dependency",
+            "Impact",
+            "Mitigation"
+          ]
+        },
+        {
+          "title": "12. Governance and Updates",
+          "type": "text"
+        },
+        {
+          "title": "13. Review and Revision",
+          "type": "text"
+        }
+      ]
+    }
+  ]
+}

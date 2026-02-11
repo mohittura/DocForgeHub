@@ -1,0 +1,79 @@
+{
+  "document_name": "Corrective and preventive action (CAPA) log",
+  "sections": [
+    {
+      "title": "1. Document Information",
+      "subsections": [
+        {
+          "title": "Description",
+          "type": "table",
+          "columns": [
+            "Field",
+            "Value"
+          ]
+        },
+        {
+          "title": "2. Purpose",
+          "type": "list"
+        },
+        {
+          "title": "3. CAPA Methodology (Standardized)",
+          "type": "list"
+        },
+        {
+          "title": "4. CAPA Log Table",
+          "type": "text"
+        },
+        {
+          "title": "Core CAPA Register",
+          "type": "table",
+          "columns": [
+            "CAPA ID",
+            "Source",
+            "Issue Description",
+            "Root Cause",
+            "Corrective Action",
+            "Preventive Action",
+            "Owner",
+            "Priority",
+            "Target Date",
+            "Status",
+            "Verification Status"
+          ]
+        },
+        {
+          "title": "5. CAPA Source Types",
+          "type": "table",
+          "columns": [
+            "Source",
+            "Example"
+          ]
+        },
+        {
+          "title": "6. Priority Definitions",
+          "type": "table",
+          "columns": [
+            "Priority",
+            "Description"
+          ]
+        },
+        {
+          "title": "7. Status Definitions",
+          "type": "table",
+          "columns": [
+            "Status",
+            "Meaning"
+          ]
+        },
+        {
+          "title": "8. Effectiveness Verification",
+          "type": "list"
+        },
+        {
+          "title": "9. Review and Maintenance",
+          "type": "list"
+        }
+      ]
+    }
+  ]
+}

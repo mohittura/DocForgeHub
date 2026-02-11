@@ -1,0 +1,84 @@
+{
+  "document_name": "Contract templates",
+  "sections": [
+    {
+      "title": "Sales Contract Template",
+      "subsections": [
+        {
+          "title": "Contract Information",
+          "type": "text"
+        },
+        {
+          "title": "Parties",
+          "type": "text"
+        },
+        {
+          "title": "Seller",
+          "type": "text"
+        },
+        {
+          "title": "Buyer",
+          "type": "text"
+        },
+        {
+          "title": "Products/Services",
+          "type": "table",
+          "columns": [
+            "Item Description",
+            "Quantity",
+            "Unit Price",
+            "Total Price"
+          ]
+        },
+        {
+          "title": "Payment Terms",
+          "type": "list"
+        },
+        {
+          "title": "Delivery Terms",
+          "type": "text"
+        },
+        {
+          "title": "Warranties and Representations",
+          "type": "list"
+        },
+        {
+          "title": "Acceptance and Inspection",
+          "type": "text"
+        },
+        {
+          "title": "Intellectual Property",
+          "type": "text"
+        },
+        {
+          "title": "Confidentiality",
+          "type": "text"
+        },
+        {
+          "title": "Limitation of Liability",
+          "type": "text"
+        },
+        {
+          "title": "Termination",
+          "type": "text"
+        },
+        {
+          "title": "Force Majeure",
+          "type": "text"
+        },
+        {
+          "title": "Governing Law and Dispute Resolution",
+          "type": "text"
+        },
+        {
+          "title": "General Provisions",
+          "type": "text"
+        },
+        {
+          "title": "Signatures",
+          "type": "text"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,78 @@
+{
+  "document_name": "Audit response documentation",
+  "sections": [
+    {
+      "title": "1. Document Information",
+      "subsections": [
+        {
+          "title": "Description",
+          "type": "table",
+          "columns": [
+            "Field",
+            "Value"
+          ]
+        },
+        {
+          "title": "2. Purpose",
+          "type": "list"
+        },
+        {
+          "title": "3. Audit Response Summary",
+          "type": "table",
+          "columns": [
+            "Category",
+            "Count"
+          ]
+        },
+        {
+          "title": "4. Audit Finding Response Log",
+          "type": "text"
+        },
+        {
+          "title": "Finding ID: {{AUD-001}}",
+          "type": "table",
+          "columns": [
+            "Field",
+            "Description"
+          ]
+        },
+        {
+          "title": "5. Risk Acceptance (If Applicable)",
+          "type": "table",
+          "columns": [
+            "Finding ID",
+            "Reason for Acceptance",
+            "Risk Level",
+            "Approval Authority",
+            "Review Date"
+          ]
+        },
+        {
+          "title": "6. Remediation Tracking Summary",
+          "type": "table",
+          "columns": [
+            "Status",
+            "Count"
+          ]
+        },
+        {
+          "title": "7. Management Confirmation",
+          "type": "table",
+          "columns": [
+            "Role",
+            "Name",
+            "Date"
+          ]
+        },
+        {
+          "title": "8. Appendix",
+          "type": "list"
+        },
+        {
+          "title": "",
+          "type": "text"
+        }
+      ]
+    }
+  ]
+}

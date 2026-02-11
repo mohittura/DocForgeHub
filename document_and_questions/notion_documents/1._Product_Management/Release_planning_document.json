@@ -1,0 +1,153 @@
+{
+  "document_name": "Release planning document",
+  "sections": [
+    {
+      "title": "📌 Document Overview",
+      "subsections": [
+        {
+          "title": "Description",
+          "type": "text"
+        },
+        {
+          "title": "1. Release Objectives",
+          "type": "text"
+        },
+        {
+          "title": "Purpose of the Release",
+          "type": "list"
+        },
+        {
+          "title": "2. Release Scope",
+          "type": "text"
+        },
+        {
+          "title": "In Scope",
+          "type": "table",
+          "columns": [
+            "Item",
+            "Type",
+            "Description"
+          ]
+        },
+        {
+          "title": "Out of Scope",
+          "type": "list"
+        },
+        {
+          "title": "3. Release Timeline & Milestones",
+          "type": "table",
+          "columns": [
+            "Milestone",
+            "Description",
+            "Target Date"
+          ]
+        },
+        {
+          "title": "4. Feature Readiness",
+          "type": "table",
+          "columns": [
+            "Feature",
+            "Engineering",
+            "QA",
+            "Docs",
+            "Status"
+          ]
+        },
+        {
+          "title": "5. Dependencies & Constraints",
+          "type": "text"
+        },
+        {
+          "title": "Dependencies",
+          "type": "list"
+        },
+        {
+          "title": "Constraints",
+          "type": "list"
+        },
+        {
+          "title": "6. Testing & Quality Plan",
+          "type": "text"
+        },
+        {
+          "title": "Testing Strategy",
+          "type": "list"
+        },
+        {
+          "title": "Exit Criteria",
+          "type": "list"
+        },
+        {
+          "title": "7. Risk Assessment & Mitigation",
+          "type": "table",
+          "columns": [
+            "Risk",
+            "Impact",
+            "Likelihood",
+            "Mitigation"
+          ]
+        },
+        {
+          "title": "8. Rollout & Deployment Plan",
+          "type": "text"
+        },
+        {
+          "title": "Deployment Strategy",
+          "type": "list"
+        },
+        {
+          "title": "Rollback Plan",
+          "type": "list"
+        },
+        {
+          "title": "9. Communication Plan",
+          "type": "text"
+        },
+        {
+          "title": "Internal Communication",
+          "type": "list"
+        },
+        {
+          "title": "External Communication",
+          "type": "list"
+        },
+        {
+          "title": "10. Support & Operational Readiness",
+          "type": "text"
+        },
+        {
+          "title": "Support Preparation",
+          "type": "list"
+        },
+        {
+          "title": "Monitoring",
+          "type": "list"
+        },
+        {
+          "title": "11. Post-Release Activities",
+          "type": "text"
+        },
+        {
+          "title": "Validation",
+          "type": "list"
+        },
+        {
+          "title": "Retrospective",
+          "type": "list"
+        },
+        {
+          "title": "12. Go / No-Go Decision",
+          "type": "table",
+          "columns": [
+            "Criteria",
+            "Status"
+          ]
+        },
+        {
+          "title": "13. Approval & Sign-off",
+          "type": "text"
+        }
+      ]
+    }
+  ]
+}

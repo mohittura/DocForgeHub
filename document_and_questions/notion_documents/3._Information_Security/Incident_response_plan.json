@@ -1,0 +1,118 @@
+{
+  "document_name": "Incident response plan",
+  "sections": [
+    {
+      "title": "Document Control",
+      "subsections": [
+        {
+          "title": "Description",
+          "type": "text"
+        },
+        {
+          "title": "1.0 Purpose",
+          "type": "list"
+        },
+        {
+          "title": "2.0 Scope",
+          "type": "list"
+        },
+        {
+          "title": "3.0 Incident Definition",
+          "type": "list"
+        },
+        {
+          "title": "4.0 Incident Classification",
+          "type": "table",
+          "columns": [
+            "Severity Level",
+            "Description",
+            "Example"
+          ]
+        },
+        {
+          "title": "5.0 Incident Response Team",
+          "type": "text"
+        },
+        {
+          "title": "5.1 Roles and Responsibilities",
+          "type": "table",
+          "columns": [
+            "Role",
+            "Responsibility"
+          ]
+        },
+        {
+          "title": "6.0 Incident Response Process",
+          "type": "text"
+        },
+        {
+          "title": "6.1 Detection and Reporting",
+          "type": "list"
+        },
+        {
+          "title": "6.2 Triage and Assessment",
+          "type": "list"
+        },
+        {
+          "title": "6.3 Containment",
+          "type": "list"
+        },
+        {
+          "title": "6.4 Investigation and Analysis",
+          "type": "list"
+        },
+        {
+          "title": "6.5 Eradication",
+          "type": "list"
+        },
+        {
+          "title": "6.6 Recovery",
+          "type": "list"
+        },
+        {
+          "title": "7.0 Communication Plan",
+          "type": "text"
+        },
+        {
+          "title": "7.1 Internal Communication",
+          "type": "table",
+          "columns": [
+            "Stage",
+            "Audience",
+            "Method"
+          ]
+        },
+        {
+          "title": "7.2 External Communication",
+          "type": "list"
+        },
+        {
+          "title": "8.0 Evidence Handling",
+          "type": "list"
+        },
+        {
+          "title": "9.0 Post-Incident Activities",
+          "type": "list"
+        },
+        {
+          "title": "10.0 Training and Testing",
+          "type": "list"
+        },
+        {
+          "title": "11.0 Continuous Improvement",
+          "type": "list"
+        },
+        {
+          "title": "12.0 Revision History",
+          "type": "table",
+          "columns": [
+            "Version",
+            "Date",
+            "Author",
+            "Changes"
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,131 @@
+{
+  "document_name": "Support process workflows",
+  "sections": [
+    {
+      "title": "1. Document Overview",
+      "subsections": [
+        {
+          "title": "Description",
+          "type": "text"
+        },
+        {
+          "title": "Document Information",
+          "type": "table",
+          "columns": [
+            "Field",
+            "Value"
+          ]
+        },
+        {
+          "title": "2. Purpose",
+          "type": "list"
+        },
+        {
+          "title": "3. Scope",
+          "type": "list"
+        },
+        {
+          "title": "4. Support Objectives",
+          "type": "text"
+        },
+        {
+          "title": "4.1 Primary Objectives",
+          "type": "list"
+        },
+        {
+          "title": "4.2 Success Criteria",
+          "type": "text"
+        },
+        {
+          "title": "5. Support Roles and Responsibilities",
+          "type": "table",
+          "columns": [
+            "Role",
+            "Responsibility"
+          ]
+        },
+        {
+          "title": "6. Support Workflow Overview",
+          "type": "text"
+        },
+        {
+          "title": "6.1 High-Level Workflow Stages",
+          "type": "list"
+        },
+        {
+          "title": "7. Detailed Support Workflow",
+          "type": "text"
+        },
+        {
+          "title": "7.1 Request Intake",
+          "type": "list"
+        },
+        {
+          "title": "7.2 Ticket Classification and Prioritization",
+          "type": "table",
+          "columns": [
+            "Priority",
+            "Description"
+          ]
+        },
+        {
+          "title": "7.3 Initial Response",
+          "type": "list"
+        },
+        {
+          "title": "7.4 Investigation and Troubleshooting",
+          "type": "list"
+        },
+        {
+          "title": "7.5 Escalation Process",
+          "type": "table",
+          "columns": [
+            "Required Information",
+            "Description"
+          ]
+        },
+        {
+          "title": "7.6 Resolution and Communication",
+          "type": "list"
+        },
+        {
+          "title": "7.7 Ticket Closure",
+          "type": "list"
+        },
+        {
+          "title": "7.8 Knowledge Capture",
+          "type": "list"
+        },
+        {
+          "title": "8. SLA and Response Standards",
+          "type": "table",
+          "columns": [
+            "Priority",
+            "First Response Time",
+            "Resolution Target"
+          ]
+        },
+        {
+          "title": "9. Communication Guidelines",
+          "type": "list"
+        },
+        {
+          "title": "10. Performance Measurement",
+          "type": "table",
+          "columns": [
+            "Metric",
+            "Purpose"
+          ]
+        },
+        {
+          "title": "11. Governance and Ownership",
+          "type": "list"
+        },
+        {
+          "title": "12. Review and Revision",
+          "type": "text"
+        }
+      ]
+    }
+  ]
+}

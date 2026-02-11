@@ -1,0 +1,126 @@
+{
+  "document_name": "Training and development materials",
+  "sections": [
+    {
+      "title": "1. Document Overview",
+      "subsections": [
+        {
+          "title": "Description",
+          "type": "text"
+        },
+        {
+          "title": "Document Information",
+          "type": "table",
+          "columns": [
+            "Field",
+            "Value"
+          ]
+        },
+        {
+          "title": "2. Purpose",
+          "type": "list"
+        },
+        {
+          "title": "3. Scope",
+          "type": "list"
+        },
+        {
+          "title": "4. Training and Development Objectives",
+          "type": "list"
+        },
+        {
+          "title": "5. Training Categories",
+          "type": "text"
+        },
+        {
+          "title": "5.1 Onboarding Training",
+          "type": "list"
+        },
+        {
+          "title": "5.2 Role-Based Training",
+          "type": "list"
+        },
+        {
+          "title": "5.3 Product Training",
+          "type": "list"
+        },
+        {
+          "title": "5.4 Compliance Training",
+          "type": "list"
+        },
+        {
+          "title": "5.5 Leadership and Professional Development",
+          "type": "list"
+        },
+        {
+          "title": "6. Training Delivery Methods",
+          "type": "table",
+          "columns": [
+            "Method",
+            "Description"
+          ]
+        },
+        {
+          "title": "7. Training Planning Process",
+          "type": "text"
+        },
+        {
+          "title": "7.1 Needs Identification",
+          "type": "list"
+        },
+        {
+          "title": "7.2 Training Development",
+          "type": "list"
+        },
+        {
+          "title": "7.3 Training Execution",
+          "type": "list"
+        },
+        {
+          "title": "7.4 Evaluation and Improvement",
+          "type": "list"
+        },
+        {
+          "title": "8. Roles and Responsibilities",
+          "type": "text"
+        },
+        {
+          "title": "8.1 Human Resources / L&D",
+          "type": "list"
+        },
+        {
+          "title": "8.2 Managers",
+          "type": "list"
+        },
+        {
+          "title": "8.3 Employees",
+          "type": "list"
+        },
+        {
+          "title": "9. Training Materials Structure (LLM-Generated)",
+          "type": "list"
+        },
+        {
+          "title": "10. Measurement and Success Metrics",
+          "type": "table",
+          "columns": [
+            "Metric",
+            "Purpose"
+          ]
+        },
+        {
+          "title": "11. Documentation and Record Keeping",
+          "type": "list"
+        },
+        {
+          "title": "12. Governance and Updates",
+          "type": "text"
+        },
+        {
+          "title": "13. Review and Revision",
+          "type": "text"
+        }
+      ]
+    }
+  ]
+}

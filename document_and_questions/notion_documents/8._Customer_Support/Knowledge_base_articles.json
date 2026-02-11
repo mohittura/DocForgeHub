@@ -1,0 +1,134 @@
+{
+  "document_name": "Knowledge base articles",
+  "sections": [
+    {
+      "title": "1. Document Overview",
+      "subsections": [
+        {
+          "title": "Description",
+          "type": "text"
+        },
+        {
+          "title": "Document Information",
+          "type": "table",
+          "columns": [
+            "Field",
+            "Value"
+          ]
+        },
+        {
+          "title": "2. Purpose",
+          "type": "list"
+        },
+        {
+          "title": "3. Scope",
+          "type": "list"
+        },
+        {
+          "title": "4. Knowledge Base Objectives",
+          "type": "text"
+        },
+        {
+          "title": "4.1 Primary Objectives",
+          "type": "list"
+        },
+        {
+          "title": "4.2 Success Criteria",
+          "type": "text"
+        },
+        {
+          "title": "5. Target Audience",
+          "type": "text"
+        },
+        {
+          "title": "5.1 Primary Users",
+          "type": "text"
+        },
+        {
+          "title": "5.2 User Knowledge Level",
+          "type": "table",
+          "columns": [
+            "User Type",
+            "Content Approach"
+          ]
+        },
+        {
+          "title": "6. Article Types and Usage",
+          "type": "text"
+        },
+        {
+          "title": "6.1 Standard Article Categories",
+          "type": "table",
+          "columns": [
+            "Article Type",
+            "Purpose"
+          ]
+        },
+        {
+          "title": "6.2 Article Selection Criteria",
+          "type": "list"
+        },
+        {
+          "title": "7. Article Structure Standard",
+          "type": "list"
+        },
+        {
+          "title": "8. Writing Guidelines",
+          "type": "text"
+        },
+        {
+          "title": "8.1 Tone and Voice",
+          "type": "list"
+        },
+        {
+          "title": "8.2 Writing Rules",
+          "type": "list"
+        },
+        {
+          "title": "8.3 Terminology Consistency",
+          "type": "text"
+        },
+        {
+          "title": "9. Visual and Formatting Standards",
+          "type": "list"
+        },
+        {
+          "title": "10. SEO and Searchability Standards",
+          "type": "list"
+        },
+        {
+          "title": "11. Governance and Approval Workflow",
+          "type": "text"
+        },
+        {
+          "title": "11.1 Article Workflow",
+          "type": "list"
+        },
+        {
+          "title": "11.2 Ownership",
+          "type": "text"
+        },
+        {
+          "title": "12. Maintenance and Updates",
+          "type": "list"
+        },
+        {
+          "title": "13. Performance Measurement",
+          "type": "table",
+          "columns": [
+            "Metric",
+            "Purpose"
+          ]
+        },
+        {
+          "title": "14. Exceptions and Escalation",
+          "type": "text"
+        },
+        {
+          "title": "15. Review and Revision",
+          "type": "text"
+        }
+      ]
+    }
+  ]
+}

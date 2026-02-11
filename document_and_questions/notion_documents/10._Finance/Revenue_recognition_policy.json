@@ -1,0 +1,86 @@
+{
+  "document_name": "Revenue recognition policy",
+  "sections": [
+    {
+      "title": "1. Document Overview",
+      "subsections": [
+        {
+          "title": "Description",
+          "type": "text"
+        },
+        {
+          "title": "Document Information",
+          "type": "table",
+          "columns": [
+            "Field",
+            "Value"
+          ]
+        },
+        {
+          "title": "2. Purpose",
+          "type": "list"
+        },
+        {
+          "title": "3. Scope",
+          "type": "list"
+        },
+        {
+          "title": "4. Revenue Recognition Principles",
+          "type": "list"
+        },
+        {
+          "title": "5. Revenue Recognition by Type",
+          "type": "text"
+        },
+        {
+          "title": "5.1 Subscription Revenue",
+          "type": "list"
+        },
+        {
+          "title": "5.2 Professional Services",
+          "type": "list"
+        },
+        {
+          "title": "5.3 Usage-Based / Consumption Revenue",
+          "type": "list"
+        },
+        {
+          "title": "5.4 Licensing / Other Revenue",
+          "type": "list"
+        },
+        {
+          "title": "6. Deferred Revenue / Contract Liabilities",
+          "type": "list"
+        },
+        {
+          "title": "7. Discounts, Refunds, and Credits",
+          "type": "list"
+        },
+        {
+          "title": "8. SaaS-Specific Metrics Integration",
+          "type": "table",
+          "columns": [
+            "Metric",
+            "Recognition Reference"
+          ]
+        },
+        {
+          "title": "9. Roles and Responsibilities",
+          "type": "table",
+          "columns": [
+            "Role",
+            "Responsibility"
+          ]
+        },
+        {
+          "title": "10. Record-Keeping",
+          "type": "list"
+        },
+        {
+          "title": "11. Policy Review & Updates",
+          "type": "list"
+        }
+      ]
+    }
+  ]
+}

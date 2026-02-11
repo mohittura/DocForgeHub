@@ -1,0 +1,146 @@
+{
+  "document_name": "Troubleshooting guides",
+  "sections": [
+    {
+      "title": "1. Document Overview",
+      "subsections": [
+        {
+          "title": "Description",
+          "type": "text"
+        },
+        {
+          "title": "Document Information",
+          "type": "table",
+          "columns": [
+            "Field",
+            "Value"
+          ]
+        },
+        {
+          "title": "2. Purpose",
+          "type": "list"
+        },
+        {
+          "title": "3. Scope",
+          "type": "list"
+        },
+        {
+          "title": "4. Issue Summary",
+          "type": "text"
+        },
+        {
+          "title": "4.1 Issue Description",
+          "type": "list"
+        },
+        {
+          "title": "4.2 Affected Environment",
+          "type": "text"
+        },
+        {
+          "title": "4.3 Business Impact",
+          "type": "table",
+          "columns": [
+            "Impact Level",
+            "Description"
+          ]
+        },
+        {
+          "title": "5. Issue Identification",
+          "type": "text"
+        },
+        {
+          "title": "5.1 Observable Symptoms",
+          "type": "list"
+        },
+        {
+          "title": "5.2 Error Messages or Indicators",
+          "type": "table",
+          "columns": [
+            "Error / Indicator",
+            "Context"
+          ]
+        },
+        {
+          "title": "5.3 Verification Checklist",
+          "type": "list"
+        },
+        {
+          "title": "6. Root Cause Categories",
+          "type": "table",
+          "columns": [
+            "Category",
+            "Example Cause"
+          ]
+        },
+        {
+          "title": "7. Troubleshooting Workflow",
+          "type": "text"
+        },
+        {
+          "title": "Step 1 — Initial Validation",
+          "type": "list"
+        },
+        {
+          "title": "Step 2 — Account and Configuration Checks",
+          "type": "list"
+        },
+        {
+          "title": "Step 3 — Environment Verification",
+          "type": "list"
+        },
+        {
+          "title": "Step 4 — System and Integration Checks",
+          "type": "list"
+        },
+        {
+          "title": "Step 5 — Internal Diagnostics (Support/Internal Only)",
+          "type": "list"
+        },
+        {
+          "title": "8. Resolution Outcome",
+          "type": "list"
+        },
+        {
+          "title": "9. Temporary Workarounds",
+          "type": "list"
+        },
+        {
+          "title": "10. Escalation Guidelines",
+          "type": "text"
+        },
+        {
+          "title": "10.1 Escalation Conditions",
+          "type": "list"
+        },
+        {
+          "title": "10.2 Required Escalation Information",
+          "type": "table",
+          "columns": [
+            "Required Information",
+            "Description"
+          ]
+        },
+        {
+          "title": "11. Related Documentation",
+          "type": "list"
+        },
+        {
+          "title": "12. Performance Measurement",
+          "type": "table",
+          "columns": [
+            "Metric",
+            "Purpose"
+          ]
+        },
+        {
+          "title": "13. Governance and Maintenance",
+          "type": "list"
+        },
+        {
+          "title": "14. Review and Revision",
+          "type": "text"
+        }
+      ]
+    }
+  ]
+}

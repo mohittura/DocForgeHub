@@ -1,0 +1,83 @@
+{
+  "document_name": "Proposal templates",
+  "sections": [
+    {
+      "title": "Proposal Title",
+      "subsections": [
+        {
+          "title": "Description",
+          "type": "text"
+        },
+        {
+          "title": "1. Client Information",
+          "type": "table",
+          "columns": [
+            "Field",
+            "Details"
+          ]
+        },
+        {
+          "title": "2. Proposal Overview",
+          "type": "text"
+        },
+        {
+          "title": "3. Product / Service Details",
+          "type": "text"
+        },
+        {
+          "title": "Included Products or Services",
+          "type": "table",
+          "columns": [
+            "Product / Service",
+            "Description",
+            "Price"
+          ]
+        },
+        {
+          "title": "4. Implementation Timeline",
+          "type": "table",
+          "columns": [
+            "Phase",
+            "Description",
+            "Timeframe"
+          ]
+        },
+        {
+          "title": "5. Investment Summary",
+          "type": "table",
+          "columns": [
+            "Item",
+            "Amount"
+          ]
+        },
+        {
+          "title": "6. Terms and Conditions",
+          "type": "text"
+        },
+        {
+          "title": "7. Optional Add-Ons",
+          "type": "table",
+          "columns": [
+            "Add-On",
+            "Description",
+            "Cost"
+          ]
+        },
+        {
+          "title": "8. Next Steps",
+          "type": "list"
+        },
+        {
+          "title": "9. Acceptance",
+          "type": "table",
+          "columns": [
+            "Name",
+            "Title",
+            "Signature",
+            "Date"
+          ]
+        }
+      ]
+    }
+  ]
+}

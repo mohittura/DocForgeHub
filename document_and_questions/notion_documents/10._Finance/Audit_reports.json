@@ -1,0 +1,99 @@
+{
+  "document_name": "Audit reports",
+  "sections": [
+    {
+      "title": "1. Document Overview",
+      "subsections": [
+        {
+          "title": "Description",
+          "type": "text"
+        },
+        {
+          "title": "Document Information",
+          "type": "table",
+          "columns": [
+            "Field",
+            "Value"
+          ]
+        },
+        {
+          "title": "2. Purpose",
+          "type": "list"
+        },
+        {
+          "title": "3. Scope",
+          "type": "list"
+        },
+        {
+          "title": "4. Audit Methodology",
+          "type": "list"
+        },
+        {
+          "title": "5. Executive Summary",
+          "type": "text"
+        },
+        {
+          "title": "5.1 Overall Observations",
+          "type": "text"
+        },
+        {
+          "title": "5.2 Key Highlights",
+          "type": "list"
+        },
+        {
+          "title": "5.3 Key Challenges / Risks",
+          "type": "list"
+        },
+        {
+          "title": "6. Detailed Findings",
+          "type": "text"
+        },
+        {
+          "title": "Finding {{ID}}",
+          "type": "text"
+        },
+        {
+          "title": "7. Control Effectiveness Assessment",
+          "type": "table",
+          "columns": [
+            "Control Area",
+            "Assessment",
+            "Notes"
+          ]
+        },
+        {
+          "title": "8. Risk Evaluation",
+          "type": "list"
+        },
+        {
+          "title": "9. Recommendations & Action Plan",
+          "type": "table",
+          "columns": [
+            "Finding ID",
+            "Recommendation",
+            "Owner",
+            "Priority",
+            "Target Date"
+          ]
+        },
+        {
+          "title": "10. Conclusion",
+          "type": "text"
+        },
+        {
+          "title": "11. Management Acknowledgement",
+          "type": "table",
+          "columns": [
+            "Role",
+            "Name",
+            "Date"
+          ]
+        },
+        {
+          "title": "12. Governance and Review",
+          "type": "list"
+        }
+      ]
+    }
+  ]
+}

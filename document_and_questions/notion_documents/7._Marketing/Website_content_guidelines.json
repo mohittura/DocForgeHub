@@ -1,0 +1,122 @@
+{
+  "document_name": "Website content guidelines",
+  "sections": [
+    {
+      "title": "1. Document Overview",
+      "subsections": [
+        {
+          "title": "Description",
+          "type": "text"
+        },
+        {
+          "title": "Document Information",
+          "type": "table",
+          "columns": [
+            "Field",
+            "Value"
+          ]
+        },
+        {
+          "title": "2. Purpose",
+          "type": "list"
+        },
+        {
+          "title": "3. Scope",
+          "type": "list"
+        },
+        {
+          "title": "4. Website Content Principles",
+          "type": "list"
+        },
+        {
+          "title": "5. Audience and Intent Alignment",
+          "type": "text"
+        },
+        {
+          "title": "5.1 Primary Audience",
+          "type": "text"
+        },
+        {
+          "title": "5.2 Visitor Intent Categories",
+          "type": "table",
+          "columns": [
+            "Intent Type",
+            "Content Objective"
+          ]
+        },
+        {
+          "title": "6. Messaging Structure for Website Pages",
+          "type": "list"
+        },
+        {
+          "title": "7. Writing Guidelines",
+          "type": "text"
+        },
+        {
+          "title": "7.1 Tone and Voice",
+          "type": "list"
+        },
+        {
+          "title": "7.2 Writing Rules",
+          "type": "list"
+        },
+        {
+          "title": "7.3 Terminology Consistency",
+          "type": "text"
+        },
+        {
+          "title": "8. Page-Specific Guidelines",
+          "type": "text"
+        },
+        {
+          "title": "8.1 Homepage",
+          "type": "list"
+        },
+        {
+          "title": "8.2 Product Pages",
+          "type": "list"
+        },
+        {
+          "title": "8.3 Landing Pages",
+          "type": "list"
+        },
+        {
+          "title": "8.4 Pricing Page",
+          "type": "list"
+        },
+        {
+          "title": "9. SEO and Readability Standards",
+          "type": "list"
+        },
+        {
+          "title": "10. Content Governance and Approval",
+          "type": "text"
+        },
+        {
+          "title": "10.1 Content Workflow",
+          "type": "list"
+        },
+        {
+          "title": "10.2 Ownership",
+          "type": "text"
+        },
+        {
+          "title": "11. Performance Measurement",
+          "type": "table",
+          "columns": [
+            "Metric",
+            "Purpose"
+          ]
+        },
+        {
+          "title": "12. Exceptions and Updates",
+          "type": "text"
+        },
+        {
+          "title": "13. Review and Revision",
+          "type": "text"
+        }
+      ]
+    }
+  ]
+}

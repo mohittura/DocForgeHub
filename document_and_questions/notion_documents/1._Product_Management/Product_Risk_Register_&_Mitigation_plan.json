@@ -1,0 +1,102 @@
+{
+  "document_name": "Product Risk Register & Mitigation plan",
+  "sections": [
+    {
+      "title": "📌 Document Overview",
+      "subsections": [
+        {
+          "title": "Description",
+          "type": "text"
+        },
+        {
+          "title": "1. Objective",
+          "type": "list"
+        },
+        {
+          "title": "2. Risk Categories",
+          "type": "list"
+        },
+        {
+          "title": "3. Risk Scoring Methodology",
+          "type": "text"
+        },
+        {
+          "title": "Likelihood Scale",
+          "type": "table",
+          "columns": [
+            "Score",
+            "Definition"
+          ]
+        },
+        {
+          "title": "Impact Scale",
+          "type": "table",
+          "columns": [
+            "Score",
+            "Definition"
+          ]
+        },
+        {
+          "title": "Risk Score",
+          "type": "text"
+        },
+        {
+          "title": "4. Risk Register (Main Table)",
+          "type": "table",
+          "columns": [
+            "Risk ID",
+            "Risk Description",
+            "Category",
+            "Likelihood",
+            "Impact",
+            "Risk Score",
+            "Mitigation Plan",
+            "Owner",
+            "Status"
+          ]
+        },
+        {
+          "title": "5. Risk Priority Levels",
+          "type": "table",
+          "columns": [
+            "Risk Score",
+            "Priority"
+          ]
+        },
+        {
+          "title": "6. Mitigation vs Contingency",
+          "type": "list"
+        },
+        {
+          "title": "7. Contingency Plan Examples",
+          "type": "table",
+          "columns": [
+            "Risk ID",
+            "Trigger Event",
+            "Contingency Action"
+          ]
+        },
+        {
+          "title": "8. Risk Review Cadence",
+          "type": "table",
+          "columns": [
+            "Risk Level",
+            "Review Frequency"
+          ]
+        },
+        {
+          "title": "9. Escalation Process",
+          "type": "list"
+        },
+        {
+          "title": "10. Change & Version Control",
+          "type": "list"
+        },
+        {
+          "title": "11. Approval & Sign-off",
+          "type": "text"
+        }
+      ]
+    }
+  ]
+}

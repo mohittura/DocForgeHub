@@ -1,0 +1,63 @@
+{
+  "document_name": "Customer case studies",
+  "sections": [
+    {
+      "title": "CUSTOMER CASE STUDY TEMPLATE",
+      "subsections": [
+        {
+          "title": "Description",
+          "type": "text"
+        },
+        {
+          "title": "1. Customer Information",
+          "type": "table",
+          "columns": [
+            "Field",
+            "Details"
+          ]
+        },
+        {
+          "title": "2. Customer Overview",
+          "type": "text"
+        },
+        {
+          "title": "3. Challenges / Pain Points",
+          "type": "table",
+          "columns": [
+            "Challenge",
+            "Description"
+          ]
+        },
+        {
+          "title": "4. Solution",
+          "type": "table",
+          "columns": [
+            "Solution Component",
+            "Description"
+          ]
+        },
+        {
+          "title": "5. Results / Impact",
+          "type": "table",
+          "columns": [
+            "Metric / Outcome",
+            "Result",
+            "Description"
+          ]
+        },
+        {
+          "title": "6. Customer Quote / Testimonial",
+          "type": "text"
+        },
+        {
+          "title": "7. Key Takeaways / Lessons Learned",
+          "type": "list"
+        },
+        {
+          "title": "8. Next Steps / Call to Action",
+          "type": "list"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,81 @@
+{
+  "document_name": "Internal audit reports",
+  "sections": [
+    {
+      "title": "1. Audit Overview",
+      "subsections": [
+        {
+          "title": "Description",
+          "type": "text"
+        },
+        {
+          "title": "Audit Summary",
+          "type": "table",
+          "columns": [
+            "Field",
+            "Value"
+          ]
+        },
+        {
+          "title": "2. Audit Objective and Scope",
+          "type": "list"
+        },
+        {
+          "title": "3. Audit Methodology (Standardized)",
+          "type": "list"
+        },
+        {
+          "title": "4. Audit Results Summary",
+          "type": "text"
+        },
+        {
+          "title": "Overall Observation",
+          "type": "text"
+        },
+        {
+          "title": "Findings Summary",
+          "type": "table",
+          "columns": [
+            "Severity",
+            "Count",
+            "General Description"
+          ]
+        },
+        {
+          "title": "5. Detailed Findings",
+          "type": "text"
+        },
+        {
+          "title": "Finding {{ID}}",
+          "type": "text"
+        },
+        {
+          "title": "6. Control Effectiveness Assessment",
+          "type": "table",
+          "columns": [
+            "Control Area",
+            "Assessment",
+            "Summary"
+          ]
+        },
+        {
+          "title": "7. Risk Evaluation",
+          "type": "list"
+        },
+        {
+          "title": "8. Conclusion",
+          "type": "text"
+        },
+        {
+          "title": "9. Management Acknowledgement",
+          "type": "table",
+          "columns": [
+            "Role",
+            "Name",
+            "Date"
+          ]
+        }
+      ]
+    }
+  ]
+}

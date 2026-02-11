@@ -1,0 +1,90 @@
+{
+  "document_name": "Data classification policy",
+  "sections": [
+    {
+      "title": "0. Required Inputs (Minimal)",
+      "subsections": [
+        {
+          "title": "Description",
+          "type": "list"
+        },
+        {
+          "title": "1. Document Metadata",
+          "type": "table",
+          "columns": [
+            "Field",
+            "Value"
+          ]
+        },
+        {
+          "title": "2. Purpose",
+          "type": "list"
+        },
+        {
+          "title": "3. Scope",
+          "type": "list"
+        },
+        {
+          "title": "4. Classification Model (Standardized)",
+          "type": "text"
+        },
+        {
+          "title": "4.1 Public",
+          "type": "list"
+        },
+        {
+          "title": "4.2 Internal",
+          "type": "list"
+        },
+        {
+          "title": "4.3 Confidential",
+          "type": "list"
+        },
+        {
+          "title": "4.4 Restricted",
+          "type": "list"
+        },
+        {
+          "title": "5. Classification Ownership",
+          "type": "table",
+          "columns": [
+            "Role",
+            "Responsibility"
+          ]
+        },
+        {
+          "title": "6. Data Handling Requirements (Operational Matrix)",
+          "type": "table",
+          "columns": [
+            "Classification",
+            "Storage",
+            "Transmission",
+            "Access",
+            "Logging",
+            "Sharing"
+          ]
+        },
+        {
+          "title": "7. Data Lifecycle Requirements",
+          "type": "list"
+        },
+        {
+          "title": "8. Default Classification Rules (LLM-Friendly)",
+          "type": "list"
+        },
+        {
+          "title": "9. Incident Handling",
+          "type": "list"
+        },
+        {
+          "title": "10. Exceptions",
+          "type": "list"
+        },
+        {
+          "title": "11. Review and Maintenance",
+          "type": "list"
+        }
+      ]
+    }
+  ]
+}

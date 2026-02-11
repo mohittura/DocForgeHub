@@ -1,0 +1,181 @@
+{
+  "document_name": "API documentation",
+  "sections": [
+    {
+      "title": "1. Introduction",
+      "subsections": [
+        {
+          "title": "1.1 Purpose",
+          "type": "text"
+        },
+        {
+          "title": "1.2 Intended Audience",
+          "type": "list"
+        },
+        {
+          "title": "2. API Overview",
+          "type": "text"
+        },
+        {
+          "title": "2.1 API Style",
+          "type": "list"
+        },
+        {
+          "title": "2.2 Versioning Strategy",
+          "type": "list"
+        },
+        {
+          "title": "3. Authentication & Authorization",
+          "type": "text"
+        },
+        {
+          "title": "3.1 Authentication Method",
+          "type": "list"
+        },
+        {
+          "title": "3.2 Authorization",
+          "type": "list"
+        },
+        {
+          "title": "3.3 Access Tokens",
+          "type": "list"
+        },
+        {
+          "title": "4. Common Request Headers",
+          "type": "table",
+          "columns": [
+            "Header",
+            "Description"
+          ]
+        },
+        {
+          "title": "5. Common Response Codes",
+          "type": "table",
+          "columns": [
+            "HTTP Status",
+            "Meaning"
+          ]
+        },
+        {
+          "title": "6. Error Response Format",
+          "type": "text"
+        },
+        {
+          "title": "Error Object Structure",
+          "type": "text"
+        },
+        {
+          "title": "7. Rate Limiting & Throttling",
+          "type": "list"
+        },
+        {
+          "title": "8. API Endpoints",
+          "type": "text"
+        },
+        {
+          "title": "8.1 Create Resource",
+          "type": "text"
+        },
+        {
+          "title": "Request",
+          "type": "table",
+          "columns": [
+            "Field",
+            "Type",
+            "Required",
+            "Description"
+          ]
+        },
+        {
+          "title": "Sample Request",
+          "type": "text"
+        },
+        {
+          "title": "Responses",
+          "type": "table",
+          "columns": [
+            "Status",
+            "Description"
+          ]
+        },
+        {
+          "title": "8.2 Get Resource",
+          "type": "text"
+        },
+        {
+          "title": "Path Parameters",
+          "type": "table",
+          "columns": [
+            "Parameter",
+            "Description"
+          ]
+        },
+        {
+          "title": "Responses",
+          "type": "table",
+          "columns": [
+            "Status",
+            "Description"
+          ]
+        },
+        {
+          "title": "8.3 Update Resource",
+          "type": "text"
+        },
+        {
+          "title": "8.4 Delete Resource",
+          "type": "text"
+        },
+        {
+          "title": "9. Pagination, Filtering & Sorting",
+          "type": "text"
+        },
+        {
+          "title": "Pagination",
+          "type": "list"
+        },
+        {
+          "title": "Filtering",
+          "type": "list"
+        },
+        {
+          "title": "Sorting",
+          "type": "list"
+        },
+        {
+          "title": "10. Webhooks (If Applicable)",
+          "type": "text"
+        },
+        {
+          "title": "Event Types",
+          "type": "list"
+        },
+        {
+          "title": "Webhook Payload Example",
+          "type": "text"
+        },
+        {
+          "title": "11. Security Considerations",
+          "type": "list"
+        },
+        {
+          "title": "12. Monitoring & Logging",
+          "type": "list"
+        },
+        {
+          "title": "13. Deprecation & Sunset Policy",
+          "type": "list"
+        },
+        {
+          "title": "14. Changelog",
+          "type": "table",
+          "columns": [
+            "Version",
+            "Date",
+            "Change Description"
+          ]
+        }
+      ]
+    }
+  ]
+}

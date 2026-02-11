@@ -1,0 +1,116 @@
+{
+  "document_name": "Forecasting models",
+  "sections": [
+    {
+      "title": "1. Document Overview",
+      "subsections": [
+        {
+          "title": "Description",
+          "type": "text"
+        },
+        {
+          "title": "Document Information",
+          "type": "table",
+          "columns": [
+            "Field",
+            "Value"
+          ]
+        },
+        {
+          "title": "2. Purpose",
+          "type": "list"
+        },
+        {
+          "title": "3. Scope",
+          "type": "list"
+        },
+        {
+          "title": "4. Forecasting Methodology",
+          "type": "text"
+        },
+        {
+          "title": "4.1 Revenue Forecasting",
+          "type": "table",
+          "columns": [
+            "Input",
+            "Source / Description"
+          ]
+        },
+        {
+          "title": "4.2 Expense Forecasting",
+          "type": "table",
+          "columns": [
+            "Input",
+            "Source / Description"
+          ]
+        },
+        {
+          "title": "4.3 Headcount Forecasting",
+          "type": "table",
+          "columns": [
+            "Input",
+            "Source / Description"
+          ]
+        },
+        {
+          "title": "5. SaaS-Specific Forecasting Metrics",
+          "type": "table",
+          "columns": [
+            "Metric",
+            "Description",
+            "Formula / Source"
+          ]
+        },
+        {
+          "title": "6. Forecasting Models",
+          "type": "text"
+        },
+        {
+          "title": "6.1 Time Series Model",
+          "type": "list"
+        },
+        {
+          "title": "6.2 Cohort-Based Model",
+          "type": "list"
+        },
+        {
+          "title": "6.3 Scenario / Sensitivity Model",
+          "type": "list"
+        },
+        {
+          "title": "6.4 Bottom-Up vs Top-Down Model",
+          "type": "list"
+        },
+        {
+          "title": "7. Assumptions and Constraints",
+          "type": "list"
+        },
+        {
+          "title": "8. Forecast Review and Approval",
+          "type": "list"
+        },
+        {
+          "title": "9. Reporting and Monitoring",
+          "type": "table",
+          "columns": [
+            "Metric",
+            "Reporting Frequency",
+            "Owner"
+          ]
+        },
+        {
+          "title": "10. Documentation and Record-Keeping",
+          "type": "list"
+        },
+        {
+          "title": "11. Governance and Updates",
+          "type": "list"
+        },
+        {
+          "title": "12. Review and Revision",
+          "type": "text"
+        }
+      ]
+    }
+  ]
+}

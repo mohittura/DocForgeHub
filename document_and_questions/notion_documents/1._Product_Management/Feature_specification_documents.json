@@ -1,0 +1,107 @@
+{
+  "document_name": "Feature specification documents",
+  "sections": [
+    {
+      "title": "🏷️ Feature Name",
+      "subsections": [
+        {
+          "title": "Description",
+          "type": "text"
+        },
+        {
+          "title": "🔗 Related Documents",
+          "type": "list"
+        },
+        {
+          "title": "🎯 Feature Overview",
+          "type": "text"
+        },
+        {
+          "title": "🎯 Goals & Non-Goals",
+          "type": "text"
+        },
+        {
+          "title": "✅ Goals",
+          "type": "list"
+        },
+        {
+          "title": "🚫 Non-Goals",
+          "type": "list"
+        },
+        {
+          "title": "👤 User Personas",
+          "type": "list"
+        },
+        {
+          "title": "🧭 User Scenarios",
+          "type": "list"
+        },
+        {
+          "title": "🔁 User Flow",
+          "type": "list"
+        },
+        {
+          "title": "🧠 Functional Requirements",
+          "type": "list"
+        },
+        {
+          "title": "🎨 UI / UX Requirements",
+          "type": "list"
+        },
+        {
+          "title": "📏 Business Rules",
+          "type": "list"
+        },
+        {
+          "title": "⚠️ Edge Cases & Error Handling",
+          "type": "list"
+        },
+        {
+          "title": "🔐 Security & Compliance Considerations",
+          "type": "list"
+        },
+        {
+          "title": "🔌 Dependencies",
+          "type": "list"
+        },
+        {
+          "title": "📊 Analytics & Tracking",
+          "type": "list"
+        },
+        {
+          "title": "🧪 Acceptance Criteria",
+          "type": "text"
+        },
+        {
+          "title": "🚫 Out of Scope",
+          "type": "list"
+        },
+        {
+          "title": "❓ Open Questions",
+          "type": "list"
+        },
+        {
+          "title": "📆 Rollout & Release Considerations",
+          "type": "list"
+        },
+        {
+          "title": "🧾 Risks & Mitigations",
+          "type": "table",
+          "columns": [
+            "Risk",
+            "Impact",
+            "Mitigation"
+          ]
+        },
+        {
+          "title": "✍️ Approval & Sign-off",
+          "type": "text"
+        },
+        {
+          "title": "",
+          "type": "text"
+        }
+      ]
+    }
+  ]
+}

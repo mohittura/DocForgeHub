@@ -1,0 +1,18 @@
+{
+  "document_name": "User story log",
+  "sections": [
+    {
+      "type": "table",
+      "columns":[
+        "Story ID",	
+        "User Story",	
+        "Persona",	
+        "Priority",	
+        "Status",	
+        "Estimate (Pts)",	
+        "Epic / Feature",	
+        "Acceptance Criteria"
+      ]
+    }
+  ]
+}

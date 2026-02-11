@@ -1,0 +1,182 @@
+{
+  "document_name": "Customer feedback reports",
+  "sections": [
+    {
+      "title": "1. Document Overview",
+      "subsections": [
+        {
+          "title": "Description",
+          "type": "text"
+        },
+        {
+          "title": "Document Information",
+          "type": "table",
+          "columns": [
+            "Field",
+            "Value"
+          ]
+        },
+        {
+          "title": "2. Purpose",
+          "type": "list"
+        },
+        {
+          "title": "3. Executive Summary",
+          "type": "text"
+        },
+        {
+          "title": "3.1 Feedback Overview",
+          "type": "list"
+        },
+        {
+          "title": "3.2 Key Highlights",
+          "type": "list"
+        },
+        {
+          "title": "3.3 Key Concerns",
+          "type": "list"
+        },
+        {
+          "title": "4. Feedback Sources",
+          "type": "table",
+          "columns": [
+            "Source",
+            "Description"
+          ]
+        },
+        {
+          "title": "5. Feedback Volume Summary",
+          "type": "table",
+          "columns": [
+            "Feedback Source",
+            "Volume",
+            "Change vs Previous Period"
+          ]
+        },
+        {
+          "title": "6. Customer Sentiment Analysis",
+          "type": "text"
+        },
+        {
+          "title": "6.1 Sentiment Distribution",
+          "type": "table",
+          "columns": [
+            "Sentiment",
+            "Percentage",
+            "Trend"
+          ]
+        },
+        {
+          "title": "6.2 Sentiment Insights",
+          "type": "text"
+        },
+        {
+          "title": "7. Feedback Themes and Insights",
+          "type": "text"
+        },
+        {
+          "title": "7.1 Top Positive Themes",
+          "type": "table",
+          "columns": [
+            "Theme",
+            "Description",
+            "Impact Area"
+          ]
+        },
+        {
+          "title": "7.2 Top Negative Themes",
+          "type": "table",
+          "columns": [
+            "Theme",
+            "Description",
+            "Impact Area",
+            "Frequency"
+          ]
+        },
+        {
+          "title": "7.3 Emerging Requests",
+          "type": "list"
+        },
+        {
+          "title": "8. Product Feedback Analysis",
+          "type": "text"
+        },
+        {
+          "title": "8.1 Feature Feedback Summary",
+          "type": "table",
+          "columns": [
+            "Feature / Area",
+            "Feedback Type",
+            "Summary",
+            "Priority Indicator"
+          ]
+        },
+        {
+          "title": "8.2 Product Insights",
+          "type": "list"
+        },
+        {
+          "title": "9. Support Experience Feedback",
+          "type": "text"
+        },
+        {
+          "title": "9.1 Support Feedback Summary",
+          "type": "table",
+          "columns": [
+            "Area",
+            "Feedback Summary",
+            "Trend"
+          ]
+        },
+        {
+          "title": "9.2 Support Insights",
+          "type": "text"
+        },
+        {
+          "title": "10. Customer Experience Impact Analysis",
+          "type": "text"
+        },
+        {
+          "title": "10.1 Impact Areas",
+          "type": "table",
+          "columns": [
+            "Area",
+            "Impact Level",
+            "Description"
+          ]
+        },
+        {
+          "title": "10.2 Risk Indicators",
+          "type": "list"
+        },
+        {
+          "title": "11. Recommendations and Action Plan",
+          "type": "table",
+          "columns": [
+            "Area",
+            "Recommendation",
+            "Owner",
+            "Priority",
+            "Timeline"
+          ]
+        },
+        {
+          "title": "12. KPI Snapshot (Quick Reference)",
+          "type": "table",
+          "columns": [
+            "Category",
+            "Summary"
+          ]
+        },
+        {
+          "title": "13. Governance and Updates",
+          "type": "text"
+        },
+        {
+          "title": "14. Review and Revision",
+          "type": "text"
+        }
+      ]
+    }
+  ]
+}

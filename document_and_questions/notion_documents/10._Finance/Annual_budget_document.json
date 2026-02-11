@@ -1,0 +1,113 @@
+{
+  "document_name": "Annual budget document",
+  "sections": [
+    {
+      "title": "1. Document Overview",
+      "subsections": [
+        {
+          "title": "Description",
+          "type": "text"
+        },
+        {
+          "title": "Document Information",
+          "type": "table",
+          "columns": [
+            "Field",
+            "Value"
+          ]
+        },
+        {
+          "title": "2. Purpose",
+          "type": "list"
+        },
+        {
+          "title": "3. Scope",
+          "type": "list"
+        },
+        {
+          "title": "4. Budget Planning Assumptions",
+          "type": "table",
+          "columns": [
+            "Category",
+            "Assumption"
+          ]
+        },
+        {
+          "title": "5. Revenue Projections",
+          "type": "table",
+          "columns": [
+            "Revenue Stream",
+            "Annual Target",
+            "Monthly/Quarterly Breakdown",
+            "Assumptions"
+          ]
+        },
+        {
+          "title": "5.1 SaaS-Specific KPIs",
+          "type": "list"
+        },
+        {
+          "title": "6. Operating Expenses (OPEX)",
+          "type": "table",
+          "columns": [
+            "Department",
+            "Budget Allocation",
+            "Notes"
+          ]
+        },
+        {
+          "title": "7. Capital Expenditure (CAPEX)",
+          "type": "table",
+          "columns": [
+            "Item / Asset",
+            "Budgeted Cost",
+            "Justification",
+            "Depreciation/Amortization"
+          ]
+        },
+        {
+          "title": "8. Headcount and Payroll Budget",
+          "type": "table",
+          "columns": [
+            "Department",
+            "Planned Hires",
+            "Salary Budget",
+            "Notes"
+          ]
+        },
+        {
+          "title": "9. Profit & Loss Forecast",
+          "type": "table",
+          "columns": [
+            "Category",
+            "Budgeted Amount",
+            "Notes"
+          ]
+        },
+        {
+          "title": "10. Cash Flow Projection",
+          "type": "table",
+          "columns": [
+            "Month / Quarter",
+            "Cash Inflow",
+            "Cash Outflow",
+            "Net Cash Flow",
+            "Ending Cash Balance"
+          ]
+        },
+        {
+          "title": "11. Budget Governance & Approval",
+          "type": "list"
+        },
+        {
+          "title": "12. Review and Revision",
+          "type": "list"
+        },
+        {
+          "title": "13. Appendices (Optional)",
+          "type": "list"
+        }
+      ]
+    }
+  ]
+}

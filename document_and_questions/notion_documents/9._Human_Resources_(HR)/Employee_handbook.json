@@ -1,0 +1,155 @@
+{
+  "document_name": "Employee handbook",
+  "sections": [
+    {
+      "title": "1. Document Overview",
+      "subsections": [
+        {
+          "title": "Description",
+          "type": "text"
+        },
+        {
+          "title": "Document Information",
+          "type": "table",
+          "columns": [
+            "Field",
+            "Value"
+          ]
+        },
+        {
+          "title": "2. Purpose",
+          "type": "list"
+        },
+        {
+          "title": "3. Company Overview",
+          "type": "text"
+        },
+        {
+          "title": "3.1 Company Introduction",
+          "type": "text"
+        },
+        {
+          "title": "3.2 Mission and Values",
+          "type": "list"
+        },
+        {
+          "title": "4. Employment Policies",
+          "type": "text"
+        },
+        {
+          "title": "4.1 Employment Classification",
+          "type": "list"
+        },
+        {
+          "title": "4.2 Equal Opportunity and Non-Discrimination",
+          "type": "text"
+        },
+        {
+          "title": "4.3 Background Verification (If Applicable)",
+          "type": "text"
+        },
+        {
+          "title": "5. Work Hours and Attendance",
+          "type": "text"
+        },
+        {
+          "title": "5.1 Working Hours",
+          "type": "text"
+        },
+        {
+          "title": "5.2 Attendance Expectations",
+          "type": "list"
+        },
+        {
+          "title": "5.3 Remote and Hybrid Work",
+          "type": "text"
+        },
+        {
+          "title": "6. Compensation and Benefits",
+          "type": "text"
+        },
+        {
+          "title": "6.1 Compensation",
+          "type": "text"
+        },
+        {
+          "title": "6.2 Benefits (Typical)",
+          "type": "list"
+        },
+        {
+          "title": "7. Leave Policies",
+          "type": "text"
+        },
+        {
+          "title": "7.1 Types of Leave",
+          "type": "list"
+        },
+        {
+          "title": "7.2 Leave Approval",
+          "type": "text"
+        },
+        {
+          "title": "8. Code of Conduct",
+          "type": "list"
+        },
+        {
+          "title": "9. Information Security and Confidentiality",
+          "type": "list"
+        },
+        {
+          "title": "10. Use of Company Systems and Equipment",
+          "type": "text"
+        },
+        {
+          "title": "11. Performance Management",
+          "type": "text"
+        },
+        {
+          "title": "11.1 Performance Expectations",
+          "type": "text"
+        },
+        {
+          "title": "11.2 Performance Reviews",
+          "type": "text"
+        },
+        {
+          "title": "12. Learning and Development",
+          "type": "text"
+        },
+        {
+          "title": "13. Workplace Health and Safety",
+          "type": "text"
+        },
+        {
+          "title": "14. Disciplinary Process",
+          "type": "list"
+        },
+        {
+          "title": "15. Grievance and Complaint Procedure",
+          "type": "list"
+        },
+        {
+          "title": "16. Separation of Employment",
+          "type": "text"
+        },
+        {
+          "title": "17. Policy Acknowledgement",
+          "type": "table",
+          "columns": [
+            "Employee Name",
+            "Signature",
+            "Date"
+          ]
+        },
+        {
+          "title": "18. Governance and Updates",
+          "type": "text"
+        },
+        {
+          "title": "19. Review and Revision",
+          "type": "text"
+        }
+      ]
+    }
+  ]
+}

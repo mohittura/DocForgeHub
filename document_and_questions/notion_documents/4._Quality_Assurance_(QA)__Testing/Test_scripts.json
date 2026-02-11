@@ -1,0 +1,84 @@
+{
+  "document_name": "Test scripts",
+  "sections": [
+    {
+      "title": "Document Information",
+      "subsections": [
+        {
+          "title": "Description",
+          "type": "table",
+          "columns": [
+            "Field",
+            "Value"
+          ]
+        },
+        {
+          "title": "1. Purpose",
+          "type": "text"
+        },
+        {
+          "title": "2. Test Script Structure",
+          "type": "table",
+          "columns": [
+            "Field",
+            "Description"
+          ]
+        },
+        {
+          "title": "3. Test Script Template",
+          "type": "text"
+        },
+        {
+          "title": "Script ID: TS-XXX",
+          "type": "text"
+        },
+        {
+          "title": "Pre-conditions",
+          "type": "list"
+        },
+        {
+          "title": "Script Steps",
+          "type": "table",
+          "columns": [
+            "Step No",
+            "Action / Command"
+          ]
+        },
+        {
+          "title": "Expected Result",
+          "type": "text"
+        },
+        {
+          "title": "Execution Result",
+          "type": "table",
+          "columns": [
+            "Field",
+            "Value"
+          ]
+        },
+        {
+          "title": "4. Script Classification (Optional)",
+          "type": "list"
+        },
+        {
+          "title": "5. Traceability (Optional)",
+          "type": "table",
+          "columns": [
+            "Requirement ID",
+            "Test Case ID",
+            "Script ID"
+          ]
+        },
+        {
+          "title": "6. Approval",
+          "type": "table",
+          "columns": [
+            "Role",
+            "Name",
+            "Date"
+          ]
+        }
+      ]
+    }
+  ]
+}

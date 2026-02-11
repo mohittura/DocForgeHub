@@ -1,0 +1,38 @@
+{
+  "document_name": "Technical debt register",
+  "sections": [
+    {
+      "title": "Document Overview",
+      "subsections": [
+        {
+          "title": "Description",
+          "type": "text"
+        },
+        {
+          "title": "1. Technical Debt Register Table",
+          "type": "table",
+          "columns": [
+            "ID",
+            "Title",
+            "Type",
+            "Description",
+            "Impact",
+            "Owner",
+            "Priority",
+            "Created Date",
+            "Target Resolution Date",
+            "Status"
+          ]
+        },
+        {
+          "title": "2. Technical Debt Types (Reference)",
+          "type": "table",
+          "columns": [
+            "Type",
+            "Description"
+          ]
+        }
+      ]
+    }
+  ]
+}

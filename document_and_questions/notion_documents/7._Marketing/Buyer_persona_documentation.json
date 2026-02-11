@@ -1,0 +1,143 @@
+{
+  "document_name": "Buyer persona documentation",
+  "sections": [
+    {
+      "title": "1. Document Overview",
+      "subsections": [
+        {
+          "title": "Description",
+          "type": "text"
+        },
+        {
+          "title": "Document Information",
+          "type": "table",
+          "columns": [
+            "Field",
+            "Value"
+          ]
+        },
+        {
+          "title": "2. Purpose",
+          "type": "list"
+        },
+        {
+          "title": "3. Persona Summary",
+          "type": "text"
+        },
+        {
+          "title": "3.1 Persona Overview",
+          "type": "table",
+          "columns": [
+            "Attribute",
+            "Description"
+          ]
+        },
+        {
+          "title": "3.2 Persona Description",
+          "type": "text"
+        },
+        {
+          "title": "4. Goals and Objectives",
+          "type": "list"
+        },
+        {
+          "title": "5. Challenges and Pain Points",
+          "type": "list"
+        },
+        {
+          "title": "6. Buying Motivation",
+          "type": "text"
+        },
+        {
+          "title": "6.1 Primary Drivers",
+          "type": "table",
+          "columns": [
+            "Driver",
+            "Description"
+          ]
+        },
+        {
+          "title": "6.2 Trigger Events",
+          "type": "list"
+        },
+        {
+          "title": "7. Decision-Making Role",
+          "type": "text"
+        },
+        {
+          "title": "7.1 Role in Buying Process",
+          "type": "list"
+        },
+        {
+          "title": "7.2 Decision Criteria",
+          "type": "table",
+          "columns": [
+            "Criteria",
+            "Importance",
+            "Notes"
+          ]
+        },
+        {
+          "title": "7.3 Objections and Concerns",
+          "type": "list"
+        },
+        {
+          "title": "8. Information Sources and Behavior",
+          "type": "text"
+        },
+        {
+          "title": "8.1 Research Behavior",
+          "type": "list"
+        },
+        {
+          "title": "8.2 Preferred Channels",
+          "type": "table",
+          "columns": [
+            "Channel",
+            "Usage Purpose"
+          ]
+        },
+        {
+          "title": "9. Messaging Guidance",
+          "type": "text"
+        },
+        {
+          "title": "9.1 Key Messaging Themes",
+          "type": "list"
+        },
+        {
+          "title": "9.2 Messaging to Avoid",
+          "type": "list"
+        },
+        {
+          "title": "10. Content and Sales Alignment",
+          "type": "text"
+        },
+        {
+          "title": "10.1 Effective Content Types",
+          "type": "list"
+        },
+        {
+          "title": "10.2 Sales Conversation Focus",
+          "type": "list"
+        },
+        {
+          "title": "11. Persona Summary Snapshot (Quick Reference)",
+          "type": "table",
+          "columns": [
+            "Category",
+            "Summary"
+          ]
+        },
+        {
+          "title": "12. Governance and Updates",
+          "type": "text"
+        },
+        {
+          "title": "13. Review and Revision",
+          "type": "text"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,118 @@
+{
+  "document_name": "Campaign planning documents",
+  "sections": [
+    {
+      "title": "1. Campaign Overview",
+      "subsections": [
+        {
+          "title": "Description",
+          "type": "text"
+        },
+        {
+          "title": "2. Campaign Objective",
+          "type": "text"
+        },
+        {
+          "title": "Primary Objective",
+          "type": "text"
+        },
+        {
+          "title": "Supporting Objectives (Auto-Generated)",
+          "type": "list"
+        },
+        {
+          "title": "3. Target Audience Definition",
+          "type": "text"
+        },
+        {
+          "title": "Audience Summary",
+          "type": "text"
+        },
+        {
+          "title": "Assumed Characteristics (Standardized)",
+          "type": "table",
+          "columns": [
+            "Attribute",
+            "Description"
+          ]
+        },
+        {
+          "title": "4. Campaign Strategy (Auto-Generated)",
+          "type": "text"
+        },
+        {
+          "title": "Strategic Approach",
+          "type": "list"
+        },
+        {
+          "title": "Funnel Focus",
+          "type": "list"
+        },
+        {
+          "title": "5. Core Messaging Framework",
+          "type": "text"
+        },
+        {
+          "title": "Primary Message",
+          "type": "text"
+        },
+        {
+          "title": "Supporting Messages",
+          "type": "list"
+        },
+        {
+          "title": "Value Proposition",
+          "type": "text"
+        },
+        {
+          "title": "6. Channel Mix (Auto-Selected)",
+          "type": "table",
+          "columns": [
+            "Channel",
+            "Purpose"
+          ]
+        },
+        {
+          "title": "7. Content and Asset Plan (Standardized)",
+          "type": "list"
+        },
+        {
+          "title": "8. Budget Allocation Model (Auto-Distributed)",
+          "type": "table",
+          "columns": [
+            "Category",
+            "Allocation Logic"
+          ]
+        },
+        {
+          "title": "9. Success Metrics (Auto-Defined)",
+          "type": "text"
+        },
+        {
+          "title": "Primary KPIs",
+          "type": "list"
+        },
+        {
+          "title": "Secondary KPIs",
+          "type": "list"
+        },
+        {
+          "title": "10. Execution Timeline",
+          "type": "table",
+          "columns": [
+            "Phase",
+            "Activity"
+          ]
+        },
+        {
+          "title": "11. Reporting and Review",
+          "type": "list"
+        },
+        {
+          "title": "12. Governance",
+          "type": "text"
+        }
+      ]
+    }
+  ]
+}

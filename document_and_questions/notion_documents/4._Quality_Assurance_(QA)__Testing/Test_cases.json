@@ -1,0 +1,74 @@
+{
+  "document_name": "Test cases",
+  "sections": [
+    {
+      "title": "Document Information",
+      "subsections": [
+        {
+          "title": "Description",
+          "type": "table",
+          "columns": [
+            "Field",
+            "Value"
+          ]
+        },
+        {
+          "title": "1. Purpose",
+          "type": "text"
+        },
+        {
+          "title": "2. Scope",
+          "type": "list"
+        },
+        {
+          "title": "3. Test Case Structure",
+          "type": "table",
+          "columns": [
+            "Field",
+            "Description"
+          ]
+        },
+        {
+          "title": "4. Test Case Template",
+          "type": "text"
+        },
+        {
+          "title": "Test Case ID: TC-XXX",
+          "type": "text"
+        },
+        {
+          "title": "Preconditions",
+          "type": "list"
+        },
+        {
+          "title": "Test Steps",
+          "type": "table",
+          "columns": [
+            "Step No",
+            "Action"
+          ]
+        },
+        {
+          "title": "Test Data",
+          "type": "table",
+          "columns": [
+            "Field",
+            "Value"
+          ]
+        },
+        {
+          "title": "Expected Result",
+          "type": "text"
+        },
+        {
+          "title": "Execution Result",
+          "type": "table",
+          "columns": [
+            "Field",
+            "Value"
+          ]
+        }
+      ]
+    }
+  ]
+}

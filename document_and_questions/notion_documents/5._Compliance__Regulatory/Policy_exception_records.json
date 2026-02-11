@@ -1,0 +1,81 @@
+{
+  "document_name": "Policy exception records",
+  "sections": [
+    {
+      "title": "1. Document Information",
+      "subsections": [
+        {
+          "title": "Description",
+          "type": "table",
+          "columns": [
+            "Field",
+            "Value"
+          ]
+        },
+        {
+          "title": "2. Purpose",
+          "type": "list"
+        },
+        {
+          "title": "3. Policy Exception Summary",
+          "type": "table",
+          "columns": [
+            "Field",
+            "Description"
+          ]
+        },
+        {
+          "title": "4. Risk Assessment",
+          "type": "text"
+        },
+        {
+          "title": "Risk Evaluation",
+          "type": "table",
+          "columns": [
+            "Field",
+            "Value"
+          ]
+        },
+        {
+          "title": "Risk Description",
+          "type": "text"
+        },
+        {
+          "title": "5. Compensating Controls",
+          "type": "table",
+          "columns": [
+            "Control",
+            "Description",
+            "Owner"
+          ]
+        },
+        {
+          "title": "6. Approval and Acceptance",
+          "type": "table",
+          "columns": [
+            "Role",
+            "Name",
+            "Approval",
+            "Date"
+          ]
+        },
+        {
+          "title": "7. Review and Expiry",
+          "type": "list",
+          "columns": [
+            "Field",
+            "Value"
+          ]
+        },
+        {
+          "title": "8. Closure Record",
+          "type": "table",
+          "columns": [
+            "Field",
+            "Value"
+          ]
+        }
+      ]
+    }
+  ]
+}

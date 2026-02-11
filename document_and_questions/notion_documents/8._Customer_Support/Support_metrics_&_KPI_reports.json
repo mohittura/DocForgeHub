@@ -1,0 +1,201 @@
+{
+  "document_name": "Support metrics & KPI reports",
+  "sections": [
+    {
+      "title": "1. Document Overview",
+      "subsections": [
+        {
+          "title": "Description",
+          "type": "text"
+        },
+        {
+          "title": "Document Information",
+          "type": "table",
+          "columns": [
+            "Field",
+            "Value"
+          ]
+        },
+        {
+          "title": "2. Purpose",
+          "type": "list"
+        },
+        {
+          "title": "3. Executive Summary",
+          "type": "text"
+        },
+        {
+          "title": "3.1 Performance Overview",
+          "type": "list"
+        },
+        {
+          "title": "3.2 Key Highlights",
+          "type": "list"
+        },
+        {
+          "title": "3.3 Key Challenges",
+          "type": "list"
+        },
+        {
+          "title": "4. Support Volume Overview",
+          "type": "text"
+        },
+        {
+          "title": "4.1 Ticket Volume Summary",
+          "type": "table",
+          "columns": [
+            "Metric",
+            "Value",
+            "Change vs Previous Period"
+          ]
+        },
+        {
+          "title": "4.2 Ticket Distribution by Channel",
+          "type": "table",
+          "columns": [
+            "Channel",
+            "Ticket Volume",
+            "Percentage"
+          ]
+        },
+        {
+          "title": "5. Response and Resolution Metrics",
+          "type": "text"
+        },
+        {
+          "title": "5.1 Response Time Metrics",
+          "type": "table",
+          "columns": [
+            "Metric",
+            "Value",
+            "Target",
+            "Status"
+          ]
+        },
+        {
+          "title": "5.2 Resolution Metrics",
+          "type": "table",
+          "columns": [
+            "Metric",
+            "Value",
+            "Target",
+            "Status"
+          ]
+        },
+        {
+          "title": "6. SLA Performance",
+          "type": "text"
+        },
+        {
+          "title": "6.1 SLA Compliance Summary",
+          "type": "table",
+          "columns": [
+            "Priority Level",
+            "Tickets",
+            "Met SLA",
+            "Breached SLA",
+            "Compliance %"
+          ]
+        },
+        {
+          "title": "6.2 SLA Insights",
+          "type": "text"
+        },
+        {
+          "title": "7. Customer Satisfaction Metrics",
+          "type": "text"
+        },
+        {
+          "title": "7.1 Satisfaction Summary",
+          "type": "table",
+          "columns": [
+            "Metric",
+            "Value",
+            "Change vs Previous Period"
+          ]
+        },
+        {
+          "title": "7.2 Satisfaction Insights",
+          "type": "text"
+        },
+        {
+          "title": "8. Issue Category Analysis",
+          "type": "text"
+        },
+        {
+          "title": "8.1 Ticket Categories",
+          "type": "table",
+          "columns": [
+            "Category",
+            "Volume",
+            "Percentage",
+            "Trend"
+          ]
+        },
+        {
+          "title": "8.2 Insights",
+          "type": "list"
+        },
+        {
+          "title": "9. Team Performance Overview",
+          "type": "text"
+        },
+        {
+          "title": "9.1 Productivity Metrics",
+          "type": "table",
+          "columns": [
+            "Metric",
+            "Value"
+          ]
+        },
+        {
+          "title": "9.2 Observations",
+          "type": "text"
+        },
+        {
+          "title": "10. Performance Analysis and Insights",
+          "type": "text"
+        },
+        {
+          "title": "10.1 What Worked Well",
+          "type": "list"
+        },
+        {
+          "title": "10.2 Areas for Improvement",
+          "type": "list"
+        },
+        {
+          "title": "10.3 Emerging Trends",
+          "type": "list"
+        },
+        {
+          "title": "11. Optimization and Action Plan",
+          "type": "table",
+          "columns": [
+            "Area",
+            "Action",
+            "Owner",
+            "Priority",
+            "Timeline"
+          ]
+        },
+        {
+          "title": "12. KPI Snapshot (Quick Reference)",
+          "type": "table",
+          "columns": [
+            "Category",
+            "Metric"
+          ]
+        },
+        {
+          "title": "13. Governance and Updates",
+          "type": "text"
+        },
+        {
+          "title": "14. Review and Revision",
+          "type": "text"
+        }
+      ]
+    }
+  ]
+}

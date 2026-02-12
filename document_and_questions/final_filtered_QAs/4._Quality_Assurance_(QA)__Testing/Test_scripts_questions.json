@@ -1,0 +1,176 @@
+{
+  "document_name": "Test Script Document",
+  "document_type": "Test Script Document",
+  "estimated_completion_time": "15-20 minutes",
+  "total_questions": 12,
+  "question_categories": [
+    {
+      "category": "Document Information",
+      "order": 1,
+      "questions": [
+        {
+          "question_id": "product_name",
+          "question": "What is the name of the product or system being tested?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "e.g., Customer Portal",
+          "description": "Used to identify which system this test script applies to",
+          "answer": ""
+        },
+        {
+          "question_id": "module_name",
+          "question": "What module or feature does this test script cover?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "e.g., User Authentication",
+          "description": "Specifies the specific area of functionality being tested",
+          "answer": ""
+        },
+        {
+          "question_id": "version",
+          "question": "What version of the product is being tested?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "e.g., v2.1.0",
+          "description": "Tracks which version this test script validates",
+          "answer": ""
+        },
+        {
+          "question_id": "qa_engineer",
+          "question": "Who is the QA Engineer preparing this test script?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "e.g., John Smith",
+          "description": "Identifies the person responsible for creating the test script",
+          "answer": ""
+        },
+        {
+          "question_id": "preparation_date",
+          "question": "What is the preparation date for this test script?",
+          "answer_type": "date",
+          "required": true,
+          "description": "Records when the test script was created",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Test Script Details",
+      "order": 2,
+      "questions": [
+        {
+          "question_id": "script_id",
+          "question": "What is the unique Script ID for this test script?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "e.g., TS-001",
+          "description": "Unique identifier for tracking and referencing this test script",
+          "answer": ""
+        },
+        {
+          "question_id": "script_description",
+          "question": "What does this test script verify?",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "e.g., Validates that users can successfully log in with valid credentials",
+          "description": "Brief summary of the test objective",
+          "answer": ""
+        },
+        {
+          "question_id": "pre_conditions",
+          "question": "What pre-conditions must be met before executing this test?",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "List each pre-condition on a new line",
+          "description": "Conditions that must be true before the test can be executed",
+          "answer": ""
+        },
+        {
+          "question_id": "test_steps",
+          "question": "What are the step-by-step test instructions?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Step Number",
+              "type": "number"
+            },
+            {
+              "name": "Action / Command",
+              "type": "text"
+            }
+          ],
+          "description": "Ordered instructions for performing the test",
+          "answer": "",
+          "answers": []
+        },
+        {
+          "question_id": "expected_result",
+          "question": "What is the expected result after executing this test script?",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "e.g., User is successfully authenticated and redirected to dashboard",
+          "description": "Defines what should happen if the test passes",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Traceability and Approval",
+      "order": 3,
+      "questions": [
+        {
+          "question_id": "traceability_items",
+          "question": "Link this test script to requirements and test cases",
+          "answer_type": "structured_list",
+          "required": false,
+          "fields": [
+            {
+              "name": "Requirement ID",
+              "type": "text"
+            },
+            {
+              "name": "Test Case ID",
+              "type": "text"
+            }
+          ],
+          "description": "Maps test scripts back to requirements for traceability",
+          "answer": "",
+          "answers": []
+        },
+        {
+          "question_id": "approvers",
+          "question": "Who needs to approve this test script?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Role",
+              "type": "select",
+              "options": [
+                "QA Lead",
+                "Engineering Lead"
+              ]
+            },
+            {
+              "name": "Name",
+              "type": "text"
+            },
+            {
+              "name": "Date",
+              "type": "date"
+            }
+          ],
+          "description": "Records who approved the test script and when",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    }
+  ],
+  "_metadata": {
+    "page_id": "2fc89db1-5e5b-8086-865b-e8e24a501ff2",
+    "extraction_date": "2026-02-09T16:04:23.392414",
+    "model_used": "moonshotai/kimi-k2-instruct-0905"
+  }
+}

@@ -1,0 +1,279 @@
+{
+  "document_name": "SOC 2 Control Matrix",
+  "document_type": "SOC 2 Control Matrix",
+  "estimated_completion_time": "45-60 minutes",
+  "total_questions": 12,
+  "question_categories": [
+    {
+      "category": "Document Metadata",
+      "order": 1,
+      "questions": [
+        {
+          "question_id": "organization_name",
+          "question": "What is your organization's name?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Acme Corporation",
+          "description": "Used in document header and ownership",
+          "answer": ""
+        },
+        {
+          "question_id": "soc2_scope",
+          "question": "What systems or services are in scope for your SOC 2 audit?",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "SaaS platform, mobile application, data processing services",
+          "description": "Defines the boundaries of your SOC 2 assessment",
+          "answer": ""
+        },
+        {
+          "question_id": "trust_service_criteria",
+          "question": "Which Trust Service Criteria are you including in your SOC 2 report?",
+          "answer_type": "multi_select",
+          "required": true,
+          "options": [
+            "Security (Required)",
+            "Availability",
+            "Confidentiality",
+            "Processing Integrity",
+            "Privacy"
+          ],
+          "description": "Security is required; others are optional based on your business needs",
+          "answer": ""
+        },
+        {
+          "question_id": "document_version",
+          "question": "What version number should this document be?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "1.0",
+          "description": "Document version for change tracking",
+          "answer": ""
+        },
+        {
+          "question_id": "document_owner",
+          "question": "Who is the primary owner of this control matrix?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Compliance / Information Security",
+          "description": "Team or individual responsible for maintaining this document",
+          "answer": ""
+        },
+        {
+          "question_id": "last_updated",
+          "question": "When was this document last updated?",
+          "answer_type": "date",
+          "required": true,
+          "description": "Date for version control",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Security Controls",
+      "order": 2,
+      "questions": [
+        {
+          "question_id": "security_controls",
+          "question": "What security controls should be included in your control matrix?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Control ID",
+              "type": "text"
+            },
+            {
+              "name": "Control Objective",
+              "type": "text"
+            },
+            {
+              "name": "Control Description",
+              "type": "text"
+            },
+            {
+              "name": "Control Owner",
+              "type": "text"
+            },
+            {
+              "name": "Frequency",
+              "type": "select",
+              "options": [
+                "Annual",
+                "Quarterly",
+                "Monthly",
+                "Continuous",
+                "As needed"
+              ]
+            },
+            {
+              "name": "Evidence",
+              "type": "text"
+            },
+            {
+              "name": "Status",
+              "type": "select",
+              "options": [
+                "Implemented",
+                "Partially Implemented",
+                "Planned",
+                "Not Applicable"
+              ]
+            }
+          ],
+          "description": "Add each security control with all required fields",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Availability Controls",
+      "order": 3,
+      "questions": [
+        {
+          "question_id": "include_availability",
+          "question": "Are you including Availability criteria in your SOC 2 report?",
+          "answer_type": "select",
+          "required": true,
+          "options": [
+            "Yes",
+            "No"
+          ],
+          "description": "Determines if availability controls section is needed",
+          "answer": ""
+        },
+        {
+          "question_id": "availability_controls",
+          "question": "What availability controls should be included?",
+          "answer_type": "structured_list",
+          "required": false,
+          "fields": [
+            {
+              "name": "Control ID",
+              "type": "text"
+            },
+            {
+              "name": "Objective",
+              "type": "text"
+            },
+            {
+              "name": "Description",
+              "type": "text"
+            },
+            {
+              "name": "Owner",
+              "type": "text"
+            },
+            {
+              "name": "Evidence",
+              "type": "text"
+            },
+            {
+              "name": "Status",
+              "type": "select",
+              "options": [
+                "Implemented",
+                "Partially Implemented",
+                "Planned",
+                "Not Applicable"
+              ]
+            }
+          ],
+          "description": "Add each availability control if Availability criteria is selected",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Confidentiality Controls",
+      "order": 4,
+      "questions": [
+        {
+          "question_id": "include_confidentiality",
+          "question": "Are you including Confidentiality criteria in your SOC 2 report?",
+          "answer_type": "select",
+          "required": true,
+          "options": [
+            "Yes",
+            "No"
+          ],
+          "description": "Determines if confidentiality controls section is needed",
+          "answer": ""
+        },
+        {
+          "question_id": "confidentiality_controls",
+          "question": "What confidentiality controls should be included?",
+          "answer_type": "structured_list",
+          "required": false,
+          "fields": [
+            {
+              "name": "Control ID",
+              "type": "text"
+            },
+            {
+              "name": "Objective",
+              "type": "text"
+            },
+            {
+              "name": "Description",
+              "type": "text"
+            },
+            {
+              "name": "Owner",
+              "type": "text"
+            },
+            {
+              "name": "Evidence",
+              "type": "text"
+            },
+            {
+              "name": "Status",
+              "type": "select",
+              "options": [
+                "Implemented",
+                "Partially Implemented",
+                "Planned",
+                "Not Applicable"
+              ]
+            }
+          ],
+          "description": "Add each confidentiality control if Confidentiality criteria is selected",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Control Ownership",
+      "order": 5,
+      "questions": [
+        {
+          "question_id": "control_ownership",
+          "question": "Which departments own which control areas in your organization?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Department",
+              "type": "text"
+            },
+            {
+              "name": "Control Areas",
+              "type": "text"
+            }
+          ],
+          "description": "Map departments to their control responsibilities",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    }
+  ],
+  "_metadata": {
+    "page_id": "2fc89db1-5e5b-8052-b39a-c6e7e85cb098",
+    "extraction_date": "2026-02-09T17:01:34.580089",
+    "model_used": "moonshotai/kimi-k2-instruct-0905"
+  }
+}

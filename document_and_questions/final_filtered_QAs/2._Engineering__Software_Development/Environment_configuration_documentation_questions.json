@@ -1,0 +1,367 @@
+{
+  "document_name": "Environment Configuration Documentation",
+  "document_type": "Environment Configuration Documentation",
+  "estimated_completion_time": "15-20 minutes",
+  "total_questions": 16,
+  "question_categories": [
+    {
+      "category": "Document Metadata",
+      "order": 1,
+      "questions": [
+        {
+          "question_id": "product_name",
+          "question": "What is the name of your product or application?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "MyApp",
+          "description": "Used to identify the product in the documentation header",
+          "answer": ""
+        },
+        {
+          "question_id": "service_name",
+          "question": "What is the name of the service or repository?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "myapp-service",
+          "description": "Used to identify the service in the documentation header",
+          "answer": ""
+        },
+        {
+          "question_id": "owner_team",
+          "question": "Which team owns this service?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Platform Team",
+          "description": "Identifies the responsible team for maintenance",
+          "answer": ""
+        },
+        {
+          "question_id": "environments",
+          "question": "What environments do you use?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Development / Staging / Production",
+          "description": "Lists all environments for this service",
+          "answer": ""
+        },
+        {
+          "question_id": "tech_stack",
+          "question": "What is the primary technology stack?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Node.js, React, PostgreSQL",
+          "description": "Describes the main technologies used",
+          "answer": ""
+        },
+        {
+          "question_id": "infrastructure_provider",
+          "question": "Who provides the infrastructure?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "AWS",
+          "description": "Identifies the cloud or infrastructure provider",
+          "answer": ""
+        },
+        {
+          "question_id": "last_updated",
+          "question": "When was this document last updated?",
+          "answer_type": "date",
+          "required": true,
+          "description": "Tracks document freshness",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Environment Definitions",
+      "order": 2,
+      "questions": [
+        {
+          "question_id": "environment_items",
+          "question": "Define each environment you support",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Environment",
+              "type": "text"
+            },
+            {
+              "name": "Purpose",
+              "type": "text"
+            },
+            {
+              "name": "Public Access",
+              "type": "select",
+              "options": [
+                "No",
+                "Limited",
+                "Yes"
+              ]
+            },
+            {
+              "name": "Notes",
+              "type": "text"
+            }
+          ],
+          "description": "One row per environment (e.g., Development, Staging, Production)",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Environment Differences",
+      "order": 3,
+      "questions": [
+        {
+          "question_id": "config_differences",
+          "question": "How do key configuration areas differ across environments?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Configuration Area",
+              "type": "text"
+            },
+            {
+              "name": "Development",
+              "type": "text"
+            },
+            {
+              "name": "Staging",
+              "type": "text"
+            },
+            {
+              "name": "Production",
+              "type": "text"
+            }
+          ],
+          "description": "Examples: Debug Mode, Logging Level, External APIs, Data Persistence",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Application Configuration Variables",
+      "order": 4,
+      "questions": [
+        {
+          "question_id": "app_config_vars",
+          "question": "List your application-level environment variables",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Variable",
+              "type": "text"
+            },
+            {
+              "name": "Description",
+              "type": "text"
+            },
+            {
+              "name": "Example",
+              "type": "text"
+            },
+            {
+              "name": "Required",
+              "type": "select",
+              "options": [
+                "Yes",
+                "No"
+              ]
+            }
+          ],
+          "description": "Common vars: APP_ENV, APP_URL, APP_DEBUG",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Database Configuration Variables",
+      "order": 5,
+      "questions": [
+        {
+          "question_id": "db_config_vars",
+          "question": "List your database environment variables",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Variable",
+              "type": "text"
+            },
+            {
+              "name": "Description",
+              "type": "text"
+            },
+            {
+              "name": "Example",
+              "type": "text"
+            },
+            {
+              "name": "Required",
+              "type": "select",
+              "options": [
+                "Yes",
+                "No"
+              ]
+            }
+          ],
+          "description": "Common vars: DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASSWORD",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "External Services",
+      "order": 6,
+      "questions": [
+        {
+          "question_id": "external_services",
+          "question": "Which external services do you integrate with?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Service",
+              "type": "text"
+            },
+            {
+              "name": "Variable Prefix",
+              "type": "text"
+            },
+            {
+              "name": "Purpose",
+              "type": "text"
+            }
+          ],
+          "description": "Examples: AWS (AWS_*), Stripe (STRIPE_*), Email (SMTP_*)",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Caching Configuration",
+      "order": 7,
+      "questions": [
+        {
+          "question_id": "cache_config_vars",
+          "question": "List your caching environment variables",
+          "answer_type": "structured_list",
+          "required": false,
+          "fields": [
+            {
+              "name": "Variable",
+              "type": "text"
+            },
+            {
+              "name": "Description",
+              "type": "text"
+            },
+            {
+              "name": "Example",
+              "type": "text"
+            }
+          ],
+          "description": "Examples: CACHE_DRIVER, CACHE_HOST",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Container Settings",
+      "order": 8,
+      "questions": [
+        {
+          "question_id": "container_settings",
+          "question": "Define container resource settings",
+          "answer_type": "structured_list",
+          "required": false,
+          "fields": [
+            {
+              "name": "Setting",
+              "type": "text"
+            },
+            {
+              "name": "Value",
+              "type": "text"
+            },
+            {
+              "name": "Notes",
+              "type": "text"
+            }
+          ],
+          "description": "Examples: Port, Memory Limit, CPU Limit",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Cloud Configuration",
+      "order": 9,
+      "questions": [
+        {
+          "question_id": "cloud_settings",
+          "question": "Define cloud-specific infrastructure settings",
+          "answer_type": "structured_list",
+          "required": false,
+          "fields": [
+            {
+              "name": "Setting",
+              "type": "text"
+            },
+            {
+              "name": "Description",
+              "type": "text"
+            }
+          ],
+          "description": "Examples: Load Balancer Health Check, Auto Scaling Rule, Logging Destination",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Troubleshooting Reference",
+      "order": 10,
+      "questions": [
+        {
+          "question_id": "troubleshooting_items",
+          "question": "Add common configuration issues and fixes",
+          "answer_type": "structured_list",
+          "required": false,
+          "fields": [
+            {
+              "name": "Issue",
+              "type": "text"
+            },
+            {
+              "name": "Likely Cause",
+              "type": "text"
+            },
+            {
+              "name": "Action",
+              "type": "text"
+            }
+          ],
+          "description": "Examples: DB connection failure, Email failure",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    }
+  ],
+  "_metadata": {
+    "page_id": "2fc89db1-5e5b-8081-ae95-fb57c47d0e6a",
+    "extraction_date": "2026-02-09T15:53:14.141238",
+    "model_used": "moonshotai/kimi-k2-instruct-0905"
+  }
+}

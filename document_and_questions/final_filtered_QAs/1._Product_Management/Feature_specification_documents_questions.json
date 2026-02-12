@@ -1,0 +1,289 @@
+{
+  "document_name": "Feature Specification Document",
+  "document_type": "Feature Specification Document",
+  "estimated_completion_time": "30-45 minutes",
+  "total_questions": 28,
+  "question_categories": [
+    {
+      "category": "Basic Information",
+      "order": 1,
+      "questions": [
+        {
+          "question_id": "feature_name",
+          "question": "What is the name of the feature?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "e.g., Smart Notifications, Bulk Export, AI Insights",
+          "description": "A clear, descriptive name for the feature",
+          "answer": ""
+        },
+        {
+          "question_id": "related_prd",
+          "question": "Link to the Product Requirements Document (PRD)",
+          "answer_type": "text",
+          "required": false,
+          "placeholder": "https://docs.company.com/prd/...",
+          "description": "URL to the related PRD",
+          "answer": ""
+        },
+        {
+          "question_id": "related_roadmap",
+          "question": "Link to the Product Roadmap",
+          "answer_type": "text",
+          "required": false,
+          "placeholder": "https://roadmap.company.com/...",
+          "description": "URL to the product roadmap",
+          "answer": ""
+        },
+        {
+          "question_id": "related_jira",
+          "question": "Link to the Jira Epic or Ticket",
+          "answer_type": "text",
+          "required": false,
+          "placeholder": "https://jira.company.com/browse/PROJ-123",
+          "description": "URL to the Jira epic or ticket",
+          "answer": ""
+        },
+        {
+          "question_id": "related_design",
+          "question": "Link to Design Files (Figma)",
+          "answer_type": "text",
+          "required": false,
+          "placeholder": "https://figma.com/file/...",
+          "description": "URL to Figma or other design files",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Feature Overview",
+      "order": 2,
+      "questions": [
+        {
+          "question_id": "feature_description",
+          "question": "Describe what this feature does and the problem it solves",
+          "answer_type": "long_text",
+          "required": true,
+          "description": "Concise explanation of the feature's purpose",
+          "answer": ""
+        },
+        {
+          "question_id": "target_audience",
+          "question": "Who is this feature for?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "e.g., Mobile app users, Admins, New customers",
+          "description": "Primary users who will benefit",
+          "answer": ""
+        },
+        {
+          "question_id": "pain_point",
+          "question": "What pain does this feature remove?",
+          "answer_type": "long_text",
+          "required": true,
+          "description": "The specific problem or frustration being solved",
+          "answer": ""
+        },
+        {
+          "question_id": "business_value",
+          "question": "Why does this feature matter to the business?",
+          "answer_type": "long_text",
+          "required": true,
+          "description": "Expected impact on metrics, revenue, retention, etc.",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Goals & Non-Goals",
+      "order": 3,
+      "questions": [
+        {
+          "question_id": "goals",
+          "question": "What are the goals of this feature?",
+          "answer_type": "long_text",
+          "required": true,
+          "description": "List what success looks like and the outcomes this feature should achieve",
+          "answer": ""
+        },
+        {
+          "question_id": "non_goals",
+          "question": "What is intentionally out of scope (non-goals)?",
+          "answer_type": "long_text",
+          "required": true,
+          "description": "What this feature will NOT do or solve",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "User & Requirements Details",
+      "order": 4,
+      "questions": [
+        {
+          "question_id": "primary_persona",
+          "question": "Primary persona",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "e.g., Power User Paula, Admin Andy",
+          "description": "Main user type who will interact with the feature",
+          "answer": ""
+        },
+        {
+          "question_id": "secondary_persona",
+          "question": "Secondary persona (if any)",
+          "answer_type": "text",
+          "required": false,
+          "description": "Additional user type impacted",
+          "answer": ""
+        },
+        {
+          "question_id": "internal_persona",
+          "question": "Internal / Admin persona (if applicable)",
+          "answer_type": "text",
+          "required": false,
+          "description": "Internal users who manage or support the feature",
+          "answer": ""
+        },
+        {
+          "question_id": "user_scenarios",
+          "question": "Provide real-world user scenarios",
+          "answer_type": "long_text",
+          "required": true,
+          "description": "Describe situations where the feature will be used",
+          "answer": ""
+        },
+        {
+          "question_id": "user_flow",
+          "question": "Outline the main user flow",
+          "answer_type": "long_text",
+          "required": true,
+          "description": "Step-by-step interaction from the user's perspective",
+          "answer": ""
+        },
+        {
+          "question_id": "functional_requirements",
+          "question": "List the functional requirements",
+          "answer_type": "long_text",
+          "required": true,
+          "description": "Clear, testable statements of what the system must do",
+          "answer": ""
+        },
+        {
+          "question_id": "ui_requirements",
+          "question": "Describe UI / UX expectations",
+          "answer_type": "long_text",
+          "required": true,
+          "description": "Screens, components, states, and accessibility needs",
+          "answer": ""
+        },
+        {
+          "question_id": "business_rules",
+          "question": "Define the business rules",
+          "answer_type": "long_text",
+          "required": true,
+          "description": "Logic and constraints governing the feature",
+          "answer": ""
+        },
+        {
+          "question_id": "edge_cases",
+          "question": "Identify edge cases and error handling",
+          "answer_type": "long_text",
+          "required": true,
+          "description": "Non-happy paths, failures, and recovery",
+          "answer": ""
+        },
+        {
+          "question_id": "security_compliance",
+          "question": "Security & compliance considerations",
+          "answer_type": "long_text",
+          "required": false,
+          "description": "Security, privacy, and regulatory requirements",
+          "answer": ""
+        },
+        {
+          "question_id": "dependencies",
+          "question": "List internal and external dependencies",
+          "answer_type": "long_text",
+          "required": true,
+          "description": "Anything this feature relies on",
+          "answer": ""
+        },
+        {
+          "question_id": "analytics_tracking",
+          "question": "Analytics & tracking events",
+          "answer_type": "long_text",
+          "required": false,
+          "description": "Events and metrics to measure usage and success",
+          "answer": ""
+        },
+        {
+          "question_id": "acceptance_criteria",
+          "question": "Acceptance criteria",
+          "answer_type": "long_text",
+          "required": true,
+          "description": "Conditions that must be met for the feature to be considered complete",
+          "answer": ""
+        },
+        {
+          "question_id": "out_of_scope",
+          "question": "Out of scope items",
+          "answer_type": "long_text",
+          "required": true,
+          "description": "Explicitly excluded functionality",
+          "answer": ""
+        },
+        {
+          "question_id": "open_questions",
+          "question": "Open questions",
+          "answer_type": "long_text",
+          "required": false,
+          "description": "Unresolved questions that need answers",
+          "answer": ""
+        },
+        {
+          "question_id": "rollout_plan",
+          "question": "Rollout & release plan",
+          "answer_type": "long_text",
+          "required": false,
+          "description": "How the feature will be released",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Risks & Mitigations",
+      "order": 5,
+      "questions": [
+        {
+          "question_id": "risks",
+          "question": "List known risks and their mitigations",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Risk",
+              "type": "text"
+            },
+            {
+              "name": "Impact",
+              "type": "text"
+            },
+            {
+              "name": "Mitigation",
+              "type": "text"
+            }
+          ],
+          "description": "Add each risk with impact and mitigation strategy",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    }
+  ],
+  "_metadata": {
+    "page_id": "2fc89db1-5e5b-80a6-a59b-ff22cd7db09c",
+    "extraction_date": "2026-02-09T15:40:15.303068",
+    "model_used": "moonshotai/kimi-k2-instruct-0905"
+  }
+}

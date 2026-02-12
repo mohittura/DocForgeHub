@@ -1,0 +1,173 @@
+{
+  "document_name": "Onboarding Documentation",
+  "document_type": "Onboarding Documentation",
+  "estimated_completion_time": "15-20 minutes",
+  "total_questions": 13,
+  "question_categories": [
+    {
+      "category": "Document Metadata",
+      "order": 1,
+      "questions": [
+        {
+          "question_id": "company_name",
+          "question": "What is your company name?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Acme Corporation",
+          "description": "Used throughout the document to personalize onboarding content",
+          "answer": ""
+        },
+        {
+          "question_id": "document_owner",
+          "question": "Who is the document owner responsible for maintaining this onboarding documentation?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "HR Department",
+          "description": "Identifies the department or person responsible for this document",
+          "answer": ""
+        },
+        {
+          "question_id": "version_number",
+          "question": "What is the current version number of this document?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "1.0",
+          "description": "Used for version control and tracking document updates",
+          "answer": ""
+        },
+        {
+          "question_id": "effective_date",
+          "question": "When does this onboarding documentation become effective?",
+          "answer_type": "date",
+          "required": true,
+          "description": "The date when this onboarding process becomes active",
+          "answer": ""
+        },
+        {
+          "question_id": "last_review_date",
+          "question": "When was this document last reviewed?",
+          "answer_type": "date",
+          "required": true,
+          "description": "Date of the most recent review for document maintenance",
+          "answer": ""
+        },
+        {
+          "question_id": "approved_by",
+          "question": "Who approved this onboarding documentation?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "HR Director Name",
+          "description": "Name or title of the person who approved this document",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Onboarding Timeline",
+      "order": 2,
+      "questions": [
+        {
+          "question_id": "onboarding_timeline_items",
+          "question": "What are the key timeline milestones for your onboarding process?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Timeline",
+              "type": "text"
+            },
+            {
+              "name": "Focus Area",
+              "type": "text"
+            }
+          ],
+          "description": "Define the timeline and focus areas for new employee integration",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Roles and Responsibilities",
+      "order": 3,
+      "questions": [
+        {
+          "question_id": "hr_responsibilities",
+          "question": "What are the specific responsibilities of HR during onboarding?",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "Managing onboarding documentation, completing employment paperwork, scheduling orientation sessions...",
+          "description": "Detailed responsibilities for HR in the onboarding process",
+          "answer": ""
+        },
+        {
+          "question_id": "manager_responsibilities",
+          "question": "What are the hiring manager's responsibilities during onboarding?",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "Setting expectations, introducing team members, assigning initial tasks...",
+          "description": "Detailed responsibilities for the hiring manager",
+          "answer": ""
+        },
+        {
+          "question_id": "it_responsibilities",
+          "question": "What are IT/Operations responsibilities during onboarding?",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "Setting up equipment, creating system accounts, security access...",
+          "description": "Detailed responsibilities for IT/Operations team",
+          "answer": ""
+        },
+        {
+          "question_id": "employee_responsibilities",
+          "question": "What are the new employee's responsibilities during onboarding?",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "Completing required training, asking questions, providing feedback...",
+          "description": "Detailed responsibilities for the new employee",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Success Metrics",
+      "order": 4,
+      "questions": [
+        {
+          "question_id": "success_metrics",
+          "question": "What metrics will you use to measure onboarding success?",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "Time to productivity, employee satisfaction scores, retention rates after 90 days...",
+          "description": "Define how you will measure if the onboarding process is successful",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Review Process",
+      "order": 5,
+      "questions": [
+        {
+          "question_id": "review_schedule",
+          "question": "How often should this onboarding documentation be reviewed and updated?",
+          "answer_type": "select",
+          "required": true,
+          "options": [
+            "Quarterly",
+            "Semi-annually",
+            "Annually",
+            "As needed"
+          ],
+          "description": "Establish the review cycle for maintaining current onboarding processes",
+          "answer": ""
+        }
+      ]
+    }
+  ],
+  "_metadata": {
+    "page_id": "2fc89db1-5e5b-802b-bb9c-d2a1e7c8e023",
+    "extraction_date": "2026-02-09T18:00:07.711878",
+    "model_used": "moonshotai/kimi-k2-instruct-0905"
+  }
+}

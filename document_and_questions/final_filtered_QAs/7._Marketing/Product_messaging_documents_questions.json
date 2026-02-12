@@ -1,0 +1,272 @@
+{
+  "document_name": "Product Messaging Document",
+  "document_type": "Product Messaging Document",
+  "estimated_completion_time": "30-40 minutes",
+  "total_questions": 17,
+  "question_categories": [
+    {
+      "category": "Document Metadata",
+      "order": 1,
+      "questions": [
+        {
+          "question_id": "document_name",
+          "question": "What is the name of this document?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Product Messaging Document",
+          "description": "Official name for this messaging document",
+          "answer": ""
+        },
+        {
+          "question_id": "product_name",
+          "question": "What is the name of your product?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Acme Analytics Platform",
+          "description": "The product this messaging document covers",
+          "answer": ""
+        },
+        {
+          "question_id": "company_name",
+          "question": "What is your company name?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Acme Corporation",
+          "description": "Company that owns the product",
+          "answer": ""
+        },
+        {
+          "question_id": "document_owner",
+          "question": "Who is the document owner?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Product Marketing Manager",
+          "description": "Person responsible for maintaining this document",
+          "answer": ""
+        },
+        {
+          "question_id": "version",
+          "question": "What is the document version?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "1.0",
+          "description": "Version number for tracking changes",
+          "answer": ""
+        },
+        {
+          "question_id": "effective_date",
+          "question": "When does this version become effective?",
+          "answer_type": "date",
+          "required": true,
+          "description": "Date when this messaging becomes active",
+          "answer": ""
+        },
+        {
+          "question_id": "last_review_date",
+          "question": "When was this document last reviewed?",
+          "answer_type": "date",
+          "required": true,
+          "description": "Most recent review date",
+          "answer": ""
+        },
+        {
+          "question_id": "approved_by",
+          "question": "Who approved this document?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "VP of Marketing",
+          "description": "Person who approved this messaging",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Product Overview",
+      "order": 2,
+      "questions": [
+        {
+          "question_id": "product_description",
+          "question": "Provide a short description of what your product does",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "A cloud-based analytics platform that helps businesses make data-driven decisions",
+          "description": "High-level explanation of product functionality",
+          "answer": ""
+        },
+        {
+          "question_id": "product_category",
+          "question": "What product category does it belong to?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Business Intelligence Software",
+          "description": "Industry category or market segment",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Target Customer",
+      "order": 3,
+      "questions": [
+        {
+          "question_id": "target_customer_attributes",
+          "question": "What are your target customer attributes?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Attribute",
+              "type": "text"
+            },
+            {
+              "name": "Description",
+              "type": "text"
+            }
+          ],
+          "description": "Define key customer characteristics like industry, company size, buyer roles",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Value Proposition",
+      "order": 4,
+      "questions": [
+        {
+          "question_id": "value_pillars",
+          "question": "What are your supporting value pillars?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Value Pillar",
+              "type": "text"
+            },
+            {
+              "name": "Description",
+              "type": "text"
+            },
+            {
+              "name": "Customer Outcome",
+              "type": "text"
+            }
+          ],
+          "description": "List each value pillar with description and expected customer outcome",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Feature-to-Benefit Mapping",
+      "order": 5,
+      "questions": [
+        {
+          "question_id": "feature_benefits",
+          "question": "Map your product features to customer benefits",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Product Feature",
+              "type": "text"
+            },
+            {
+              "name": "Capability Description",
+              "type": "text"
+            },
+            {
+              "name": "Customer Benefit",
+              "type": "text"
+            }
+          ],
+          "description": "For each feature, describe the capability and resulting customer benefit",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Differentiation",
+      "order": 6,
+      "questions": [
+        {
+          "question_id": "differentiators",
+          "question": "What makes your product different from competitors?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Differentiator",
+              "type": "text"
+            },
+            {
+              "name": "Description",
+              "type": "text"
+            },
+            {
+              "name": "Customer Impact",
+              "type": "text"
+            }
+          ],
+          "description": "List each differentiator with description and impact on customers",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Scope and Governance",
+      "order": 7,
+      "questions": [
+        {
+          "question_id": "scope_items",
+          "question": "Where will this messaging be used? (In-scope items)",
+          "answer_type": "multi_select",
+          "required": true,
+          "options": [
+            "Website product pages",
+            "Sales presentations",
+            "Marketing campaigns",
+            "Product documentation",
+            "Partner communications",
+            "Press releases",
+            "Trade show materials"
+          ],
+          "description": "Select all channels where this messaging applies",
+          "answer": ""
+        },
+        {
+          "question_id": "out_of_scope",
+          "question": "What is explicitly out of scope for this messaging?",
+          "answer_type": "long_text",
+          "required": false,
+          "placeholder": "Internal technical documentation, engineering specs, etc.",
+          "description": "Define what this messaging document does not cover",
+          "answer": ""
+        },
+        {
+          "question_id": "review_schedule",
+          "question": "How often should this document be reviewed?",
+          "answer_type": "select",
+          "required": true,
+          "options": [
+            "Monthly",
+            "Quarterly",
+            "Bi-annually",
+            "Annually",
+            "As needed"
+          ],
+          "description": "Frequency for reviewing and updating messaging",
+          "answer": ""
+        }
+      ]
+    }
+  ],
+  "_metadata": {
+    "page_id": "2fc89db1-5e5b-8014-acb1-fbd1e4d52796",
+    "extraction_date": "2026-02-09T17:23:31.997793",
+    "model_used": "moonshotai/kimi-k2-instruct-0905"
+  }
+}

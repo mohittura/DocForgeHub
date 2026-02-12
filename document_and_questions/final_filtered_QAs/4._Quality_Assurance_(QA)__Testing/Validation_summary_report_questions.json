@@ -1,0 +1,238 @@
+{
+  "document_name": "Validation Summary Report",
+  "document_type": "Validation Summary Report",
+  "estimated_completion_time": "15-20 minutes",
+  "total_questions": 13,
+  "question_categories": [
+    {
+      "category": "Document Metadata",
+      "order": 1,
+      "questions": [
+        {
+          "question_id": "product_name",
+          "question": "What is the name of the product or system being validated?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "e.g., Customer Portal 2.0",
+          "description": "Used throughout the report to identify the validated system",
+          "answer": ""
+        },
+        {
+          "question_id": "release_version",
+          "question": "What is the release version being validated?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "e.g., v3.2.1",
+          "description": "Identifies the specific version covered by this validation",
+          "answer": ""
+        },
+        {
+          "question_id": "validation_period",
+          "question": "What is the validation period (start and end dates)?",
+          "answer_type": "date",
+          "required": true,
+          "description": "Shows the timeframe during which validation activities were performed",
+          "answer": ""
+        },
+        {
+          "question_id": "prepared_by",
+          "question": "Who prepared this validation summary report?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "QA / Validation Team",
+          "description": "Identifies the team responsible for the report",
+          "answer": ""
+        },
+        {
+          "question_id": "approved_by",
+          "question": "Who approved this validation summary report?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "e.g., QA Manager",
+          "description": "Identifies the approver of the report",
+          "answer": ""
+        },
+        {
+          "question_id": "document_date",
+          "question": "What is the document date?",
+          "answer_type": "date",
+          "required": true,
+          "description": "Date when the report was finalized",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Validation Scope",
+      "order": 2,
+      "questions": [
+        {
+          "question_id": "validation_scope",
+          "question": "What validation activities were covered in this report?",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "e.g., Installation and configuration verification, Functional testing of implemented features, Operational workflow validation, Integration verification",
+          "description": "Defines what was included in the validation effort",
+          "answer": ""
+        },
+        {
+          "question_id": "validation_assumptions",
+          "question": "What assumptions apply to this validation?",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "e.g., Testing environments accurately reflect production configurations, Approved requirements and specifications were used as validation references, Test data used represents expected operational scenarios",
+          "description": "States the assumptions made during validation",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Acronyms and Definitions",
+      "order": 3,
+      "questions": [
+        {
+          "question_id": "acronyms",
+          "question": "What acronyms and their definitions should be included in the report?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Acronym",
+              "type": "text"
+            },
+            {
+              "name": "Definition",
+              "type": "text"
+            }
+          ],
+          "description": "List all acronyms used in the validation report with their definitions",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Referenced Documents",
+      "order": 4,
+      "questions": [
+        {
+          "question_id": "referenced_documents",
+          "question": "What documents were referenced during validation and their versions?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Document",
+              "type": "text"
+            },
+            {
+              "name": "Version",
+              "type": "text"
+            }
+          ],
+          "description": "List all documents referenced in the validation with their versions",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Testing Environment",
+      "order": 5,
+      "questions": [
+        {
+          "question_id": "testing_environment",
+          "question": "What testing environment details should be documented?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Item",
+              "type": "text"
+            },
+            {
+              "name": "Description",
+              "type": "text"
+            }
+          ],
+          "description": "Describe the testing environment, tools used, and test data",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Installation Qualification Results",
+      "order": 6,
+      "questions": [
+        {
+          "question_id": "iq_test_results",
+          "question": "What were the Installation Qualification test results?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Test Area",
+              "type": "text"
+            },
+            {
+              "name": "Result",
+              "type": "select",
+              "options": [
+                "Pass",
+                "Fail",
+                "N/A"
+              ]
+            },
+            {
+              "name": "Comments",
+              "type": "text"
+            }
+          ],
+          "description": "Document each IQ test area with its result and any comments",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Operational Qualification Results",
+      "order": 7,
+      "questions": [
+        {
+          "question_id": "oq_test_results",
+          "question": "What were the Operational Qualification test results?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Test Area",
+              "type": "text"
+            },
+            {
+              "name": "Result",
+              "type": "select",
+              "options": [
+                "Pass",
+                "Fail",
+                "N/A"
+              ]
+            },
+            {
+              "name": "Comments",
+              "type": "text"
+            }
+          ],
+          "description": "Document each OQ test area with its result and any comments",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    }
+  ],
+  "_metadata": {
+    "page_id": "2fc89db1-5e5b-80b8-840f-e49307a08f1d",
+    "extraction_date": "2026-02-09T16:29:06.287403",
+    "model_used": "moonshotai/kimi-k2-instruct-0905"
+  }
+}

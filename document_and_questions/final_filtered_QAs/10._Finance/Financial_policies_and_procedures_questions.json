@@ -1,0 +1,246 @@
+{
+  "document_name": "Financial Policies and Procedures",
+  "document_type": "Financial Policies and Procedures",
+  "estimated_completion_time": "20-30 minutes",
+  "total_questions": 16,
+  "question_categories": [
+    {
+      "category": "Document Metadata",
+      "order": 1,
+      "questions": [
+        {
+          "question_id": "company_name",
+          "question": "What is your company name?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Acme Corporation",
+          "description": "Used throughout the document to personalize policies",
+          "answer": ""
+        },
+        {
+          "question_id": "document_version",
+          "question": "What is the document version number?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "1.0",
+          "description": "Version tracking for document control",
+          "answer": ""
+        },
+        {
+          "question_id": "effective_date",
+          "question": "What is the effective date for these policies?",
+          "answer_type": "date",
+          "required": true,
+          "description": "Date when policies become active",
+          "answer": ""
+        },
+        {
+          "question_id": "last_review_date",
+          "question": "What is the last review date?",
+          "answer_type": "date",
+          "required": true,
+          "description": "Date when policies were last reviewed",
+          "answer": ""
+        },
+        {
+          "question_id": "approved_by",
+          "question": "Who approved this document?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "CFO Name",
+          "description": "Person with authority approving these policies",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Document Scope",
+      "order": 2,
+      "questions": [
+        {
+          "question_id": "departments_handling_finances",
+          "question": "Which departments handle financial transactions?",
+          "answer_type": "multi_select",
+          "required": true,
+          "options": [
+            "Finance/Accounting",
+            "Operations",
+            "Sales",
+            "Marketing",
+            "HR",
+            "IT",
+            "Legal",
+            "Procurement",
+            "All Departments"
+          ],
+          "description": "Departments that will be governed by these financial policies",
+          "answer": ""
+        },
+        {
+          "question_id": "company_accounts_assets",
+          "question": "What company accounts and assets are covered?",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "All bank accounts, investment accounts, physical assets, intellectual property",
+          "description": "Specific accounts and assets subject to these policies",
+          "answer": ""
+        },
+        {
+          "question_id": "financial_employee_roles",
+          "question": "Which employee roles are involved in financial activities?",
+          "answer_type": "multi_select",
+          "required": true,
+          "options": [
+            "All Employees",
+            "Managers",
+            "Department Heads",
+            "Finance Team",
+            "C-Suite",
+            "Procurement Staff",
+            "Sales Team",
+            "HR Team"
+          ],
+          "description": "Employee categories that must comply with financial policies",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Financial Roles and Responsibilities",
+      "order": 3,
+      "questions": [
+        {
+          "question_id": "financial_roles",
+          "question": "What financial roles exist in your organization?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Role Title",
+              "type": "text"
+            },
+            {
+              "name": "Responsibilities",
+              "type": "text"
+            }
+          ],
+          "description": "Define each role and their specific financial responsibilities",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Budgeting and Forecasting",
+      "order": 4,
+      "questions": [
+        {
+          "question_id": "budget_cycle_dates",
+          "question": "What are your budget cycle dates?",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "Budget preparation: September-November, Approval: December, Implementation: January",
+          "description": "Timeline for annual budget process",
+          "answer": ""
+        },
+        {
+          "question_id": "forecast_update_frequency",
+          "question": "How often are forecasts updated?",
+          "answer_type": "select",
+          "required": true,
+          "options": [
+            "Monthly",
+            "Quarterly",
+            "Semi-annually",
+            "Annually",
+            "As needed"
+          ],
+          "description": "Frequency of forecast revisions",
+          "answer": ""
+        },
+        {
+          "question_id": "budget_approval_process",
+          "question": "Describe your budget approval process",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "Department submits → Finance reviews → CFO approves → Board approval",
+          "description": "Steps in budget approval workflow",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Annual Budget Process",
+      "order": 5,
+      "questions": [
+        {
+          "question_id": "budget_preparation_timeline",
+          "question": "What is your budget preparation timeline?",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "Q3: Department planning, Q4: Finance consolidation and review, December: Final approval",
+          "description": "Detailed timeline for annual budget preparation",
+          "answer": ""
+        },
+        {
+          "question_id": "departmental_budget_requirements",
+          "question": "What are the departmental budget requirements?",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "Zero-based budgeting, prior year + 5% growth, strategic initiatives included",
+          "description": "Specific requirements for department budget submissions",
+          "answer": ""
+        },
+        {
+          "question_id": "budget_approval_hierarchy",
+          "question": "What is the approval hierarchy for budgets?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Approval Level",
+              "type": "text"
+            },
+            {
+              "name": "Approval Authority",
+              "type": "text"
+            }
+          ],
+          "description": "Who approves budgets at each level",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Approval Limits",
+      "order": 6,
+      "questions": [
+        {
+          "question_id": "approval_limits",
+          "question": "What are the approval limits for financial transactions?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Approval Level",
+              "type": "text"
+            },
+            {
+              "name": "Maximum Approval Amount",
+              "type": "number"
+            }
+          ],
+          "description": "Define who can approve what dollar amounts",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    }
+  ],
+  "_metadata": {
+    "page_id": "2fc89db1-5e5b-80c7-b6d3-e645c23a9fe7",
+    "extraction_date": "2026-02-09T18:09:26.197695",
+    "model_used": "moonshotai/kimi-k2-instruct-0905"
+  }
+}

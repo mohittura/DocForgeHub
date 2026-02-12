@@ -1,0 +1,213 @@
+{
+  "document_name": "Customer Case Study",
+  "document_type": "Customer Case Study",
+  "estimated_completion_time": "15-20 minutes",
+  "total_questions": 14,
+  "question_categories": [
+    {
+      "category": "Customer Information",
+      "order": 1,
+      "questions": [
+        {
+          "question_id": "customer_name",
+          "question": "What is the primary contact's full name?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "e.g., Sarah Johnson",
+          "description": "Name of the customer who will be quoted",
+          "answer": ""
+        },
+        {
+          "question_id": "company_name",
+          "question": "What is the customer's company name?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "e.g., Acme Logistics",
+          "description": "Company name that will appear in the title",
+          "answer": ""
+        },
+        {
+          "question_id": "industry_sector",
+          "question": "What industry or sector does the company operate in?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "e.g., Logistics & Transportation",
+          "description": "Helps readers understand the business context",
+          "answer": ""
+        },
+        {
+          "question_id": "company_size",
+          "question": "How would you describe the company size?",
+          "answer_type": "select",
+          "required": true,
+          "options": [
+            "Startup (1-50 employees)",
+            "Small (51-200 employees)",
+            "Medium (201-1000 employees)",
+            "Large (1000+ employees)"
+          ],
+          "description": "Provides context for the scale of the business",
+          "answer": ""
+        },
+        {
+          "question_id": "company_location",
+          "question": "Where is the company headquartered?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "e.g., Chicago, IL",
+          "description": "Adds geographic context to the story",
+          "answer": ""
+        },
+        {
+          "question_id": "case_study_date",
+          "question": "When is this case study being created?",
+          "answer_type": "date",
+          "required": true,
+          "description": "Used for version control and timeliness",
+          "answer": ""
+        },
+        {
+          "question_id": "prepared_by",
+          "question": "Who is preparing this case study?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "e.g., Marketing Team",
+          "description": "Tracks ownership of the document",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Customer Overview",
+      "order": 2,
+      "questions": [
+        {
+          "question_id": "customer_overview",
+          "question": "Provide a 2-3 sentence summary of the customer's business, market position, and primary operations.",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "Acme Logistics is a mid-sized freight company operating across the Midwest...",
+          "description": "Sets the stage for understanding their business context",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Challenges / Pain Points",
+      "order": 3,
+      "questions": [
+        {
+          "question_id": "challenges",
+          "question": "What were the main challenges the customer faced before using your product/service?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Challenge",
+              "type": "text"
+            },
+            {
+              "name": "Description",
+              "type": "text"
+            }
+          ],
+          "description": "List each challenge with a brief description of its impact",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Solution",
+      "order": 4,
+      "questions": [
+        {
+          "question_id": "product_service_name",
+          "question": "What is the name of your product/service that was implemented?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "e.g., FleetTrack Pro",
+          "description": "Primary solution that addressed the challenges",
+          "answer": ""
+        },
+        {
+          "question_id": "solution_components",
+          "question": "Describe the solution components and how they were implemented.",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Solution Component",
+              "type": "text"
+            },
+            {
+              "name": "Description",
+              "type": "text"
+            }
+          ],
+          "description": "Include implementation steps, integration details, and usage context",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Results / Impact",
+      "order": 5,
+      "questions": [
+        {
+          "question_id": "results_metrics",
+          "question": "What measurable results and outcomes were achieved?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Metric / Outcome",
+              "type": "text"
+            },
+            {
+              "name": "Result",
+              "type": "text"
+            },
+            {
+              "name": "Description",
+              "type": "text"
+            }
+          ],
+          "description": "Include both quantitative (%, time saved, revenue) and qualitative benefits",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Customer Quote & Takeaways",
+      "order": 6,
+      "questions": [
+        {
+          "question_id": "customer_quote",
+          "question": "Provide a short, positive quote from the customer about their experience.",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "\"FleetTrack Pro has transformed our operations...\"",
+          "description": "Authentic testimonial reflecting satisfaction and impact",
+          "answer": ""
+        },
+        {
+          "question_id": "key_takeaways",
+          "question": "What are the key lessons learned or best practices other customers can apply?",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "1. Start with a pilot program...",
+          "description": "Actionable insights for similar businesses",
+          "answer": ""
+        }
+      ]
+    }
+  ],
+  "_metadata": {
+    "page_id": "2fc89db1-5e5b-80c8-9d61-ce250ad9a0f8",
+    "extraction_date": "2026-02-09T17:13:28.706338",
+    "model_used": "moonshotai/kimi-k2-instruct-0905"
+  }
+}

@@ -1,0 +1,135 @@
+{
+  "document_name": "Employee Handbook",
+  "document_type": "Employee Handbook",
+  "estimated_completion_time": "15-20 minutes",
+  "total_questions": 9,
+  "question_categories": [
+    {
+      "category": "Company Information",
+      "order": 1,
+      "questions": [
+        {
+          "question_id": "company_name",
+          "question": "What is your company's legal name?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Acme Corporation",
+          "description": "This will replace all {{Company Name}} placeholders throughout the handbook",
+          "answer": ""
+        },
+        {
+          "question_id": "company_mission",
+          "question": "Provide a brief overview of your company's mission, products, and business focus",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "We are a technology company focused on developing innovative software solutions for small businesses...",
+          "description": "This content will appear in Section 3.1 Company Introduction",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Document Metadata",
+      "order": 2,
+      "questions": [
+        {
+          "question_id": "handbook_version",
+          "question": "What is the version number for this handbook?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "1.0",
+          "description": "Used for document version control",
+          "answer": ""
+        },
+        {
+          "question_id": "effective_date",
+          "question": "When does this handbook become effective?",
+          "answer_type": "date",
+          "required": true,
+          "description": "Date when policies become active",
+          "answer": ""
+        },
+        {
+          "question_id": "last_review_date",
+          "question": "When was this handbook last reviewed?",
+          "answer_type": "date",
+          "required": true,
+          "description": "For tracking document review cycles",
+          "answer": ""
+        },
+        {
+          "question_id": "approved_by",
+          "question": "Who approved this handbook?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "CEO Name, HR Director Name",
+          "description": "Name and title of person who approved the document",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Review and Updates",
+      "order": 3,
+      "questions": [
+        {
+          "question_id": "review_schedule",
+          "question": "How often will this handbook be reviewed?",
+          "answer_type": "select",
+          "required": true,
+          "options": [
+            "Annually",
+            "Bi-annually",
+            "Quarterly",
+            "As needed"
+          ],
+          "description": "Determines the review frequency for Section 19",
+          "answer": ""
+        },
+        {
+          "question_id": "responsible_department",
+          "question": "Which department is responsible for maintaining this handbook?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Human Resources",
+          "description": "Department responsible for updates and revisions",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Employee Acknowledgements",
+      "order": 4,
+      "questions": [
+        {
+          "question_id": "employees_to_acknowledge",
+          "question": "Which employees need to sign the acknowledgement form?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Employee Name",
+              "type": "text"
+            },
+            {
+              "name": "Signature",
+              "type": "text"
+            },
+            {
+              "name": "Date",
+              "type": "date"
+            }
+          ],
+          "description": "List all employees who must acknowledge receipt of the handbook",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    }
+  ],
+  "_metadata": {
+    "page_id": "2fc89db1-5e5b-8090-a395-c81aa86f192d",
+    "extraction_date": "2026-02-09T17:58:44.856689",
+    "model_used": "moonshotai/kimi-k2-instruct-0905"
+  }
+}

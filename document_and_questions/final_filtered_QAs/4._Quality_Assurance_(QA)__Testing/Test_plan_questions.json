@@ -1,0 +1,255 @@
+{
+  "document_name": "Test Plan",
+  "document_type": "Test Plan",
+  "estimated_completion_time": "15-20 minutes",
+  "total_questions": 13,
+  "question_categories": [
+    {
+      "category": "Document Metadata",
+      "order": 1,
+      "questions": [
+        {
+          "question_id": "product_name",
+          "question": "What is the name of the product or system being tested?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "e.g., MyApp v3.2",
+          "description": "Replaces {{Product Name}} in the header and scope section",
+          "answer": ""
+        },
+        {
+          "question_id": "release_version",
+          "question": "What is the release or version number?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "e.g., 3.2.0",
+          "description": "Appears in the document header",
+          "answer": ""
+        },
+        {
+          "question_id": "prepared_by",
+          "question": "Who is preparing this test plan?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "e.g., Jane Smith",
+          "description": "Replaces {{QA Owner}} in the header",
+          "answer": ""
+        },
+        {
+          "question_id": "approved_by",
+          "question": "Who will approve this test plan?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "e.g., John Doe",
+          "description": "Replaces {{Approver}} in the header",
+          "answer": ""
+        },
+        {
+          "question_id": "document_date",
+          "question": "What is the document creation or approval date?",
+          "answer_type": "date",
+          "required": true,
+          "description": "Replaces {{Date}} in the header",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Scope and Objectives",
+      "order": 2,
+      "questions": [
+        {
+          "question_id": "scope_features",
+          "question": "Which features or modules are IN scope for testing?",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "List each feature on a new line",
+          "description": "Replaces the generic bullet list under 'In Scope'",
+          "answer": ""
+        },
+        {
+          "question_id": "out_of_scope",
+          "question": "What is explicitly OUT of scope for this testing effort?",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "List each out-of-scope item on a new line",
+          "description": "Replaces the generic bullet list under 'Out of Scope'",
+          "answer": ""
+        },
+        {
+          "question_id": "test_objectives",
+          "question": "What are the specific objectives for this test cycle?",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "One objective per line",
+          "description": "Replaces the generic objectives listed in section 1.2",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Test Cases",
+      "order": 3,
+      "questions": [
+        {
+          "question_id": "test_cases",
+          "question": "What test cases should be tracked in this plan?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Test Case ID",
+              "type": "text"
+            },
+            {
+              "name": "Scenario",
+              "type": "text"
+            },
+            {
+              "name": "Description",
+              "type": "text"
+            },
+            {
+              "name": "Expected Result",
+              "type": "text"
+            },
+            {
+              "name": "Status",
+              "type": "select",
+              "options": [
+                "Pending",
+                "Pass",
+                "Fail",
+                "Blocked"
+              ]
+            }
+          ],
+          "description": "Each row becomes a line in the Test Cases table",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Team and Roles",
+      "order": 4,
+      "questions": [
+        {
+          "question_id": "team_roles",
+          "question": "Who are the team members and their responsibilities?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Role",
+              "type": "text"
+            },
+            {
+              "name": "Responsibility",
+              "type": "text"
+            }
+          ],
+          "description": "Populates the Roles and Responsibilities table",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Testing Schedule",
+      "order": 5,
+      "questions": [
+        {
+          "question_id": "testing_phases",
+          "question": "What are the testing phases, activities, owners, and dates?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Phase",
+              "type": "text"
+            },
+            {
+              "name": "Activity",
+              "type": "text"
+            },
+            {
+              "name": "Owner",
+              "type": "text"
+            },
+            {
+              "name": "Start Date",
+              "type": "date"
+            },
+            {
+              "name": "End Date",
+              "type": "date"
+            }
+          ],
+          "description": "Fills the Timeline and Schedule table",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Risks and Mitigation",
+      "order": 6,
+      "questions": [
+        {
+          "question_id": "project_risks",
+          "question": "What risks could impact testing and how will you mitigate them?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Risk",
+              "type": "text"
+            },
+            {
+              "name": "Impact",
+              "type": "text"
+            },
+            {
+              "name": "Mitigation",
+              "type": "text"
+            }
+          ],
+          "description": "Populates the Risk Assessment table",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Testing Types",
+      "order": 7,
+      "questions": [
+        {
+          "question_id": "testing_types",
+          "question": "Which testing types will you perform and why?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Testing Type",
+              "type": "text"
+            },
+            {
+              "name": "Purpose",
+              "type": "text"
+            }
+          ],
+          "description": "Fills the Testing Approach table",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    }
+  ],
+  "_metadata": {
+    "page_id": "2fc89db1-5e5b-8089-b242-d54d9c0b360e",
+    "extraction_date": "2026-02-09T16:03:04.968697",
+    "model_used": "moonshotai/kimi-k2-instruct-0905"
+  }
+}

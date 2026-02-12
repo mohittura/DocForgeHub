@@ -1,0 +1,256 @@
+{
+  "document_name": "Market Research Report",
+  "document_type": "Market Research Report",
+  "estimated_completion_time": "25-35 minutes",
+  "total_questions": 15,
+  "question_categories": [
+    {
+      "category": "Document Metadata",
+      "order": 1,
+      "questions": [
+        {
+          "question_id": "doc_name",
+          "question": "What is the name of this market research report?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "e.g., Global Cloud Storage Market Research 2026",
+          "description": "Used as the official document title",
+          "answer": ""
+        },
+        {
+          "question_id": "market_industry",
+          "question": "What market or industry are you researching?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "e.g., Cloud Storage Services, EV Charging Infrastructure",
+          "description": "Defines the scope of the research",
+          "answer": ""
+        },
+        {
+          "question_id": "department",
+          "question": "Which department is conducting this research?",
+          "answer_type": "select",
+          "required": true,
+          "options": [
+            "Marketing",
+            "Strategy",
+            "Product",
+            "Business Development",
+            "Other"
+          ],
+          "description": "Identifies the owning department",
+          "answer": ""
+        },
+        {
+          "question_id": "research_owner",
+          "question": "Who is the primary owner of this research?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "e.g., Jane Smith",
+          "description": "Person responsible for the report content",
+          "answer": ""
+        },
+        {
+          "question_id": "version",
+          "question": "What is the version number of this report?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "e.g., 1.0, 2.3",
+          "description": "Tracks document revisions",
+          "answer": ""
+        },
+        {
+          "question_id": "research_period",
+          "question": "What is the research period covered?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "e.g., Jan 2026 – Mar 2026",
+          "description": "Timeframe when research was conducted",
+          "answer": ""
+        },
+        {
+          "question_id": "report_date",
+          "question": "What is the report publication date?",
+          "answer_type": "date",
+          "required": true,
+          "description": "Date the report is finalized",
+          "answer": ""
+        },
+        {
+          "question_id": "approved_by",
+          "question": "Who approves this report?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "e.g., Director of Strategy",
+          "description": "Approver name for sign-off",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Market Overview",
+      "order": 2,
+      "questions": [
+        {
+          "question_id": "market_size_metrics",
+          "question": "Provide key market size and growth metrics",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Metric",
+              "type": "select",
+              "options": [
+                "Estimated Market Size",
+                "Growth Rate (CAGR)",
+                "Growth Drivers",
+                "Market Share"
+              ]
+            },
+            {
+              "name": "Value",
+              "type": "text"
+            }
+          ],
+          "description": "Quantitative data to populate the Market Size table",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Customer Segments",
+      "order": 3,
+      "questions": [
+        {
+          "question_id": "customer_segments",
+          "question": "List your target customer segments",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Segment",
+              "type": "text"
+            },
+            {
+              "name": "Description",
+              "type": "text"
+            },
+            {
+              "name": "Needs",
+              "type": "text"
+            }
+          ],
+          "description": "Defines who the customers are and what they need",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Competitive Landscape",
+      "order": 4,
+      "questions": [
+        {
+          "question_id": "competitors",
+          "question": "Who are your main competitors?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Competitor",
+              "type": "text"
+            },
+            {
+              "name": "Strength",
+              "type": "text"
+            },
+            {
+              "name": "Weakness",
+              "type": "text"
+            },
+            {
+              "name": "Market Position",
+              "type": "text"
+            }
+          ],
+          "description": "Competitive analysis data for comparison table",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Risks and Challenges",
+      "order": 5,
+      "questions": [
+        {
+          "question_id": "market_risks",
+          "question": "What are the key market risks and challenges?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Risk",
+              "type": "text"
+            },
+            {
+              "name": "Impact",
+              "type": "text"
+            },
+            {
+              "name": "Mitigation Consideration",
+              "type": "text"
+            }
+          ],
+          "description": "Identifies risks and how to mitigate them",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Review Process",
+      "order": 6,
+      "questions": [
+        {
+          "question_id": "review_frequency",
+          "question": "How often should this report be reviewed?",
+          "answer_type": "select",
+          "required": true,
+          "options": [
+            "Monthly",
+            "Quarterly",
+            "Semi-annually",
+            "Annually",
+            "As needed"
+          ],
+          "description": "Sets the review cadence",
+          "answer": ""
+        },
+        {
+          "question_id": "reviewers",
+          "question": "Who are the designated reviewers?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "e.g., Product Manager, Strategy Lead",
+          "description": "People responsible for reviewing updates",
+          "answer": ""
+        },
+        {
+          "question_id": "next_review",
+          "question": "When is the next scheduled review?",
+          "answer_type": "date",
+          "required": true,
+          "description": "Next review date for the report",
+          "answer": ""
+        }
+      ]
+    }
+  ],
+  "_metadata": {
+    "page_id": "2fc89db1-5e5b-8057-bcbc-edaf4396bf23",
+    "extraction_date": "2026-02-09T17:23:59.208533",
+    "model_used": "moonshotai/kimi-k2-instruct-0905"
+  }
+}

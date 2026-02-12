@@ -1,0 +1,401 @@
+{
+  "document_name": "Marketing Performance Report",
+  "document_type": "Marketing Performance Report",
+  "estimated_completion_time": "20-30 minutes",
+  "total_questions": 17,
+  "question_categories": [
+    {
+      "category": "Document Metadata",
+      "order": 1,
+      "questions": [
+        {
+          "question_id": "company_name",
+          "question": "What is your company name?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Acme Corporation",
+          "description": "Used in document header and overview section",
+          "answer": ""
+        },
+        {
+          "question_id": "reporting_period",
+          "question": "What reporting period does this report cover?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Q4 2024",
+          "description": "Defines the time period for performance analysis",
+          "answer": ""
+        },
+        {
+          "question_id": "product_name",
+          "question": "What product or solution is this report focused on?",
+          "answer_type": "text",
+          "required": false,
+          "placeholder": "Enterprise SaaS Platform",
+          "description": "Optional: specify if report focuses on a specific product",
+          "answer": ""
+        },
+        {
+          "question_id": "report_date",
+          "question": "What is the report generation date?",
+          "answer_type": "date",
+          "required": true,
+          "description": "Date when this report was created",
+          "answer": ""
+        },
+        {
+          "question_id": "approver_name",
+          "question": "Who is the approver for this report?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Marketing Director Name",
+          "description": "Person who reviews and approves the final report",
+          "answer": ""
+        },
+        {
+          "question_id": "document_version",
+          "question": "What is the version number of this report?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "1.0",
+          "description": "Version tracking for document control",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Executive Summary",
+      "order": 2,
+      "questions": [
+        {
+          "question_id": "performance_summary",
+          "question": "Provide a brief summary of overall marketing performance for this period",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "Marketing exceeded pipeline targets by 15% driven by strong paid search performance...",
+          "description": "High-level overview of how marketing performed this period",
+          "answer": ""
+        },
+        {
+          "question_id": "key_highlights",
+          "question": "List the top 3-5 key highlights or wins from this period",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "1. Exceeded pipeline target by 15%\n2. Launched successful ABM campaign\n3. Improved lead quality score by 20%",
+          "description": "Major achievements and positive outcomes",
+          "answer": ""
+        },
+        {
+          "question_id": "key_challenges",
+          "question": "List the main challenges or issues faced this period",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "1. Email engagement rates declined 10%\n2. Paid search CPC increased 25%\n3. Lead conversion rate below target",
+          "description": "Key obstacles or underperforming areas",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Marketing Goals and Targets",
+      "order": 3,
+      "questions": [
+        {
+          "question_id": "marketing_goals",
+          "question": "What marketing goals are you tracking this period?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Goal",
+              "type": "text"
+            },
+            {
+              "name": "Target",
+              "type": "text"
+            },
+            {
+              "name": "Actual",
+              "type": "text"
+            },
+            {
+              "name": "Status",
+              "type": "select",
+              "options": [
+                "On Track",
+                "At Risk",
+                "Achieved",
+                "Missed"
+              ]
+            },
+            {
+              "name": "Notes",
+              "type": "text"
+            }
+          ],
+          "description": "Track progress against key marketing objectives",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Funnel Performance",
+      "order": 4,
+      "questions": [
+        {
+          "question_id": "funnel_stages",
+          "question": "Provide funnel metrics for each stage",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Funnel Stage",
+              "type": "text"
+            },
+            {
+              "name": "Volume",
+              "type": "number"
+            },
+            {
+              "name": "Conversion Rate",
+              "type": "text"
+            },
+            {
+              "name": "Change vs Previous Period",
+              "type": "text"
+            }
+          ],
+          "description": "Track volume and conversion rates through the marketing funnel",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Channel Performance",
+      "order": 5,
+      "questions": [
+        {
+          "question_id": "channel_performance",
+          "question": "How did each marketing channel perform?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Channel",
+              "type": "text"
+            },
+            {
+              "name": "Spend",
+              "type": "text"
+            },
+            {
+              "name": "Leads",
+              "type": "text"
+            },
+            {
+              "name": "Pipeline Generated",
+              "type": "text"
+            },
+            {
+              "name": "CAC",
+              "type": "text"
+            },
+            {
+              "name": "Performance Rating",
+              "type": "select",
+              "options": [
+                "High",
+                "Medium",
+                "Low"
+              ]
+            }
+          ],
+          "description": "Analyze spend and results by marketing channel",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Campaign Performance",
+      "order": 6,
+      "questions": [
+        {
+          "question_id": "campaign_summary",
+          "question": "List your campaigns and their performance",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Campaign Name",
+              "type": "text"
+            },
+            {
+              "name": "Objective",
+              "type": "text"
+            },
+            {
+              "name": "Leads",
+              "type": "text"
+            },
+            {
+              "name": "Pipeline",
+              "type": "text"
+            },
+            {
+              "name": "ROI",
+              "type": "text"
+            },
+            {
+              "name": "Status",
+              "type": "select",
+              "options": [
+                "Successful",
+                "Needs Optimization"
+              ]
+            }
+          ],
+          "description": "Track individual campaign results and ROI",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Content Performance",
+      "order": 7,
+      "questions": [
+        {
+          "question_id": "content_metrics",
+          "question": "How did your content perform by type?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Content Type",
+              "type": "text"
+            },
+            {
+              "name": "Published",
+              "type": "number"
+            },
+            {
+              "name": "Engagement",
+              "type": "text"
+            },
+            {
+              "name": "Leads Generated",
+              "type": "text"
+            },
+            {
+              "name": "Notes",
+              "type": "text"
+            }
+          ],
+          "description": "Track content production and lead generation",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Revenue Attribution",
+      "order": 8,
+      "questions": [
+        {
+          "question_id": "marketing_contribution",
+          "question": "What is marketing's contribution to pipeline and revenue?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Metric",
+              "type": "text"
+            },
+            {
+              "name": "Value",
+              "type": "text"
+            }
+          ],
+          "description": "Track marketing-sourced and influenced pipeline",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Optimization Plan",
+      "order": 9,
+      "questions": [
+        {
+          "question_id": "optimization_actions",
+          "question": "What actions will you take to optimize performance?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Area",
+              "type": "text"
+            },
+            {
+              "name": "Action",
+              "type": "text"
+            },
+            {
+              "name": "Owner",
+              "type": "text"
+            },
+            {
+              "name": "Priority",
+              "type": "select",
+              "options": [
+                "High",
+                "Medium",
+                "Low"
+              ]
+            },
+            {
+              "name": "Timeline",
+              "type": "date"
+            }
+          ],
+          "description": "Define specific actions to improve marketing performance",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "KPI Snapshot",
+      "order": 10,
+      "questions": [
+        {
+          "question_id": "kpi_snapshot",
+          "question": "Provide key metrics for quick reference",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Category",
+              "type": "text"
+            },
+            {
+              "name": "Metric",
+              "type": "text"
+            }
+          ],
+          "description": "Quick reference for the most important metrics",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    }
+  ],
+  "_metadata": {
+    "page_id": "2fc89db1-5e5b-809a-99c1-f99c7338d930",
+    "extraction_date": "2026-02-09T17:25:59.531482",
+    "model_used": "moonshotai/kimi-k2-instruct-0905"
+  }
+}

@@ -1,0 +1,277 @@
+{
+  "document_name": "Campaign Planning Document",
+  "document_type": "Campaign Planning Document",
+  "estimated_completion_time": "15-20 minutes",
+  "total_questions": 16,
+  "question_categories": [
+    {
+      "category": "Campaign Overview",
+      "order": 1,
+      "questions": [
+        {
+          "question_id": "company_name",
+          "question": "What is your company name?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Acme Corporation",
+          "description": "Used in campaign overview header",
+          "answer": ""
+        },
+        {
+          "question_id": "campaign_goal",
+          "question": "What is the primary goal of this campaign?",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "Generate 500 qualified leads for our new product launch",
+          "description": "Defines the main objective of the campaign",
+          "answer": ""
+        },
+        {
+          "question_id": "campaign_timeline",
+          "question": "What is the campaign timeline?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Q2 2026 (April 1 - June 30)",
+          "description": "Sets the campaign duration",
+          "answer": ""
+        },
+        {
+          "question_id": "target_audience",
+          "question": "Who is your target audience?",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "IT decision-makers in mid-market companies (100-1000 employees)",
+          "description": "Defines who the campaign will reach",
+          "answer": ""
+        },
+        {
+          "question_id": "budget_range",
+          "question": "What is your budget range for this campaign?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "$50,000 - $75,000",
+          "description": "Sets budget expectations",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Target Audience Details",
+      "order": 2,
+      "questions": [
+        {
+          "question_id": "audience_characteristics",
+          "question": "What are the key characteristics of your target audience?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Attribute",
+              "type": "select",
+              "options": [
+                "Buying Intent",
+                "Decision Drivers",
+                "Information Sources",
+                "Buying Stage",
+                "Pain Points",
+                "Demographics",
+                "Firmographics"
+              ]
+            },
+            {
+              "name": "Description",
+              "type": "text"
+            }
+          ],
+          "description": "Add each audience characteristic with description",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Channel Selection",
+      "order": 3,
+      "questions": [
+        {
+          "question_id": "selected_channels",
+          "question": "Which channels will you use for this campaign?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Channel",
+              "type": "select",
+              "options": [
+                "Paid Media",
+                "Email Marketing",
+                "Website / Landing Page",
+                "Social Media",
+                "Sales Enablement",
+                "Content Marketing",
+                "Events",
+                "PR",
+                "Direct Mail"
+              ]
+            },
+            {
+              "name": "Purpose",
+              "type": "text"
+            }
+          ],
+          "description": "Select channels and define their purpose for your campaign",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Budget Details",
+      "order": 4,
+      "questions": [
+        {
+          "question_id": "total_budget",
+          "question": "What is your total campaign budget?",
+          "answer_type": "number",
+          "required": true,
+          "placeholder": "75000",
+          "description": "Total budget amount for allocation",
+          "answer": ""
+        },
+        {
+          "question_id": "currency",
+          "question": "What currency?",
+          "answer_type": "select",
+          "required": true,
+          "options": [
+            "USD",
+            "EUR",
+            "GBP",
+            "CAD",
+            "AUD",
+            "JPY",
+            "Other"
+          ],
+          "description": "Currency for budget display",
+          "answer": ""
+        },
+        {
+          "question_id": "budget_categories",
+          "question": "How should budget be allocated across categories?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Category",
+              "type": "select",
+              "options": [
+                "Paid Distribution",
+                "Creative Production",
+                "Tools / Platforms",
+                "Contingency",
+                "Personnel",
+                "Research",
+                "Testing"
+              ]
+            },
+            {
+              "name": "Allocation Logic",
+              "type": "text"
+            }
+          ],
+          "description": "Define budget categories and allocation rationale",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Success Metrics",
+      "order": 5,
+      "questions": [
+        {
+          "question_id": "primary_kpi_targets",
+          "question": "What are your primary KPI targets?",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "500 MQLs, 2.5% conversion rate, $50 cost per lead",
+          "description": "Main metrics to measure campaign success",
+          "answer": ""
+        },
+        {
+          "question_id": "secondary_kpi_targets",
+          "question": "What are your secondary KPI targets?",
+          "answer_type": "long_text",
+          "required": false,
+          "placeholder": "10,000 website visits, 25% email open rate, 5% CTR",
+          "description": "Additional metrics to track performance",
+          "answer": ""
+        },
+        {
+          "question_id": "baseline_metrics",
+          "question": "What are your current baseline metrics?",
+          "answer_type": "long_text",
+          "required": false,
+          "placeholder": "Current conversion rate: 1.5%, Current monthly leads: 200",
+          "description": "Starting point for measuring improvement",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Timeline",
+      "order": 6,
+      "questions": [
+        {
+          "question_id": "campaign_phases",
+          "question": "What are your campaign phases and activities?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Phase",
+              "type": "select",
+              "options": [
+                "Preparation",
+                "Launch",
+                "Optimization",
+                "Closure",
+                "Planning",
+                "Execution",
+                "Analysis"
+              ]
+            },
+            {
+              "name": "Activity",
+              "type": "text"
+            }
+          ],
+          "description": "Define campaign phases and key activities",
+          "answer": "",
+          "answers": []
+        },
+        {
+          "question_id": "campaign_start_date",
+          "question": "What is your campaign start date?",
+          "answer_type": "date",
+          "required": true,
+          "description": "When the campaign begins",
+          "answer": ""
+        },
+        {
+          "question_id": "campaign_end_date",
+          "question": "What is your campaign end date?",
+          "answer_type": "date",
+          "required": true,
+          "description": "When the campaign ends",
+          "answer": ""
+        }
+      ]
+    }
+  ],
+  "_metadata": {
+    "page_id": "2fc89db1-5e5b-805e-916a-dc6935ae807c",
+    "extraction_date": "2026-02-09T17:20:40.399206",
+    "model_used": "moonshotai/kimi-k2-instruct-0905"
+  }
+}

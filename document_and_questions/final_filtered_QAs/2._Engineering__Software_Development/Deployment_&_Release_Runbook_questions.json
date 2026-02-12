@@ -1,0 +1,237 @@
+{
+  "document_name": "Deployment & Release Runbook",
+  "document_type": "Deployment & Release Runbook",
+  "estimated_completion_time": "15-20 minutes",
+  "total_questions": 12,
+  "question_categories": [
+    {
+      "category": "Document Metadata",
+      "order": 1,
+      "questions": [
+        {
+          "question_id": "product_service_name",
+          "question": "What is the name of the product or service this runbook covers?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "e.g., Payment Gateway, Mobile App, Web Platform",
+          "answer": ""
+        },
+        {
+          "question_id": "environment",
+          "question": "Which environment does this runbook apply to?",
+          "answer_type": "select",
+          "required": true,
+          "options": [
+            "Production",
+            "Staging",
+            "QA",
+            "Development"
+          ],
+          "answer": ""
+        },
+        {
+          "question_id": "document_owner",
+          "question": "Who owns this document?",
+          "answer_type": "select",
+          "required": true,
+          "options": [
+            "Engineering",
+            "DevOps",
+            "Release Management",
+            "QA",
+            "Operations"
+          ],
+          "answer": ""
+        },
+        {
+          "question_id": "last_updated",
+          "question": "When was this document last updated?",
+          "answer_type": "date",
+          "required": true,
+          "answer": ""
+        },
+        {
+          "question_id": "deployment_purpose",
+          "question": "Briefly describe the purpose of this deployment process",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "e.g., This document defines the process for deploying our e-commerce platform updates safely and consistently",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Deployment Overview",
+      "order": 2,
+      "questions": [
+        {
+          "question_id": "deployment_type",
+          "question": "What types of deployments does your organization perform?",
+          "answer_type": "multi_select",
+          "required": true,
+          "options": [
+            "Scheduled Release",
+            "Hotfix",
+            "Emergency Patch",
+            "Infrastructure Update"
+          ],
+          "answer": ""
+        },
+        {
+          "question_id": "deployment_frequency",
+          "question": "How often do you typically deploy?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "e.g., Weekly scheduled releases, Bi-weekly sprints, Emergency releases as required",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Team Roles & Responsibilities",
+      "order": 3,
+      "questions": [
+        {
+          "question_id": "team_roles",
+          "question": "What roles are involved in your deployment process?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Role",
+              "type": "text"
+            },
+            {
+              "name": "Responsibility",
+              "type": "text"
+            }
+          ],
+          "description": "Add each role and their specific deployment responsibilities",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Post-Deployment Validation",
+      "order": 4,
+      "questions": [
+        {
+          "question_id": "validation_checks",
+          "question": "What checks should be performed after deployment?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Check",
+              "type": "text"
+            },
+            {
+              "name": "Owner",
+              "type": "text"
+            }
+          ],
+          "description": "List each validation check and who is responsible for it",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Communication Plan",
+      "order": 5,
+      "questions": [
+        {
+          "question_id": "communication_stages",
+          "question": "What are your communication stages during deployment?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Stage",
+              "type": "text"
+            },
+            {
+              "name": "Audience",
+              "type": "text"
+            },
+            {
+              "name": "Communication Method",
+              "type": "text"
+            }
+          ],
+          "description": "Define when to communicate, who to inform, and how to reach them",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Known Risks",
+      "order": 6,
+      "questions": [
+        {
+          "question_id": "deployment_risks",
+          "question": "What are the known risks for your deployments?",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "List specific risks like database migration failures, service dependencies, peak traffic periods, etc.",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Deployment History",
+      "order": 7,
+      "questions": [
+        {
+          "question_id": "deployment_history",
+          "question": "Add recent deployment history (optional)",
+          "answer_type": "structured_list",
+          "required": false,
+          "fields": [
+            {
+              "name": "Version",
+              "type": "text"
+            },
+            {
+              "name": "Date",
+              "type": "date"
+            },
+            {
+              "name": "Environment",
+              "type": "select",
+              "options": [
+                "Production",
+                "Staging",
+                "QA"
+              ]
+            },
+            {
+              "name": "Owner",
+              "type": "text"
+            },
+            {
+              "name": "Result",
+              "type": "select",
+              "options": [
+                "Successful",
+                "Rolled back",
+                "Partial",
+                "Failed"
+              ]
+            }
+          ],
+          "description": "Track your deployment history for reference",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    }
+  ],
+  "_metadata": {
+    "page_id": "2fc89db1-5e5b-8086-83da-c98c87ed2267",
+    "extraction_date": "2026-02-09T15:52:08.113222",
+    "model_used": "moonshotai/kimi-k2-instruct-0905"
+  }
+}

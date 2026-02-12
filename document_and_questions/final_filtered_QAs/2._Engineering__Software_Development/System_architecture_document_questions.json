@@ -1,0 +1,340 @@
+{
+  "document_name": "System Architecture Document",
+  "document_type": "System Architecture Document",
+  "estimated_completion_time": "25-35 minutes",
+  "total_questions": 18,
+  "question_categories": [
+    {
+      "category": "Document Metadata",
+      "order": 1,
+      "questions": [
+        {
+          "question_id": "system_name",
+          "question": "What is the name of the system being documented?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "e.g., Customer Portal, Payment Service",
+          "description": "Used in document header and throughout the architecture description",
+          "answer": ""
+        },
+        {
+          "question_id": "product_name",
+          "question": "What product or product line does this system belong to?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "e.g., E-commerce Platform, SaaS Suite",
+          "description": "Identifies the broader product context for the system",
+          "answer": ""
+        },
+        {
+          "question_id": "document_owner",
+          "question": "Who owns this architecture document?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Engineering / Architecture",
+          "description": "Determines responsibility for updates and approvals",
+          "answer": ""
+        },
+        {
+          "question_id": "stakeholders",
+          "question": "Who are the key stakeholders for this architecture?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Engineering, Product, DevOps, Security",
+          "description": "Lists groups with vested interest in the architecture",
+          "answer": ""
+        },
+        {
+          "question_id": "last_updated",
+          "question": "When was this document last updated?",
+          "answer_type": "date",
+          "required": true,
+          "description": "Tracks document currency for version control",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Scope & Goals",
+      "order": 2,
+      "questions": [
+        {
+          "question_id": "scope_items",
+          "question": "What specific items does this architecture document cover?",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "High-level system architecture\nCore components and services\nData flow and integrations",
+          "description": "Defines the boundaries of what is documented",
+          "answer": ""
+        },
+        {
+          "question_id": "architectural_goals",
+          "question": "What are the specific architectural goals for this system?",
+          "answer_type": "multi_select",
+          "required": true,
+          "options": [
+            "Scalability",
+            "Reliability",
+            "Security",
+            "Maintainability",
+            "Performance",
+            "Cost-optimization",
+            "Compliance",
+            "Extensibility"
+          ],
+          "description": "Guides design decisions and trade-offs",
+          "answer": ""
+        },
+        {
+          "question_id": "architectural_assumptions",
+          "question": "List key assumptions made about the system environment or constraints",
+          "answer_type": "long_text",
+          "required": false,
+          "placeholder": "Cloud-native deployment\nMicroservices architecture\nMulti-tenant support",
+          "description": "Documents foundational assumptions that guide architecture",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Client Layer Components",
+      "order": 3,
+      "questions": [
+        {
+          "question_id": "client_components",
+          "question": "What client-side components does the system expose?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Component",
+              "type": "text"
+            },
+            {
+              "name": "Description",
+              "type": "text"
+            }
+          ],
+          "description": "Defines user-facing interfaces and clients",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Application Layer Services",
+      "order": 4,
+      "questions": [
+        {
+          "question_id": "application_services",
+          "question": "List the core application services and their responsibilities",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Service",
+              "type": "text"
+            },
+            {
+              "name": "Responsibility",
+              "type": "text"
+            }
+          ],
+          "description": "Documents backend services and their roles",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Data Layer Components",
+      "order": 5,
+      "questions": [
+        {
+          "question_id": "data_components",
+          "question": "What data storage and management components are used?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Component",
+              "type": "text"
+            },
+            {
+              "name": "Description",
+              "type": "text"
+            }
+          ],
+          "description": "Identifies databases, caches, and storage systems",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Integration Layer",
+      "order": 6,
+      "questions": [
+        {
+          "question_id": "external_integrations",
+          "question": "What third-party integrations does the system use?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Integration",
+              "type": "text"
+            },
+            {
+              "name": "Purpose",
+              "type": "text"
+            }
+          ],
+          "description": "Documents external services and APIs",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Deployment Environments",
+      "order": 7,
+      "questions": [
+        {
+          "question_id": "deployment_environments",
+          "question": "What deployment environments are configured?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Environment",
+              "type": "text"
+            },
+            {
+              "name": "Purpose",
+              "type": "text"
+            }
+          ],
+          "description": "Defines staging and production setup",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Reliability & Availability",
+      "order": 8,
+      "questions": [
+        {
+          "question_id": "reliability_aspects",
+          "question": "How does the system ensure reliability and availability?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Aspect",
+              "type": "text"
+            },
+            {
+              "name": "Approach",
+              "type": "text"
+            }
+          ],
+          "description": "Documents uptime and resilience strategies",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Open Issues & Future Work",
+      "order": 9,
+      "questions": [
+        {
+          "question_id": "open_issues",
+          "question": "What open issues or future considerations exist?",
+          "answer_type": "structured_list",
+          "required": false,
+          "fields": [
+            {
+              "name": "Issue",
+              "type": "text"
+            },
+            {
+              "name": "Owner",
+              "type": "text"
+            },
+            {
+              "name": "Status",
+              "type": "select",
+              "options": [
+                "Planned",
+                "Backlog",
+                "In Progress",
+                "Completed",
+                "Cancelled"
+              ]
+            }
+          ],
+          "description": "Tracks known gaps and future enhancements",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Glossary",
+      "order": 10,
+      "questions": [
+        {
+          "question_id": "glossary_terms",
+          "question": "Define key terms and acronyms used in this architecture",
+          "answer_type": "structured_list",
+          "required": false,
+          "fields": [
+            {
+              "name": "Term",
+              "type": "text"
+            },
+            {
+              "name": "Definition",
+              "type": "text"
+            }
+          ],
+          "description": "Ensures consistent terminology understanding",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Data Flow & Examples",
+      "order": 11,
+      "questions": [
+        {
+          "question_id": "data_flow_overview",
+          "question": "Provide a high-level overview of data flow in the system",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "Describe how data moves between components",
+          "description": "Explains data movement patterns",
+          "answer": ""
+        },
+        {
+          "question_id": "example_data_flows",
+          "question": "Provide specific examples of data flows (e.g., user login, order processing)",
+          "answer_type": "long_text",
+          "required": false,
+          "placeholder": "User Login Flow: 1) User submits credentials → 2) Auth service validates → 3) Token issued → 4) User redirected",
+          "description": "Illustrates concrete data flow scenarios",
+          "answer": ""
+        }
+      ]
+    }
+  ],
+  "_metadata": {
+    "page_id": "2fc89db1-5e5b-80a0-b627-ca463417a2e6",
+    "extraction_date": "2026-02-09T15:47:03.914430",
+    "model_used": "moonshotai/kimi-k2-instruct-0905"
+  }
+}

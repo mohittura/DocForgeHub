@@ -1,0 +1,81 @@
+{
+  "document_name": "Change Request Log",
+  "document_type": "Change Request Log",
+  "estimated_completion_time": "5-10 minutes",
+  "total_questions": 1,
+  "question_categories": [
+    {
+      "category": "Change Requests",
+      "order": 1,
+      "questions": [
+        {
+          "question_id": "change_requests",
+          "question": "What change requests should be tracked in your log?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "CR ID",
+              "type": "text"
+            },
+            {
+              "name": "Date Raised",
+              "type": "date"
+            },
+            {
+              "name": "Requested By",
+              "type": "text"
+            },
+            {
+              "name": "Change Description",
+              "type": "text"
+            },
+            {
+              "name": "Impact Area",
+              "type": "text"
+            },
+            {
+              "name": "Priority",
+              "type": "select",
+              "options": [
+                "High",
+                "Medium",
+                "Low"
+              ]
+            },
+            {
+              "name": "Status",
+              "type": "select",
+              "options": [
+                "Approved",
+                "Under Review",
+                "Deferred"
+              ]
+            },
+            {
+              "name": "Decision",
+              "type": "select",
+              "options": [
+                "Include",
+                "Pending",
+                "Exclude"
+              ]
+            },
+            {
+              "name": "Target Release",
+              "type": "text"
+            }
+          ],
+          "description": "Add each change request with all required tracking fields",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    }
+  ],
+  "_metadata": {
+    "page_id": "2fc89db1-5e5b-8016-9b81-d5367dfb5864",
+    "extraction_date": "2026-02-09T15:43:06.550747",
+    "model_used": "moonshotai/kimi-k2-instruct-0905"
+  }
+}

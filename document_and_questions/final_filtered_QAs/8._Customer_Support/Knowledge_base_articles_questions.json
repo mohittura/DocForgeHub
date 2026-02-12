@@ -1,0 +1,208 @@
+{
+  "document_name": "Knowledge Base Article Guidelines",
+  "document_type": "Knowledge Base Article Guidelines",
+  "estimated_completion_time": "15-20 minutes",
+  "total_questions": 12,
+  "question_categories": [
+    {
+      "category": "Document Metadata",
+      "order": 1,
+      "questions": [
+        {
+          "question_id": "company_name",
+          "question": "What is your company name?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Acme Corporation",
+          "description": "Used in the document overview section",
+          "answer": ""
+        },
+        {
+          "question_id": "product_name",
+          "question": "What is the name of your product or platform?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Acme Platform",
+          "description": "Used in the document information table",
+          "answer": ""
+        },
+        {
+          "question_id": "knowledge_base_url",
+          "question": "What is your knowledge base URL?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "https://help.acme.com",
+          "description": "Used in the document information table",
+          "answer": ""
+        },
+        {
+          "question_id": "document_version",
+          "question": "What is the version number for this document?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "1.0",
+          "description": "Used in the document information table",
+          "answer": ""
+        },
+        {
+          "question_id": "effective_date",
+          "question": "When does this document become effective?",
+          "answer_type": "date",
+          "required": true,
+          "description": "Used in the document information table",
+          "answer": ""
+        },
+        {
+          "question_id": "approver_name",
+          "question": "Who approves this document?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Documentation Manager",
+          "description": "Used in the document information table",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Knowledge Base Objectives",
+      "order": 2,
+      "questions": [
+        {
+          "question_id": "primary_goals",
+          "question": "What are the primary goals of your knowledge base?",
+          "answer_type": "multi_select",
+          "required": true,
+          "options": [
+            "Self-service support",
+            "Onboarding assistance",
+            "Ticket reduction",
+            "Feature education",
+            "Product adoption",
+            "Customer empowerment"
+          ],
+          "description": "Defines the main objectives for your knowledge base",
+          "answer": ""
+        },
+        {
+          "question_id": "scope_items",
+          "question": "Which specific document types will these guidelines cover?",
+          "answer_type": "multi_select",
+          "required": true,
+          "options": [
+            "Help center articles",
+            "How-to guides",
+            "Troubleshooting documentation",
+            "Feature explanations",
+            "Setup and onboarding instructions",
+            "FAQs",
+            "Video scripts",
+            "API documentation"
+          ],
+          "description": "Defines the scope of documentation covered by these guidelines",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "User Types and Content Approach",
+      "order": 3,
+      "questions": [
+        {
+          "question_id": "user_types",
+          "question": "What user types does your knowledge base serve?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "User Type",
+              "type": "text"
+            },
+            {
+              "name": "Content Approach",
+              "type": "text"
+            }
+          ],
+          "description": "Define user segments and how content should be tailored for each",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Article Types",
+      "order": 4,
+      "questions": [
+        {
+          "question_id": "article_types",
+          "question": "What types of articles will your knowledge base include?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Article Type",
+              "type": "text"
+            },
+            {
+              "name": "Purpose",
+              "type": "text"
+            }
+          ],
+          "description": "Define the different article formats and their purposes",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Performance Metrics",
+      "order": 5,
+      "questions": [
+        {
+          "question_id": "metrics",
+          "question": "How will you measure knowledge base performance?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Metric",
+              "type": "text"
+            },
+            {
+              "name": "Purpose",
+              "type": "text"
+            }
+          ],
+          "description": "Define key metrics and what they measure",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Review Process",
+      "order": 6,
+      "questions": [
+        {
+          "question_id": "review_schedule",
+          "question": "How often should knowledge base articles be reviewed?",
+          "answer_type": "select",
+          "required": true,
+          "options": [
+            "Monthly",
+            "Quarterly",
+            "Bi-annually",
+            "Annually",
+            "As needed"
+          ],
+          "description": "Defines the review frequency for maintaining content accuracy",
+          "answer": ""
+        }
+      ]
+    }
+  ],
+  "_metadata": {
+    "page_id": "2fc89db1-5e5b-8026-b886-f1a5d1f5f9c9",
+    "extraction_date": "2026-02-09T17:49:21.877045",
+    "model_used": "moonshotai/kimi-k2-instruct-0905"
+  }
+}

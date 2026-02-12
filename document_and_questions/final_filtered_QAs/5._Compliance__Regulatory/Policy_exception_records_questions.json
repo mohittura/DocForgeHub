@@ -1,0 +1,369 @@
+{
+  "document_name": "Policy Exception Record",
+  "document_type": "Policy Exception Record",
+  "estimated_completion_time": "15-20 minutes",
+  "total_questions": 27,
+  "question_categories": [
+    {
+      "category": "Document Information",
+      "order": 1,
+      "questions": [
+        {
+          "question_id": "organization_name",
+          "question": "What is the name of your organization?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Acme Corporation",
+          "description": "Used to identify the organization requesting the policy exception",
+          "answer": ""
+        },
+        {
+          "question_id": "exception_id",
+          "question": "What is the unique identifier for this exception?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "EXC-2026-001",
+          "description": "Unique ID to track this policy exception",
+          "answer": ""
+        },
+        {
+          "question_id": "policy_name",
+          "question": "What is the name of the policy being excepted?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Password Complexity Policy",
+          "description": "Identifies which organizational policy is being bypassed",
+          "answer": ""
+        },
+        {
+          "question_id": "policy_version",
+          "question": "What version of the policy is being excepted?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "v2.3",
+          "description": "Version number of the policy document",
+          "answer": ""
+        },
+        {
+          "question_id": "request_date",
+          "question": "When was the exception requested?",
+          "answer_type": "date",
+          "required": true,
+          "description": "Date the exception request was submitted",
+          "answer": ""
+        },
+        {
+          "question_id": "requested_by",
+          "question": "Who requested this exception?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "IT Operations Team",
+          "description": "Department or individual who requested the exception",
+          "answer": ""
+        },
+        {
+          "question_id": "exception_owner",
+          "question": "Who is the responsible owner for this exception?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "John Smith, IT Manager",
+          "description": "Person responsible for managing and monitoring the exception",
+          "answer": ""
+        },
+        {
+          "question_id": "review_date",
+          "question": "When is the next review date for this exception?",
+          "answer_type": "date",
+          "required": true,
+          "description": "Date when this exception must be reviewed",
+          "answer": ""
+        },
+        {
+          "question_id": "status",
+          "question": "What is the current status of this exception?",
+          "answer_type": "select",
+          "required": true,
+          "options": [
+            "Requested",
+            "Approved",
+            "Rejected",
+            "Expired",
+            "Closed"
+          ],
+          "description": "Current state of the exception request",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Policy Exception Summary",
+      "order": 2,
+      "questions": [
+        {
+          "question_id": "policy_requirement",
+          "question": "What specific policy requirement is being bypassed?",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "Section 4.2: All passwords must be at least 12 characters long",
+          "description": "Detailed description of the policy rule or control being excepted",
+          "answer": ""
+        },
+        {
+          "question_id": "exception_description",
+          "question": "What is not being followed?",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "Legacy system XYZ can only support 8-character passwords",
+          "description": "Explanation of what is being bypassed or not implemented",
+          "answer": ""
+        },
+        {
+          "question_id": "business_justification",
+          "question": "Why is this exception required?",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "Upgrading the legacy system would cost $500,000 and take 18 months",
+          "description": "Business reason for requiring the exception",
+          "answer": ""
+        },
+        {
+          "question_id": "affected_systems",
+          "question": "Which systems or processes are impacted?",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "Legacy payroll system, Employee self-service portal",
+          "description": "List of systems or services affected by this exception",
+          "answer": ""
+        },
+        {
+          "question_id": "exception_duration",
+          "question": "Is this exception temporary or permanent?",
+          "answer_type": "select",
+          "required": true,
+          "options": [
+            "Temporary",
+            "Permanent"
+          ],
+          "description": "Duration of the exception",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Risk Assessment",
+      "order": 3,
+      "questions": [
+        {
+          "question_id": "risk_category",
+          "question": "What category of risk does this exception introduce?",
+          "answer_type": "select",
+          "required": true,
+          "options": [
+            "Security",
+            "Operational",
+            "Compliance",
+            "Technical"
+          ],
+          "description": "Primary category of risk introduced",
+          "answer": ""
+        },
+        {
+          "question_id": "impact_level",
+          "question": "What is the potential impact level?",
+          "answer_type": "select",
+          "required": true,
+          "options": [
+            "High",
+            "Medium",
+            "Low"
+          ],
+          "description": "Severity of impact if the risk materializes",
+          "answer": ""
+        },
+        {
+          "question_id": "likelihood",
+          "question": "How likely is this risk to occur?",
+          "answer_type": "select",
+          "required": true,
+          "options": [
+            "High",
+            "Medium",
+            "Low"
+          ],
+          "description": "Probability of the risk event occurring",
+          "answer": ""
+        },
+        {
+          "question_id": "overall_risk_rating",
+          "question": "What is the overall risk rating?",
+          "answer_type": "select",
+          "required": true,
+          "options": [
+            "Critical",
+            "High",
+            "Medium",
+            "Low"
+          ],
+          "description": "Combined assessment of impact and likelihood",
+          "answer": ""
+        },
+        {
+          "question_id": "risk_description",
+          "question": "Describe the risk in detail",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "Shorter passwords increase the risk of brute force attacks...",
+          "description": "Detailed explanation of the risk introduced by the exception",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Compensating Controls",
+      "order": 4,
+      "questions": [
+        {
+          "question_id": "compensating_controls",
+          "question": "What compensating controls will be implemented?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Control Name",
+              "type": "text"
+            },
+            {
+              "name": "Description",
+              "type": "text"
+            },
+            {
+              "name": "Owner",
+              "type": "text"
+            }
+          ],
+          "description": "Additional controls to mitigate the exception risk",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Approval and Acceptance",
+      "order": 5,
+      "questions": [
+        {
+          "question_id": "approvals",
+          "question": "Who are the approvers for this exception?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Role",
+              "type": "select",
+              "options": [
+                "Policy Owner",
+                "Security / Compliance",
+                "Business Owner"
+              ]
+            },
+            {
+              "name": "Name",
+              "type": "text"
+            },
+            {
+              "name": "Approval",
+              "type": "select",
+              "options": [
+                "Approved",
+                "Rejected"
+              ]
+            },
+            {
+              "name": "Date",
+              "type": "date"
+            }
+          ],
+          "description": "Stakeholders who must approve the exception",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Review and Expiry",
+      "order": 6,
+      "questions": [
+        {
+          "question_id": "exception_expiry_date",
+          "question": "When does this exception expire?",
+          "answer_type": "date",
+          "required": true,
+          "description": "Date when the exception automatically expires",
+          "answer": ""
+        },
+        {
+          "question_id": "review_frequency",
+          "question": "How often should this exception be reviewed?",
+          "answer_type": "select",
+          "required": true,
+          "options": [
+            "Quarterly",
+            "Semi-Annual",
+            "Annual"
+          ],
+          "description": "Frequency of exception review",
+          "answer": ""
+        },
+        {
+          "question_id": "renewal_required",
+          "question": "Is renewal required for this exception?",
+          "answer_type": "select",
+          "required": true,
+          "options": [
+            "Yes",
+            "No"
+          ],
+          "description": "Whether the exception needs to be renewed after expiry",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Closure Record",
+      "order": 7,
+      "questions": [
+        {
+          "question_id": "closure_date",
+          "question": "When was this exception closed?",
+          "answer_type": "date",
+          "required": false,
+          "description": "Date when the exception was closed",
+          "answer": ""
+        },
+        {
+          "question_id": "closure_summary",
+          "question": "How was this exception resolved?",
+          "answer_type": "long_text",
+          "required": false,
+          "placeholder": "System was upgraded to support 12-character passwords",
+          "description": "Description of how the exception was resolved",
+          "answer": ""
+        },
+        {
+          "question_id": "verified_by",
+          "question": "Who verified the closure?",
+          "answer_type": "text",
+          "required": false,
+          "placeholder": "Jane Doe, Security Manager",
+          "description": "Person who verified the exception was properly closed",
+          "answer": ""
+        }
+      ]
+    }
+  ],
+  "_metadata": {
+    "page_id": "2fc89db1-5e5b-8027-8e89-e269ff6938f3",
+    "extraction_date": "2026-02-09T17:05:02.977320",
+    "model_used": "moonshotai/kimi-k2-instruct-0905"
+  }
+}

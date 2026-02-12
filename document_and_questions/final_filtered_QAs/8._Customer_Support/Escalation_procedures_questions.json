@@ -1,0 +1,213 @@
+{
+  "document_name": "Escalation Procedures",
+  "document_type": "Escalation Procedures",
+  "estimated_completion_time": "15-20 minutes",
+  "total_questions": 13,
+  "question_categories": [
+    {
+      "category": "Document Metadata",
+      "order": 1,
+      "questions": [
+        {
+          "question_id": "company_name",
+          "question": "What is your company name?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Acme Corporation",
+          "description": "Used in document header and overview section",
+          "answer": ""
+        },
+        {
+          "question_id": "product_platform",
+          "question": "What product or platform does this escalation procedure cover?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Acme Cloud Platform",
+          "description": "Replaces {{Product Name}} in document metadata",
+          "answer": ""
+        },
+        {
+          "question_id": "document_version",
+          "question": "What is the document version number?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "1.0",
+          "description": "Document version tracking",
+          "answer": ""
+        },
+        {
+          "question_id": "effective_date",
+          "question": "When does this escalation procedure become effective?",
+          "answer_type": "date",
+          "required": true,
+          "description": "Date when procedures go into effect",
+          "answer": ""
+        },
+        {
+          "question_id": "last_review_date",
+          "question": "When was this document last reviewed?",
+          "answer_type": "date",
+          "required": true,
+          "description": "For tracking document currency",
+          "answer": ""
+        },
+        {
+          "question_id": "approved_by",
+          "question": "Who approved this escalation procedure document?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Director of Customer Support",
+          "description": "Person who authorized this document",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Escalation Types",
+      "order": 2,
+      "questions": [
+        {
+          "question_id": "escalation_types",
+          "question": "What types of escalations does your organization handle?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Escalation Type",
+              "type": "text"
+            },
+            {
+              "name": "Description",
+              "type": "text"
+            }
+          ],
+          "description": "Define the categories of escalations your team manages",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Escalation Levels",
+      "order": 3,
+      "questions": [
+        {
+          "question_id": "escalation_levels",
+          "question": "What are your escalation levels and who owns each level?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Level",
+              "type": "text"
+            },
+            {
+              "name": "Owner",
+              "type": "text"
+            },
+            {
+              "name": "Description",
+              "type": "text"
+            }
+          ],
+          "description": "Define the hierarchy of escalation and responsible teams",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Required Information",
+      "order": 4,
+      "questions": [
+        {
+          "question_id": "required_info",
+          "question": "What information must be provided when escalating an issue?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Required Information",
+              "type": "text"
+            },
+            {
+              "name": "Description",
+              "type": "text"
+            }
+          ],
+          "description": "Standard information requirements for escalations",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Performance Metrics",
+      "order": 5,
+      "questions": [
+        {
+          "question_id": "metrics",
+          "question": "What metrics will you use to measure escalation performance?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Metric",
+              "type": "text"
+            },
+            {
+              "name": "Purpose",
+              "type": "text"
+            }
+          ],
+          "description": "Define how you'll measure escalation process effectiveness",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Process Customization",
+      "order": 6,
+      "questions": [
+        {
+          "question_id": "escalation_objectives",
+          "question": "What are the main goals of escalation in your organization?",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "Faster resolution, customer retention, SLA protection, incident control, etc.",
+          "description": "Primary objectives that drive your escalation process",
+          "answer": ""
+        },
+        {
+          "question_id": "scope_items",
+          "question": "What specific types of issues should be covered by these escalation procedures?",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "Unresolved technical issues, product defects, high-impact incidents, SLA risks, security concerns",
+          "description": "Define what falls under escalation vs. normal support",
+          "answer": ""
+        },
+        {
+          "question_id": "review_frequency",
+          "question": "How often should this escalation procedure be reviewed?",
+          "answer_type": "select",
+          "required": true,
+          "options": [
+            "Monthly",
+            "Quarterly",
+            "Semi-annually",
+            "Annually"
+          ],
+          "description": "Schedule for reviewing and updating the procedure",
+          "answer": ""
+        }
+      ]
+    }
+  ],
+  "_metadata": {
+    "page_id": "2fc89db1-5e5b-8070-a7e7-de003a41a034",
+    "extraction_date": "2026-02-09T17:51:29.439327",
+    "model_used": "moonshotai/kimi-k2-instruct-0905"
+  }
+}

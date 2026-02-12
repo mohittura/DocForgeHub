@@ -1,0 +1,159 @@
+{
+  "document_name": "Risk Register",
+  "document_type": "Risk Register",
+  "estimated_completion_time": "15-20 minutes",
+  "total_questions": 7,
+  "question_categories": [
+    {
+      "category": "Document Information",
+      "order": 1,
+      "questions": [
+        {
+          "question_id": "organization",
+          "question": "What is the name of your organization?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Acme Corporation",
+          "description": "Used to identify the organization owning this risk register",
+          "answer": ""
+        },
+        {
+          "question_id": "department_scope",
+          "question": "Which department or business area does this risk register cover?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "IT Operations",
+          "description": "Defines the scope of risks being tracked",
+          "answer": ""
+        },
+        {
+          "question_id": "risk_register_owner",
+          "question": "Who is the owner of this risk register?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Risk / Compliance Team",
+          "description": "Person or team responsible for maintaining the register",
+          "answer": ""
+        },
+        {
+          "question_id": "review_frequency",
+          "question": "How often will this risk register be reviewed?",
+          "answer_type": "select",
+          "required": true,
+          "options": [
+            "Monthly",
+            "Quarterly",
+            "Semi-annually",
+            "Annually"
+          ],
+          "description": "Sets the review cadence for risk management",
+          "answer": ""
+        },
+        {
+          "question_id": "version",
+          "question": "What is the version number of this risk register?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "1.0",
+          "description": "Version tracking for document control",
+          "answer": ""
+        },
+        {
+          "question_id": "last_updated",
+          "question": "What is the last updated date for this risk register?",
+          "answer_type": "date",
+          "required": true,
+          "description": "Tracks when the register was last modified",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Core Risk Log",
+      "order": 2,
+      "questions": [
+        {
+          "question_id": "risk_items",
+          "question": "What risks should be included in your risk register?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Risk ID",
+              "type": "text"
+            },
+            {
+              "name": "Risk Title",
+              "type": "text"
+            },
+            {
+              "name": "Category",
+              "type": "select",
+              "options": [
+                "Security Risk",
+                "Operational Risk",
+                "Technical Risk",
+                "Compliance Risk",
+                "Vendor Risk",
+                "Business Risk"
+              ]
+            },
+            {
+              "name": "Description",
+              "type": "text"
+            },
+            {
+              "name": "Impact",
+              "type": "select",
+              "options": [
+                "High",
+                "Medium",
+                "Low"
+              ]
+            },
+            {
+              "name": "Likelihood",
+              "type": "select",
+              "options": [
+                "High",
+                "Medium",
+                "Low"
+              ]
+            },
+            {
+              "name": "Owner",
+              "type": "text"
+            },
+            {
+              "name": "Mitigation Strategy",
+              "type": "text"
+            },
+            {
+              "name": "Target Date",
+              "type": "date"
+            },
+            {
+              "name": "Status",
+              "type": "select",
+              "options": [
+                "Open",
+                "In Progress",
+                "Mitigated",
+                "Accepted",
+                "Closed"
+              ]
+            }
+          ],
+          "description": "Add each risk with all required assessment and mitigation details",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    }
+  ],
+  "_metadata": {
+    "page_id": "2fc89db1-5e5b-8096-903b-fc586f7cf2e1",
+    "extraction_date": "2026-02-09T17:03:41.186744",
+    "model_used": "moonshotai/kimi-k2-instruct-0905"
+  }
+}

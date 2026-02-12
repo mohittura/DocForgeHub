@@ -1,0 +1,293 @@
+{
+  "document_name": "Lead Qualification Criteria",
+  "document_type": "Lead Qualification Criteria",
+  "estimated_completion_time": "15-20 minutes",
+  "total_questions": 17,
+  "question_categories": [
+    {
+      "category": "Document Information",
+      "order": 1,
+      "questions": [
+        {
+          "question_id": "company_name",
+          "question": "What is your company name?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Acme Corp",
+          "description": "Used in document header to identify the owning organization",
+          "answer": ""
+        },
+        {
+          "question_id": "product_service",
+          "question": "What product or service category are you qualifying leads for?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Cloud-based CRM platform",
+          "description": "Defines the offering that leads will be evaluated against",
+          "answer": ""
+        },
+        {
+          "question_id": "target_market",
+          "question": "Which market segments do you primarily serve?",
+          "answer_type": "multi_select",
+          "required": true,
+          "options": [
+            "SMB",
+            "Mid-Market",
+            "Enterprise",
+            "Mixed"
+          ],
+          "description": "Determines the size profile of qualified leads",
+          "answer": ""
+        },
+        {
+          "question_id": "sales_model",
+          "question": "What is your primary sales model?",
+          "answer_type": "select",
+          "required": true,
+          "options": [
+            "Inbound",
+            "Outbound",
+            "Hybrid"
+          ],
+          "description": "Aligns qualification process with how leads are generated",
+          "answer": ""
+        },
+        {
+          "question_id": "prepared_by",
+          "question": "Which team or role is preparing this document?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Sales Operations",
+          "description": "Establishes ownership for updates and questions",
+          "answer": ""
+        },
+        {
+          "question_id": "version",
+          "question": "What version number is this document?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "1.0",
+          "description": "Tracks revisions over time",
+          "answer": ""
+        },
+        {
+          "question_id": "effective_date",
+          "question": "When does this qualification criteria become effective?",
+          "answer_type": "date",
+          "required": true,
+          "description": "Sets the go-live date for the new criteria",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Ideal Customer Profile (ICP)",
+      "order": 2,
+      "questions": [
+        {
+          "question_id": "icp_industries",
+          "question": "List the primary industries you serve (one per line)",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "Manufacturing\nHealthcare\nFinancial Services",
+          "description": "Defines industry fit for scoring ICP alignment",
+          "answer": ""
+        },
+        {
+          "question_id": "icp_company_size",
+          "question": "What employee count or revenue range defines your ideal company size?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "100-1000 employees or $10M-$100M revenue",
+          "description": "Sets firmographic threshold for qualified accounts",
+          "answer": ""
+        },
+        {
+          "question_id": "icp_geography",
+          "question": "Which regions or countries do you primarily target?",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "North America\nWestern Europe",
+          "description": "Determines geographic qualification rules",
+          "answer": ""
+        },
+        {
+          "question_id": "icp_tech_maturity",
+          "question": "How would you describe the technology maturity of your ideal customer?",
+          "answer_type": "select",
+          "required": true,
+          "options": [
+            "Low digital adoption",
+            "Moderate digital adoption",
+            "High digital adoption"
+          ],
+          "description": "Assesses readiness for tech solutions",
+          "answer": ""
+        },
+        {
+          "question_id": "icp_business_model",
+          "question": "Which business models best describe your ideal customers?",
+          "answer_type": "multi_select",
+          "required": true,
+          "options": [
+            "SaaS",
+            "Services",
+            "E-commerce",
+            "Enterprise",
+            "Other"
+          ],
+          "description": "Narrows fit to business types you serve best",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Budget Alignment",
+      "order": 3,
+      "questions": [
+        {
+          "question_id": "budget_criteria",
+          "question": "Describe the budget criteria that qualify a lead as having approved or potential budget",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "Budget allocated in current FY\nBudget request approved by finance",
+          "description": "Clarifies what counts as budget availability",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Timeline Priority",
+      "order": 4,
+      "questions": [
+        {
+          "question_id": "timeline_ranges",
+          "question": "Define the purchase timeline ranges for high, medium, and nurture priority",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Priority Level",
+              "type": "select",
+              "options": [
+                "High priority",
+                "Medium priority",
+                "Nurture"
+              ]
+            },
+            {
+              "name": "Timeline Range",
+              "type": "text"
+            }
+          ],
+          "description": "Maps lead timeline to sales urgency",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Lead Scoring Weights",
+      "order": 5,
+      "questions": [
+        {
+          "question_id": "scoring_weights",
+          "question": "Set the weight (%) for each scoring category",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Category",
+              "type": "select",
+              "options": [
+                "ICP Fit",
+                "Need Urgency",
+                "Authority",
+                "Budget",
+                "Engagement"
+              ]
+            },
+            {
+              "name": "Weight (%)",
+              "type": "number"
+            }
+          ],
+          "description": "Allocates importance across qualification factors",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Score Interpretation",
+      "order": 6,
+      "questions": [
+        {
+          "question_id": "score_ranges",
+          "question": "Define score ranges and resulting lead status",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Score Range",
+              "type": "text"
+            },
+            {
+              "name": "Lead Status",
+              "type": "select",
+              "options": [
+                "Sales Qualified Lead",
+                "Marketing Qualified Lead",
+                "Unqualified"
+              ]
+            },
+            {
+              "name": "Recommended Action",
+              "type": "text"
+            }
+          ],
+          "description": "Translates numeric score into next steps",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Responsibilities",
+      "order": 7,
+      "questions": [
+        {
+          "question_id": "team_responsibilities",
+          "question": "Assign qualification responsibilities to each team",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Role",
+              "type": "select",
+              "options": [
+                "Marketing Team",
+                "Sales Development",
+                "Account Executives",
+                "Revenue Operations"
+              ]
+            },
+            {
+              "name": "Responsibility",
+              "type": "text"
+            }
+          ],
+          "description": "Clarifies who does what in the qualification process",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    }
+  ],
+  "_metadata": {
+    "page_id": "2fc89db1-5e5b-80e7-ba98-f539d7db1a39",
+    "extraction_date": "2026-02-09T17:16:32.623068",
+    "model_used": "moonshotai/kimi-k2-instruct-0905"
+  }
+}

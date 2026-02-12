@@ -1,0 +1,322 @@
+{
+  "document_name": "Annual Budget Document",
+  "document_type": "Annual Budget Document",
+  "estimated_completion_time": "25-35 minutes",
+  "total_questions": 19,
+  "question_categories": [
+    {
+      "category": "Document Metadata",
+      "order": 1,
+      "questions": [
+        {
+          "question_id": "company_name",
+          "question": "What is your company name?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Acme Corp",
+          "description": "Used throughout the document header and overview",
+          "answer": ""
+        },
+        {
+          "question_id": "fiscal_year",
+          "question": "Which fiscal year does this budget cover?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "2026",
+          "description": "Determines the time horizon for all financial projections",
+          "answer": ""
+        },
+        {
+          "question_id": "preparer_name",
+          "question": "Who is preparing this budget?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Jane Smith, CFO",
+          "description": "Shows ownership and accountability",
+          "answer": ""
+        },
+        {
+          "question_id": "approver_name",
+          "question": "Who will approve this budget?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "John Doe, CEO",
+          "description": "Required for governance and sign-off",
+          "answer": ""
+        },
+        {
+          "question_id": "preparation_date",
+          "question": "When is this budget being prepared?",
+          "answer_type": "date",
+          "required": true,
+          "description": "Used for version control",
+          "answer": ""
+        },
+        {
+          "question_id": "document_version",
+          "question": "What is the version number of this budget document?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "v1.0",
+          "description": "Tracks revisions and updates",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Budget Planning Assumptions",
+      "order": 2,
+      "questions": [
+        {
+          "question_id": "revenue_growth_rate",
+          "question": "What is your projected annual revenue growth rate (%)?",
+          "answer_type": "number",
+          "required": true,
+          "placeholder": "15",
+          "description": "Drives top-line revenue projections",
+          "answer": ""
+        },
+        {
+          "question_id": "customer_acquisition_cost",
+          "question": "What is your estimated customer acquisition cost (in currency)?",
+          "answer_type": "number",
+          "required": true,
+          "placeholder": "1200",
+          "description": "Impacts marketing and sales spend",
+          "answer": ""
+        },
+        {
+          "question_id": "churn_rate",
+          "question": "What is your expected annual churn rate (%)?",
+          "answer_type": "number",
+          "required": true,
+          "placeholder": "5",
+          "description": "Affects recurring revenue forecasts",
+          "answer": ""
+        },
+        {
+          "question_id": "inflation_rate",
+          "question": "What inflation or cost escalation rate (%) should be applied?",
+          "answer_type": "number",
+          "required": true,
+          "placeholder": "3",
+          "description": "Adjusts expense line items",
+          "answer": ""
+        },
+        {
+          "question_id": "headcount_expansion",
+          "question": "How many total new employees do you plan to hire?",
+          "answer_type": "number",
+          "required": true,
+          "placeholder": "25",
+          "description": "Drives payroll and recruiting budgets",
+          "answer": ""
+        },
+        {
+          "question_id": "capex_limit",
+          "question": "What is the maximum capital expenditure limit (in currency)?",
+          "answer_type": "number",
+          "required": true,
+          "placeholder": "500000",
+          "description": "Caps large asset purchases",
+          "answer": ""
+        },
+        {
+          "question_id": "contingency_reserve",
+          "question": "What percentage of the total budget should be reserved for contingencies?",
+          "answer_type": "number",
+          "required": true,
+          "placeholder": "5",
+          "description": "Buffers unforeseen expenses",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Revenue Projections",
+      "order": 3,
+      "questions": [
+        {
+          "question_id": "revenue_streams",
+          "question": "What revenue streams should be included in the budget?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Revenue Stream",
+              "type": "text"
+            },
+            {
+              "name": "Annual Target (currency)",
+              "type": "number"
+            },
+            {
+              "name": "Monthly or Quarterly Breakdown",
+              "type": "text"
+            },
+            {
+              "name": "Key Assumptions",
+              "type": "text"
+            }
+          ],
+          "description": "Add each revenue stream with targets and assumptions",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Operating Expense Allocation",
+      "order": 4,
+      "questions": [
+        {
+          "question_id": "opex_departments",
+          "question": "What are the budget allocations for each department?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Department",
+              "type": "text"
+            },
+            {
+              "name": "Budget Allocation (currency)",
+              "type": "number"
+            },
+            {
+              "name": "Notes",
+              "type": "text"
+            }
+          ],
+          "description": "List every department receiving an OPEX budget",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Capital Expenditure Items",
+      "order": 5,
+      "questions": [
+        {
+          "question_id": "capex_items",
+          "question": "What capital expenditure items are planned?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Item / Asset",
+              "type": "text"
+            },
+            {
+              "name": "Budgeted Cost (currency)",
+              "type": "number"
+            },
+            {
+              "name": "Justification",
+              "type": "text"
+            },
+            {
+              "name": "Depreciation / Amortization Notes",
+              "type": "text"
+            }
+          ],
+          "description": "Add each CAPEX item with cost and rationale",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Headcount and Payroll Budget",
+      "order": 6,
+      "questions": [
+        {
+          "question_id": "headcount_plan",
+          "question": "What is your headcount plan by department?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Department",
+              "type": "text"
+            },
+            {
+              "name": "Planned Hires (count)",
+              "type": "number"
+            },
+            {
+              "name": "Salary Budget (currency)",
+              "type": "number"
+            },
+            {
+              "name": "Notes",
+              "type": "text"
+            }
+          ],
+          "description": "Provide hiring numbers and salary budgets per department",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Cash Flow Projection",
+      "order": 7,
+      "questions": [
+        {
+          "question_id": "cash_flow_periods",
+          "question": "Which periods should be shown in the cash-flow projection?",
+          "answer_type": "multi_select",
+          "required": true,
+          "options": [
+            "Monthly",
+            "Quarterly",
+            "Semi-Annual"
+          ],
+          "description": "Determines granularity of cash-flow table",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "SaaS-Specific KPIs",
+      "order": 8,
+      "questions": [
+        {
+          "question_id": "saas_kpis",
+          "question": "Which SaaS KPIs should be tracked in the budget?",
+          "answer_type": "structured_list",
+          "required": false,
+          "fields": [
+            {
+              "name": "KPI Name",
+              "type": "text"
+            },
+            {
+              "name": "Target Value",
+              "type": "text"
+            },
+            {
+              "name": "Measurement Frequency",
+              "type": "select",
+              "options": [
+                "Monthly",
+                "Quarterly",
+                "Annually"
+              ]
+            }
+          ],
+          "description": "Add KPIs like MRR, ARPU, LTV, CAC-payback, etc.",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    }
+  ],
+  "_metadata": {
+    "page_id": "2fc89db1-5e5b-80ca-8d86-dd7a1e77afa9",
+    "extraction_date": "2026-02-09T18:10:00.215224",
+    "model_used": "moonshotai/kimi-k2-instruct-0905"
+  }
+}

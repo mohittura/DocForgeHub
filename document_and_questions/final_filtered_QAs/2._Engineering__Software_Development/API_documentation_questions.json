@@ -1,0 +1,326 @@
+{
+  "document_name": "API Documentation",
+  "document_type": "API Documentation",
+  "estimated_completion_time": "30-45 minutes",
+  "total_questions": 16,
+  "question_categories": [
+    {
+      "category": "API Overview",
+      "order": 1,
+      "questions": [
+        {
+          "question_id": "api_style",
+          "question": "What architectural style does your API follow?",
+          "answer_type": "select",
+          "required": true,
+          "options": [
+            "REST",
+            "GraphQL",
+            "gRPC",
+            "SOAP",
+            "Other"
+          ],
+          "description": "Determines the overall structure and conventions used in the documentation.",
+          "answer": ""
+        },
+        {
+          "question_id": "base_url",
+          "question": "What is the base URL for your API?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "https://api.example.com/v1",
+          "description": "Used throughout the documentation for endpoint examples.",
+          "answer": ""
+        },
+        {
+          "question_id": "versioning_strategy",
+          "question": "How do you version your API?",
+          "answer_type": "select",
+          "required": true,
+          "options": [
+            "URL path (/v1/)",
+            "Header (API-Version)",
+            "Query parameter (?version=1)",
+            "Media type (application/vnd.api+json;version=1)"
+          ],
+          "description": "Determines how version information is presented in examples.",
+          "answer": ""
+        },
+        {
+          "question_id": "supported_protocols",
+          "question": "Which protocols does your API support?",
+          "answer_type": "multi_select",
+          "required": true,
+          "options": [
+            "HTTPS only",
+            "HTTP and HTTPS",
+            "WebSocket",
+            "Server-Sent Events"
+          ],
+          "description": "Clarifies transport security requirements.",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Authentication & Authorization",
+      "order": 2,
+      "questions": [
+        {
+          "question_id": "auth_method",
+          "question": "Which authentication method do you use?",
+          "answer_type": "select",
+          "required": true,
+          "options": [
+            "OAuth 2.0",
+            "JWT Bearer",
+            "API Key (Header)",
+            "API Key (Query)",
+            "Basic Auth",
+            "HMAC",
+            "Mutual TLS"
+          ],
+          "description": "Determines how clients authenticate requests.",
+          "answer": ""
+        },
+        {
+          "question_id": "token_expiry",
+          "question": "How long are access tokens valid (in minutes)?",
+          "answer_type": "number",
+          "required": true,
+          "placeholder": "60",
+          "description": "Used to document token refresh requirements.",
+          "answer": ""
+        },
+        {
+          "question_id": "authorization_model",
+          "question": "What authorization model do you use?",
+          "answer_type": "select",
+          "required": true,
+          "options": [
+            "Role-Based Access Control (RBAC)",
+            "Scope-based",
+            "Attribute-Based Access Control (ABAC)",
+            "Custom"
+          ],
+          "description": "Explains how permissions are granted to authenticated clients.",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Rate Limiting",
+      "order": 3,
+      "questions": [
+        {
+          "question_id": "rate_limit_window",
+          "question": "What is your rate-limit time window (in seconds)?",
+          "answer_type": "number",
+          "required": true,
+          "placeholder": "60",
+          "description": "Defines how often the request counter resets.",
+          "answer": ""
+        },
+        {
+          "question_id": "rate_limit_count",
+          "question": "How many requests are allowed per window?",
+          "answer_type": "number",
+          "required": true,
+          "placeholder": "1000",
+          "description": "Documents the maximum number of requests allowed.",
+          "answer": ""
+        },
+        {
+          "question_id": "rate_limit_scope",
+          "question": "What scope does the limit apply to?",
+          "answer_type": "select",
+          "required": true,
+          "options": [
+            "Per API key",
+            "Per IP address",
+            "Per user",
+            "Per endpoint",
+            "Global"
+          ],
+          "description": "Clarifies how limits are counted.",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Request Headers",
+      "order": 4,
+      "questions": [
+        {
+          "question_id": "custom_headers",
+          "question": "List any custom request headers your API requires or supports.",
+          "answer_type": "structured_list",
+          "required": false,
+          "fields": [
+            {
+              "name": "Header Name",
+              "type": "text"
+            },
+            {
+              "name": "Description",
+              "type": "text"
+            },
+            {
+              "name": "Required",
+              "type": "select",
+              "options": [
+                "Yes",
+                "No"
+              ]
+            }
+          ],
+          "description": "Documents headers beyond standard ones like Authorization and Content-Type.",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Response Codes",
+      "order": 5,
+      "questions": [
+        {
+          "question_id": "custom_status_codes",
+          "question": "List any custom or domain-specific HTTP status codes you return.",
+          "answer_type": "structured_list",
+          "required": false,
+          "fields": [
+            {
+              "name": "Status Code",
+              "type": "number"
+            },
+            {
+              "name": "Meaning",
+              "type": "text"
+            }
+          ],
+          "description": "Documents non-standard status codes clients should handle.",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Endpoints",
+      "order": 6,
+      "questions": [
+        {
+          "question_id": "endpoints",
+          "question": "Provide details for each endpoint in your API.",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Method",
+              "type": "select",
+              "options": [
+                "GET",
+                "POST",
+                "PUT",
+                "PATCH",
+                "DELETE",
+                "HEAD",
+                "OPTIONS"
+              ]
+            },
+            {
+              "name": "Path",
+              "type": "text"
+            },
+            {
+              "name": "Summary",
+              "type": "text"
+            },
+            {
+              "name": "Request Body Required",
+              "type": "select",
+              "options": [
+                "Yes",
+                "No"
+              ]
+            }
+          ],
+          "description": "Generates the endpoint sections and sample requests/responses.",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Webhook Events (if applicable)",
+      "order": 7,
+      "questions": [
+        {
+          "question_id": "webhooks_enabled",
+          "question": "Does your API support webhooks?",
+          "answer_type": "select",
+          "required": true,
+          "options": [
+            "Yes",
+            "No"
+          ],
+          "description": "Determines whether webhook sections are included.",
+          "answer": ""
+        },
+        {
+          "question_id": "webhook_events",
+          "question": "List the webhook event types you support.",
+          "answer_type": "structured_list",
+          "required": false,
+          "fields": [
+            {
+              "name": "Event Name",
+              "type": "text"
+            },
+            {
+              "name": "Description",
+              "type": "text"
+            }
+          ],
+          "description": "Documents events clients can subscribe to.",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Changelog",
+      "order": 8,
+      "questions": [
+        {
+          "question_id": "changelog_entries",
+          "question": "Provide changelog entries for your API versions.",
+          "answer_type": "structured_list",
+          "required": false,
+          "fields": [
+            {
+              "name": "Version",
+              "type": "text"
+            },
+            {
+              "name": "Release Date",
+              "type": "date"
+            },
+            {
+              "name": "Change Description",
+              "type": "text"
+            }
+          ],
+          "description": "Keeps a historical record of API changes.",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    }
+  ],
+  "_metadata": {
+    "page_id": "2fc89db1-5e5b-8051-b8e0-c9a8a7881ccd",
+    "extraction_date": "2026-02-09T15:48:38.797449",
+    "model_used": "moonshotai/kimi-k2-instruct-0905"
+  }
+}

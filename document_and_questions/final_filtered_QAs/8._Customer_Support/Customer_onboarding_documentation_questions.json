@@ -1,0 +1,243 @@
+{
+  "document_name": "Customer Onboarding Documentation",
+  "document_type": "Customer Onboarding Documentation",
+  "estimated_completion_time": "15-20 minutes",
+  "total_questions": 15,
+  "question_categories": [
+    {
+      "category": "Document Metadata",
+      "order": 1,
+      "questions": [
+        {
+          "question_id": "company_name",
+          "question": "What is your company name?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Acme Corp",
+          "description": "Used in document header and overview",
+          "answer": ""
+        },
+        {
+          "question_id": "product_name",
+          "question": "What is the name of your product or platform?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Acme Analytics Platform",
+          "description": "Replaces {{Product Name}} placeholder",
+          "answer": ""
+        },
+        {
+          "question_id": "department",
+          "question": "Which department owns this onboarding process?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Customer Success",
+          "description": "Defaults to Customer Support if blank",
+          "answer": ""
+        },
+        {
+          "question_id": "applicable_teams",
+          "question": "Which teams are involved in onboarding?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Support / Customer Success / Implementation",
+          "description": "List all teams separated by slashes",
+          "answer": ""
+        },
+        {
+          "question_id": "document_owner",
+          "question": "Who is the document owner (role)?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Head of Customer Success",
+          "description": "Role responsible for maintaining this document",
+          "answer": ""
+        },
+        {
+          "question_id": "version",
+          "question": "Document version",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "1.0",
+          "description": "Semantic version number",
+          "answer": ""
+        },
+        {
+          "question_id": "effective_date",
+          "question": "Effective date",
+          "answer_type": "date",
+          "required": true,
+          "description": "When this process becomes active",
+          "answer": ""
+        },
+        {
+          "question_id": "last_review_date",
+          "question": "Last review date",
+          "answer_type": "date",
+          "required": true,
+          "description": "Most recent review date",
+          "answer": ""
+        },
+        {
+          "question_id": "approved_by",
+          "question": "Approved by (name or role)",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "VP Customer Success",
+          "description": "Person who approved this document",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Onboarding Stages",
+      "order": 2,
+      "questions": [
+        {
+          "question_id": "onboarding_stages",
+          "question": "Define your onboarding stages",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Stage Name",
+              "type": "text"
+            },
+            {
+              "name": "Objective",
+              "type": "text"
+            },
+            {
+              "name": "Owner",
+              "type": "select",
+              "options": [
+                "Support",
+                "Customer Success",
+                "Customer",
+                "Engineering",
+                "Implementation",
+                "Customer + Support",
+                "Support / CS"
+              ]
+            },
+            {
+              "name": "Success Criteria",
+              "type": "text"
+            }
+          ],
+          "description": "List each stage of your onboarding process",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Roles and Responsibilities",
+      "order": 3,
+      "questions": [
+        {
+          "question_id": "roles_responsibilities",
+          "question": "List roles and their onboarding responsibilities",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Role",
+              "type": "text"
+            },
+            {
+              "name": "Responsibility",
+              "type": "text"
+            }
+          ],
+          "description": "Define who does what during onboarding",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Success Metrics",
+      "order": 4,
+      "questions": [
+        {
+          "question_id": "success_metrics",
+          "question": "What metrics will you track for onboarding success?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Metric Name",
+              "type": "text"
+            },
+            {
+              "name": "Description",
+              "type": "text"
+            }
+          ],
+          "description": "KPIs to measure onboarding effectiveness",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Common Issues",
+      "order": 5,
+      "questions": [
+        {
+          "question_id": "common_issues",
+          "question": "What are common onboarding issues and how should they be handled?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Issue Type",
+              "type": "text"
+            },
+            {
+              "name": "Example",
+              "type": "text"
+            },
+            {
+              "name": "Support Action",
+              "type": "text"
+            }
+          ],
+          "description": "Anticipate and document frequent problems",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Scope Customization",
+      "order": 6,
+      "questions": [
+        {
+          "question_id": "scope_inclusions",
+          "question": "What does your onboarding process cover?",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "New customer onboarding after purchase\nProduct setup and configuration\nInitial training and support",
+          "description": "Bullet list of what is in scope",
+          "answer": ""
+        },
+        {
+          "question_id": "scope_exclusions",
+          "question": "What is explicitly out of scope for onboarding?",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "Advanced implementation\nCustom integrations\nFeature development",
+          "description": "Bullet list of exclusions",
+          "answer": ""
+        }
+      ]
+    }
+  ],
+  "_metadata": {
+    "page_id": "2fc89db1-5e5b-804a-977d-f6a42a60f4a6",
+    "extraction_date": "2026-02-09T17:53:40.235501",
+    "model_used": "moonshotai/kimi-k2-instruct-0905"
+  }
+}

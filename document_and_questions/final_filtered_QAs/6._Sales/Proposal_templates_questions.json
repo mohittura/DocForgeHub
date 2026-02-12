@@ -1,0 +1,246 @@
+{
+  "document_name": "Sales Proposal Template",
+  "document_type": "Sales Proposal Template",
+  "estimated_completion_time": "15-20 minutes",
+  "total_questions": 16,
+  "question_categories": [
+    {
+      "category": "Client Information",
+      "order": 1,
+      "questions": [
+        {
+          "question_id": "client_name",
+          "question": "What is the client's full name?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "John Smith",
+          "description": "Primary contact person for this proposal",
+          "answer": ""
+        },
+        {
+          "question_id": "client_company",
+          "question": "What is the client's company name?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Acme Corporation",
+          "description": "Company name that will appear in proposal title",
+          "answer": ""
+        },
+        {
+          "question_id": "client_email",
+          "question": "What is the client's email address?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "john.smith@acme.com",
+          "description": "Primary contact email",
+          "answer": ""
+        },
+        {
+          "question_id": "client_phone",
+          "question": "What is the client's phone number?",
+          "answer_type": "text",
+          "required": false,
+          "placeholder": "+1 (555) 123-4567",
+          "description": "Primary contact phone number",
+          "answer": ""
+        },
+        {
+          "question_id": "proposal_date",
+          "question": "What date should appear on the proposal?",
+          "answer_type": "date",
+          "required": true,
+          "description": "Typically today's date or proposal submission date",
+          "answer": ""
+        },
+        {
+          "question_id": "prepared_by",
+          "question": "Who is preparing this proposal?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Jane Doe, Sales Manager",
+          "description": "Name and title of proposal author",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Proposal Overview",
+      "order": 2,
+      "questions": [
+        {
+          "question_id": "proposal_overview",
+          "question": "Provide a brief overview of this proposal",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "This proposal outlines our comprehensive solution to address your company's need for...",
+          "description": "High-level summary that appears in section 2",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Products or Services",
+      "order": 3,
+      "questions": [
+        {
+          "question_id": "products_services",
+          "question": "What products or services are you proposing?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Product/Service Name",
+              "type": "text"
+            },
+            {
+              "name": "Description",
+              "type": "text"
+            },
+            {
+              "name": "Price",
+              "type": "number"
+            }
+          ],
+          "description": "List each product/service with description and price",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Implementation Timeline",
+      "order": 4,
+      "questions": [
+        {
+          "question_id": "implementation_phases",
+          "question": "What are the implementation phases and timeline?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Phase Name",
+              "type": "text"
+            },
+            {
+              "name": "Description",
+              "type": "text"
+            },
+            {
+              "name": "Timeframe",
+              "type": "text"
+            }
+          ],
+          "description": "Break down the project into phases with descriptions and timeframes",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Investment Summary",
+      "order": 5,
+      "questions": [
+        {
+          "question_id": "total_investment",
+          "question": "What is the total investment amount?",
+          "answer_type": "number",
+          "required": true,
+          "placeholder": "50000",
+          "description": "Total amount before any discounts",
+          "answer": ""
+        },
+        {
+          "question_id": "discount_amount",
+          "question": "What discount amount (if any)?",
+          "answer_type": "number",
+          "required": false,
+          "placeholder": "5000",
+          "description": "Enter 0 if no discount",
+          "answer": ""
+        },
+        {
+          "question_id": "final_amount",
+          "question": "What is the final amount after discount?",
+          "answer_type": "number",
+          "required": true,
+          "placeholder": "45000",
+          "description": "Final amount client will pay",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Optional Add-Ons",
+      "order": 6,
+      "questions": [
+        {
+          "question_id": "add_ons",
+          "question": "What optional add-ons are available?",
+          "answer_type": "structured_list",
+          "required": false,
+          "fields": [
+            {
+              "name": "Add-On Name",
+              "type": "text"
+            },
+            {
+              "name": "Description",
+              "type": "text"
+            },
+            {
+              "name": "Cost",
+              "type": "number"
+            }
+          ],
+          "description": "Additional services or features client can purchase",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Terms and Conditions",
+      "order": 7,
+      "questions": [
+        {
+          "question_id": "terms_conditions",
+          "question": "What are the terms and conditions?",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "Payment terms, service level agreements, cancellation policy...",
+          "description": "Legal terms that will appear in section 6",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Acceptance",
+      "order": 8,
+      "questions": [
+        {
+          "question_id": "client_representative",
+          "question": "Who will sign on behalf of the client?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "John Smith",
+          "description": "Name of client representative who will sign",
+          "answer": ""
+        },
+        {
+          "question_id": "sender_title",
+          "question": "What is your title for the signature block?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Sales Director",
+          "description": "Your title that appears under your signature",
+          "answer": ""
+        }
+      ]
+    }
+  ],
+  "_metadata": {
+    "page_id": "2fc89db1-5e5b-80e5-ad78-d82a684763e4",
+    "extraction_date": "2026-02-09T17:11:07.123757",
+    "model_used": "moonshotai/kimi-k2-instruct-0905"
+  }
+}

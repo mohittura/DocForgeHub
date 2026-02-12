@@ -1,0 +1,266 @@
+{
+  "document_name": "Audit Report",
+  "document_type": "Audit Report",
+  "estimated_completion_time": "25-35 minutes",
+  "total_questions": 16,
+  "question_categories": [
+    {
+      "category": "Document Metadata",
+      "order": 1,
+      "questions": [
+        {
+          "question_id": "finding_title",
+          "question": "What is the title of this audit finding?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "e.g., Inadequate Access Controls in Financial System",
+          "description": "Used as the finding title in the report header",
+          "answer": ""
+        },
+        {
+          "question_id": "severity",
+          "question": "What is the severity level of this finding?",
+          "answer_type": "select",
+          "required": true,
+          "options": [
+            "High",
+            "Medium",
+            "Low"
+          ],
+          "description": "Determines the urgency and priority of the finding",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Document Information",
+      "order": 2,
+      "questions": [
+        {
+          "question_id": "company_name",
+          "question": "What is the name of the company being audited?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "e.g., Acme Corporation",
+          "description": "Used throughout the document header and overview",
+          "answer": ""
+        },
+        {
+          "question_id": "department_system",
+          "question": "What department or system is being audited?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "e.g., IT Security, Finance, HR Payroll System",
+          "description": "Identifies the audit area",
+          "answer": ""
+        },
+        {
+          "question_id": "audit_period",
+          "question": "What is the audit period (start and end dates)?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "e.g., January 1, 2024 – March 31, 2024",
+          "description": "Defines the timeframe covered by the audit",
+          "answer": ""
+        },
+        {
+          "question_id": "audit_team",
+          "question": "Who conducted the audit?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "e.g., Internal Audit Team, Deloitte External Auditors",
+          "description": "Identifies the audit team responsible",
+          "answer": ""
+        },
+        {
+          "question_id": "report_date",
+          "question": "What is the report date?",
+          "answer_type": "date",
+          "required": true,
+          "description": "Date when the report is finalized",
+          "answer": ""
+        },
+        {
+          "question_id": "version",
+          "question": "What is the report version?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "e.g., 1.0, Final",
+          "description": "Version identifier for the report",
+          "answer": ""
+        },
+        {
+          "question_id": "approver_name",
+          "question": "Who approved this audit report?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "e.g., John Smith, Chief Audit Executive",
+          "description": "Name of the person who approved the report",
+          "answer": ""
+        },
+        {
+          "question_id": "overall_rating",
+          "question": "What is the overall audit rating?",
+          "answer_type": "select",
+          "required": true,
+          "options": [
+            "Effective",
+            "Needs Improvement",
+            "High Risk"
+          ],
+          "description": "Summarizes the overall control effectiveness",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Audit Scope",
+      "order": 3,
+      "questions": [
+        {
+          "question_id": "scope_details",
+          "question": "What specific departments, processes, or systems are included in the audit scope?",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "e.g., All financial reporting processes, IT change management procedures, user access controls for SAP system",
+          "description": "Defines what is being audited",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Control Effectiveness Assessment",
+      "order": 4,
+      "questions": [
+        {
+          "question_id": "control_areas",
+          "question": "What control areas should be assessed and what are their effectiveness ratings?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Control Area",
+              "type": "text"
+            },
+            {
+              "name": "Assessment",
+              "type": "select",
+              "options": [
+                "Effective",
+                "Partial",
+                "Ineffective"
+              ]
+            },
+            {
+              "name": "Notes",
+              "type": "text"
+            }
+          ],
+          "description": "Evaluate each control area's effectiveness",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Key Challenges and Risks",
+      "order": 5,
+      "questions": [
+        {
+          "question_id": "key_challenges",
+          "question": "What are the key challenges identified during the audit?",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "List each challenge separately",
+          "description": "Documents significant challenges encountered",
+          "answer": ""
+        },
+        {
+          "question_id": "key_risks",
+          "question": "What are the key risks identified?",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "List each risk and its potential impact",
+          "description": "Identifies significant risks to the organization",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Recommendations and Action Plan",
+      "order": 6,
+      "questions": [
+        {
+          "question_id": "recommendations",
+          "question": "What recommendations should be included in the action plan?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Finding ID",
+              "type": "text"
+            },
+            {
+              "name": "Recommendation",
+              "type": "text"
+            },
+            {
+              "name": "Owner",
+              "type": "text"
+            },
+            {
+              "name": "Priority",
+              "type": "select",
+              "options": [
+                "High",
+                "Medium",
+                "Low"
+              ]
+            },
+            {
+              "name": "Target Date",
+              "type": "date"
+            }
+          ],
+          "description": "Each recommendation with assigned owner and timeline",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Management Acknowledgement",
+      "order": 7,
+      "questions": [
+        {
+          "question_id": "acknowledgements",
+          "question": "Who are the stakeholders acknowledging this audit report?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Role",
+              "type": "text"
+            },
+            {
+              "name": "Name",
+              "type": "text"
+            },
+            {
+              "name": "Date",
+              "type": "date"
+            }
+          ],
+          "description": "Signatures and dates for management acknowledgement",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    }
+  ],
+  "_metadata": {
+    "page_id": "2fc89db1-5e5b-804c-9eba-c7bd143702c2",
+    "extraction_date": "2026-02-09T18:13:06.093645",
+    "model_used": "moonshotai/kimi-k2-instruct-0905"
+  }
+}

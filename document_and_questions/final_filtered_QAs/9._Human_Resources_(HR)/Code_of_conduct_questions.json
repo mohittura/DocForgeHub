@@ -1,0 +1,142 @@
+{
+  "document_name": "Code of Conduct",
+  "document_type": "Code of Conduct",
+  "estimated_completion_time": "10-15 minutes",
+  "total_questions": 10,
+  "question_categories": [
+    {
+      "category": "Company Information",
+      "order": 1,
+      "questions": [
+        {
+          "question_id": "company_name",
+          "question": "What is your company name?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Acme Corporation",
+          "description": "Used throughout the document to identify the company",
+          "answer": ""
+        },
+        {
+          "question_id": "department_name",
+          "question": "Which department owns this Code of Conduct?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Human Resources",
+          "description": "Identifies the department responsible for the document",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Document Metadata",
+      "order": 2,
+      "questions": [
+        {
+          "question_id": "document_version",
+          "question": "What is the version number of this document?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "1.0",
+          "description": "Version tracking for document control",
+          "answer": ""
+        },
+        {
+          "question_id": "effective_date",
+          "question": "When does this Code of Conduct become effective?",
+          "answer_type": "date",
+          "required": true,
+          "description": "Date when the policy takes effect",
+          "answer": ""
+        },
+        {
+          "question_id": "last_review_date",
+          "question": "When was this document last reviewed?",
+          "answer_type": "date",
+          "required": true,
+          "description": "Date of last document review",
+          "answer": ""
+        },
+        {
+          "question_id": "approved_by",
+          "question": "Who approved this Code of Conduct?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "CEO Name or HR Director Name",
+          "description": "Name of the person who approved the document",
+          "answer": ""
+        },
+        {
+          "question_id": "document_owner",
+          "question": "Who is the document owner?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "HR Department",
+          "description": "Department or person responsible for maintaining the document",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Acknowledgement Signatures",
+      "order": 3,
+      "questions": [
+        {
+          "question_id": "acknowledgement_roles",
+          "question": "What roles need to sign the acknowledgement?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Role",
+              "type": "text"
+            },
+            {
+              "name": "Name",
+              "type": "text"
+            },
+            {
+              "name": "Signature",
+              "type": "text"
+            },
+            {
+              "name": "Date",
+              "type": "date"
+            }
+          ],
+          "description": "List all roles that need to acknowledge the Code of Conduct",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Review and Revision",
+      "order": 4,
+      "questions": [
+        {
+          "question_id": "reviewer_name",
+          "question": "Who is responsible for reviewing this document?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "HR Director Name",
+          "description": "Person responsible for document review",
+          "answer": ""
+        },
+        {
+          "question_id": "next_review_date",
+          "question": "When should this document be reviewed next?",
+          "answer_type": "date",
+          "required": true,
+          "description": "Scheduled date for next review",
+          "answer": ""
+        }
+      ]
+    }
+  ],
+  "_metadata": {
+    "page_id": "2fc89db1-5e5b-80fe-9384-c553aff53db7",
+    "extraction_date": "2026-02-09T18:02:38.118283",
+    "model_used": "moonshotai/kimi-k2-instruct-0905"
+  }
+}

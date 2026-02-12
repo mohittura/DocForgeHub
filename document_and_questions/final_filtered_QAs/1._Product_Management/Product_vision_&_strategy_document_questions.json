@@ -1,0 +1,249 @@
+{
+  "document_name": "Product Vision & Strategy Document",
+  "document_type": "Product Vision & Strategy Document",
+  "estimated_completion_time": "25-35 minutes",
+  "total_questions": 12,
+  "question_categories": [
+    {
+      "category": "Document Metadata",
+      "order": 1,
+      "questions": [
+        {
+          "question_id": "product_name",
+          "question": "What is the name of your product?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "e.g., Acme Cloud Platform",
+          "description": "This appears in the document header and throughout as the product identifier.",
+          "answer": ""
+        },
+        {
+          "question_id": "document_owner",
+          "question": "Who owns this document?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "e.g., Product Management",
+          "description": "Team or role responsible for maintaining the strategy document.",
+          "answer": ""
+        },
+        {
+          "question_id": "audience",
+          "question": "Who is the intended audience for this document?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "e.g., Executive Team, Product, Engineering, Sales, Marketing",
+          "description": "List stakeholder groups that will reference this document.",
+          "answer": ""
+        },
+        {
+          "question_id": "time_horizon",
+          "question": "What time horizon does this strategy cover?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "e.g., 2–3 Years",
+          "description": "Typical range is 2–5 years for product vision documents.",
+          "answer": ""
+        },
+        {
+          "question_id": "last_updated",
+          "question": "When was this document last updated?",
+          "answer_type": "date",
+          "required": true,
+          "description": "Used to track version freshness.",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Personas",
+      "order": 2,
+      "questions": [
+        {
+          "question_id": "personas",
+          "question": "What personas should be included in the strategy?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Persona",
+              "type": "text"
+            },
+            {
+              "name": "Role",
+              "type": "text"
+            },
+            {
+              "name": "Primary Needs",
+              "type": "text"
+            }
+          ],
+          "description": "Add each persona with role and top needs.",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Business Goals & Metrics",
+      "order": 3,
+      "questions": [
+        {
+          "question_id": "objectives_metrics",
+          "question": "What business objectives and metrics will you track?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Objective",
+              "type": "text"
+            },
+            {
+              "name": "Metric",
+              "type": "text"
+            },
+            {
+              "name": "Target",
+              "type": "text"
+            }
+          ],
+          "description": "Define measurable goals and success targets.",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Strategic Pillars",
+      "order": 4,
+      "questions": [
+        {
+          "question_id": "strategic_pillars",
+          "question": "What are your strategic pillars?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Pillar",
+              "type": "text"
+            },
+            {
+              "name": "Description",
+              "type": "text"
+            }
+          ],
+          "description": "High-level themes guiding product decisions.",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Key Initiatives",
+      "order": 5,
+      "questions": [
+        {
+          "question_id": "initiatives",
+          "question": "What key initiatives are planned for the next 12–24 months?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Initiative",
+              "type": "text"
+            },
+            {
+              "name": "Description",
+              "type": "text"
+            },
+            {
+              "name": "Strategic Pillar",
+              "type": "select",
+              "options": []
+            }
+          ],
+          "description": "List major features or programs aligned to pillars.",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Roadmap Themes",
+      "order": 6,
+      "questions": [
+        {
+          "question_id": "roadmap_themes",
+          "question": "What are your roadmap themes?",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "e.g., Platform Modernization, AI-Powered Insights, Enterprise Compliance",
+          "description": "High-level themes that organize upcoming roadmap items.",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Competitive Landscape",
+      "order": 7,
+      "questions": [
+        {
+          "question_id": "competitors",
+          "question": "Who are your main competitors and how do you compare?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Competitor",
+              "type": "text"
+            },
+            {
+              "name": "Strength",
+              "type": "text"
+            },
+            {
+              "name": "Weakness",
+              "type": "text"
+            }
+          ],
+          "description": "Identify competitors and their relative pros/cons.",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Risks & Mitigations",
+      "order": 8,
+      "questions": [
+        {
+          "question_id": "risks",
+          "question": "What risks could derail the strategy and how will you mitigate them?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Risk",
+              "type": "text"
+            },
+            {
+              "name": "Impact",
+              "type": "text"
+            },
+            {
+              "name": "Mitigation",
+              "type": "text"
+            }
+          ],
+          "description": "List top risks, their impact, and mitigation plans.",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    }
+  ],
+  "_metadata": {
+    "page_id": "2fc89db1-5e5b-803a-ba94-e8a262d65ea7",
+    "extraction_date": "2026-02-09T15:41:28.937175",
+    "model_used": "moonshotai/kimi-k2-instruct-0905"
+  }
+}

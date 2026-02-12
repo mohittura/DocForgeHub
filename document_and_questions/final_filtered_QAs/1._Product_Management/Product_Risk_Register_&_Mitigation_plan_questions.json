@@ -1,0 +1,156 @@
+{
+  "document_name": "Product Risk Register & Mitigation Plan",
+  "document_type": "Risk Management Document",
+  "estimated_completion_time": "20-30 minutes",
+  "total_questions": 6,
+  "question_categories": [
+    {
+      "category": "Document Metadata",
+      "order": 1,
+      "questions": [
+        {
+          "question_id": "product_name",
+          "question": "What is the name of your product or program?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "e.g., Acme Cloud Platform",
+          "description": "Used in document header to identify the product",
+          "answer": ""
+        },
+        {
+          "question_id": "document_owner",
+          "question": "Who is the owner of this risk register?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "e.g., Program Management",
+          "description": "Person or team responsible for maintaining the document",
+          "answer": ""
+        },
+        {
+          "question_id": "audience",
+          "question": "Who is the intended audience for this document?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "e.g., Product, Engineering, Security, Leadership",
+          "description": "Stakeholders who will review or use this risk register",
+          "answer": ""
+        },
+        {
+          "question_id": "last_updated",
+          "question": "What is the last updated date for this document?",
+          "answer_type": "date",
+          "required": true,
+          "description": "Date when the document was last modified",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Risk Register Items",
+      "order": 2,
+      "questions": [
+        {
+          "question_id": "risk_items",
+          "question": "What risks should be included in your risk register?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Risk ID",
+              "type": "text",
+              "options": []
+            },
+            {
+              "name": "Risk Description",
+              "type": "text",
+              "options": []
+            },
+            {
+              "name": "Category",
+              "type": "select",
+              "options": [
+                "Technical",
+                "Security",
+                "Resource",
+                "Compliance",
+                "Product",
+                "Operational",
+                "External / Market"
+              ]
+            },
+            {
+              "name": "Likelihood (1-5)",
+              "type": "number",
+              "options": []
+            },
+            {
+              "name": "Impact (1-5)",
+              "type": "number",
+              "options": []
+            },
+            {
+              "name": "Mitigation Plan",
+              "type": "text",
+              "options": []
+            },
+            {
+              "name": "Owner",
+              "type": "text",
+              "options": []
+            },
+            {
+              "name": "Status",
+              "type": "select",
+              "options": [
+                "Open",
+                "Monitoring",
+                "Closed",
+                "Accepted"
+              ]
+            }
+          ],
+          "description": "Each risk item with all required fields for the main risk register table",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Contingency Plans",
+      "order": 3,
+      "questions": [
+        {
+          "question_id": "contingency_items",
+          "question": "What contingency plans should be defined for your risks?",
+          "answer_type": "structured_list",
+          "required": false,
+          "fields": [
+            {
+              "name": "Risk ID",
+              "type": "text",
+              "options": []
+            },
+            {
+              "name": "Trigger Event",
+              "type": "text",
+              "options": []
+            },
+            {
+              "name": "Contingency Action",
+              "type": "text",
+              "options": []
+            }
+          ],
+          "description": "Contingency actions that will be triggered when specific events occur",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    }
+  ],
+  "_metadata": {
+    "page_id": "2fc89db1-5e5b-80d9-8d53-f11c81889ed9",
+    "extraction_date": "2026-02-09T15:44:44.264519",
+    "model_used": "moonshotai/kimi-k2-instruct-0905"
+  }
+}

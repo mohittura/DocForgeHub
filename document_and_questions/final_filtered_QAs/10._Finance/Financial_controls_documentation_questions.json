@@ -1,0 +1,149 @@
+{
+  "document_name": "Financial Controls Documentation",
+  "document_type": "Financial Controls Documentation",
+  "estimated_completion_time": "15-20 minutes",
+  "total_questions": 10,
+  "question_categories": [
+    {
+      "category": "Document Metadata",
+      "order": 1,
+      "questions": [
+        {
+          "question_id": "company_name",
+          "question": "What is your company's legal name?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Acme Corporation",
+          "description": "Replaces {{Company Name}} placeholders throughout the document",
+          "answer": ""
+        },
+        {
+          "question_id": "document_version",
+          "question": "What version number should this document be labeled as?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "1.0",
+          "description": "Used in the document metadata table",
+          "answer": ""
+        },
+        {
+          "question_id": "effective_date",
+          "question": "When should this financial controls policy become effective?",
+          "answer_type": "date",
+          "required": true,
+          "description": "Used in the document metadata table",
+          "answer": ""
+        },
+        {
+          "question_id": "last_review_date",
+          "question": "When was this document last reviewed (if updating) or today's date (if new)?",
+          "answer_type": "date",
+          "required": true,
+          "description": "Used in the document metadata table",
+          "answer": ""
+        },
+        {
+          "question_id": "approved_by",
+          "question": "Who is the approver of this financial controls document?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "CFO Name",
+          "description": "Used in the document metadata table",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Control Categories",
+      "order": 2,
+      "questions": [
+        {
+          "question_id": "control_categories",
+          "question": "What control categories does your organization use?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Control Category",
+              "type": "text"
+            },
+            {
+              "name": "Purpose",
+              "type": "text"
+            },
+            {
+              "name": "Examples",
+              "type": "text"
+            }
+          ],
+          "description": "Customize the control categories table with your specific controls",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Roles and Responsibilities",
+      "order": 3,
+      "questions": [
+        {
+          "question_id": "roles_responsibilities",
+          "question": "What are the actual roles and their financial control responsibilities in your organization?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Role",
+              "type": "text"
+            },
+            {
+              "name": "Responsibility",
+              "type": "text"
+            }
+          ],
+          "description": "Customize the roles and responsibilities table with your organizational structure",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Document Customization",
+      "order": 4,
+      "questions": [
+        {
+          "question_id": "document_name",
+          "question": "What should this document be titled?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Financial Controls Documentation",
+          "description": "Used in the document metadata table",
+          "answer": ""
+        },
+        {
+          "question_id": "department_name",
+          "question": "Which department owns this document?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Finance / Accounting",
+          "description": "Used in the document metadata table",
+          "answer": ""
+        },
+        {
+          "question_id": "document_owner",
+          "question": "Who is the document owner?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Finance Department",
+          "description": "Used in the document metadata table",
+          "answer": ""
+        }
+      ]
+    }
+  ],
+  "_metadata": {
+    "page_id": "2fc89db1-5e5b-8014-8fb4-f68d8b997848",
+    "extraction_date": "2026-02-09T18:13:40.032317",
+    "model_used": "moonshotai/kimi-k2-instruct-0905"
+  }
+}

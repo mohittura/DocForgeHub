@@ -1,0 +1,300 @@
+{
+  "document_name": "Audit Response Documentation",
+  "document_type": "Audit Response Documentation",
+  "estimated_completion_time": "20-30 minutes",
+  "total_questions": 15,
+  "question_categories": [
+    {
+      "category": "Document Information",
+      "order": 1,
+      "questions": [
+        {
+          "question_id": "company_name",
+          "question": "What is your organization's name?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Acme Corporation",
+          "description": "Used in the document header to identify the organization being audited",
+          "answer": ""
+        },
+        {
+          "question_id": "audit_type_auditor",
+          "question": "What is the audit type and who is the auditor?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "ISO 27001 External Audit / Deloitte",
+          "description": "Identifies the type of audit and the auditing body",
+          "answer": ""
+        },
+        {
+          "question_id": "audit_period",
+          "question": "What is the audit period (start date – end date)?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "2025-01-01 – 2025-01-31",
+          "description": "Defines the period covered by the audit",
+          "answer": ""
+        },
+        {
+          "question_id": "response_owner",
+          "question": "Who is the response owner?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Compliance Team",
+          "description": "Team responsible for coordinating the audit response",
+          "answer": ""
+        },
+        {
+          "question_id": "document_version",
+          "question": "What is the document version?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "1.0",
+          "description": "Version number of this response document",
+          "answer": ""
+        },
+        {
+          "question_id": "response_date",
+          "question": "What is the response date?",
+          "answer_type": "date",
+          "required": true,
+          "description": "Date when the response is finalized",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Audit Response Summary",
+      "order": 2,
+      "questions": [
+        {
+          "question_id": "total_findings",
+          "question": "How many total findings were identified?",
+          "answer_type": "number",
+          "required": true,
+          "placeholder": "12",
+          "description": "Total number of audit findings",
+          "answer": ""
+        },
+        {
+          "question_id": "high_severity_count",
+          "question": "How many high-severity findings?",
+          "answer_type": "number",
+          "required": true,
+          "placeholder": "2",
+          "description": "Count of high-severity findings",
+          "answer": ""
+        },
+        {
+          "question_id": "medium_severity_count",
+          "question": "How many medium-severity findings?",
+          "answer_type": "number",
+          "required": true,
+          "placeholder": "5",
+          "description": "Count of medium-severity findings",
+          "answer": ""
+        },
+        {
+          "question_id": "low_severity_count",
+          "question": "How many low-severity findings?",
+          "answer_type": "number",
+          "required": true,
+          "placeholder": "5",
+          "description": "Count of low-severity findings",
+          "answer": ""
+        },
+        {
+          "question_id": "accepted_risks_count",
+          "question": "How many risks have been formally accepted?",
+          "answer_type": "number",
+          "required": true,
+          "placeholder": "0",
+          "description": "Count of findings where risk is accepted rather than remediated",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Finding Response Log",
+      "order": 3,
+      "questions": [
+        {
+          "question_id": "finding_items",
+          "question": "Provide details for each audit finding",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Finding ID",
+              "type": "text"
+            },
+            {
+              "name": "Process / System",
+              "type": "text"
+            },
+            {
+              "name": "Control ID or Requirement",
+              "type": "text"
+            },
+            {
+              "name": "Finding Summary",
+              "type": "text"
+            },
+            {
+              "name": "Risk Impact",
+              "type": "text"
+            },
+            {
+              "name": "Management Response",
+              "type": "text"
+            },
+            {
+              "name": "Root Cause",
+              "type": "text"
+            },
+            {
+              "name": "Corrective Action",
+              "type": "text"
+            },
+            {
+              "name": "Preventive Action",
+              "type": "text"
+            },
+            {
+              "name": "Responsible Team",
+              "type": "text"
+            },
+            {
+              "name": "Target Completion Date",
+              "type": "date"
+            },
+            {
+              "name": "Status",
+              "type": "select",
+              "options": [
+                "Open",
+                "In Progress",
+                "Completed"
+              ]
+            }
+          ],
+          "description": "Each row represents one audit finding and its response details",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Risk Acceptance",
+      "order": 4,
+      "questions": [
+        {
+          "question_id": "risk_acceptance_items",
+          "question": "List any findings where risk is formally accepted",
+          "answer_type": "structured_list",
+          "required": false,
+          "fields": [
+            {
+              "name": "Finding ID",
+              "type": "text"
+            },
+            {
+              "name": "Reason for Acceptance",
+              "type": "text"
+            },
+            {
+              "name": "Risk Level",
+              "type": "select",
+              "options": [
+                "High",
+                "Medium",
+                "Low"
+              ]
+            },
+            {
+              "name": "Approval Authority",
+              "type": "text"
+            },
+            {
+              "name": "Review Date",
+              "type": "date"
+            }
+          ],
+          "description": "Only include findings where remediation is not feasible and risk is accepted",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Remediation Tracking Summary",
+      "order": 5,
+      "questions": [
+        {
+          "question_id": "remediation_status_counts",
+          "question": "Provide counts for each remediation status",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Status",
+              "type": "select",
+              "options": [
+                "Open",
+                "In Progress",
+                "Completed",
+                "Pending Verification"
+              ]
+            },
+            {
+              "name": "Count",
+              "type": "number"
+            }
+          ],
+          "description": "Summary counts of findings by remediation status",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Management Confirmation",
+      "order": 6,
+      "questions": [
+        {
+          "question_id": "management_signatories",
+          "question": "Who are the management signatories and their sign-off dates?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Role",
+              "type": "select",
+              "options": [
+                "Department Owner",
+                "Compliance Lead",
+                "Executive Sponsor"
+              ]
+            },
+            {
+              "name": "Name",
+              "type": "text"
+            },
+            {
+              "name": "Date",
+              "type": "date"
+            }
+          ],
+          "description": "Management confirmation of review and commitment to resolving findings",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    }
+  ],
+  "_metadata": {
+    "page_id": "2fc89db1-5e5b-80fb-b5aa-f95c0d8b9ad2",
+    "extraction_date": "2026-02-09T17:07:02.246156",
+    "model_used": "moonshotai/kimi-k2-instruct-0905"
+  }
+}

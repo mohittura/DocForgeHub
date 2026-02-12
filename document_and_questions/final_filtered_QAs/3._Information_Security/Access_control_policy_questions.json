@@ -1,0 +1,149 @@
+{
+  "document_name": "Access Control Policy",
+  "document_type": "Access Control Policy",
+  "estimated_completion_time": "10-15 minutes",
+  "total_questions": 9,
+  "question_categories": [
+    {
+      "category": "Document Metadata",
+      "order": 1,
+      "questions": [
+        {
+          "question_id": "document_owner",
+          "question": "Who is the Document Owner for this Access Control Policy?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "e.g., Information Security, CISO Office",
+          "description": "Identifies the team responsible for maintaining this policy",
+          "answer": ""
+        },
+        {
+          "question_id": "approved_by",
+          "question": "Who approves this policy?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "e.g., Executive Management, CIO, CISO",
+          "description": "Identifies the approving authority for the policy",
+          "answer": ""
+        },
+        {
+          "question_id": "effective_date",
+          "question": "What is the effective date of this policy?",
+          "answer_type": "date",
+          "required": true,
+          "description": "Date when the policy becomes active",
+          "answer": ""
+        },
+        {
+          "question_id": "review_cycle",
+          "question": "How often will this policy be reviewed?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "e.g., Annual, Bi-annual, Upon significant change",
+          "description": "Defines the review frequency for policy updates",
+          "answer": ""
+        },
+        {
+          "question_id": "version",
+          "question": "What is the version number of this policy?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "e.g., 1.0, 2.1",
+          "description": "Version identifier for tracking revisions",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Policy Scope",
+      "order": 2,
+      "questions": [
+        {
+          "question_id": "scope_user_types",
+          "question": "Which user types does this policy apply to?",
+          "answer_type": "multi_select",
+          "required": true,
+          "options": [
+            "Employees",
+            "Contractors",
+            "Consultants",
+            "Third-party vendors",
+            "Interns",
+            "Board members"
+          ],
+          "description": "Defines which categories of users are covered by the policy",
+          "answer": ""
+        },
+        {
+          "question_id": "scope_systems",
+          "question": "What systems and environments are covered?",
+          "answer_type": "multi_select",
+          "required": true,
+          "options": [
+            "On-premise servers",
+            "Cloud services",
+            "Applications",
+            "Network infrastructure",
+            "Physical facilities",
+            "Mobile devices"
+          ],
+          "description": "Specifies the technical scope of the policy",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Security Team Information",
+      "order": 3,
+      "questions": [
+        {
+          "question_id": "security_team_name",
+          "question": "What is the name of your Information Security team?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "e.g., Information Security Department, Cybersecurity Team",
+          "description": "Identifies the team responsible for security operations",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Revision History",
+      "order": 4,
+      "questions": [
+        {
+          "question_id": "revision_history",
+          "question": "What revision history entries should be included?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Version",
+              "type": "text"
+            },
+            {
+              "name": "Date",
+              "type": "date"
+            },
+            {
+              "name": "Author",
+              "type": "text"
+            },
+            {
+              "name": "Changes",
+              "type": "text"
+            }
+          ],
+          "description": "Tracks all policy updates and modifications",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    }
+  ],
+  "_metadata": {
+    "page_id": "2fc89db1-5e5b-804e-9eba-d94862e76cec",
+    "extraction_date": "2026-02-09T15:55:29.150252",
+    "model_used": "moonshotai/kimi-k2-instruct-0905"
+  }
+}

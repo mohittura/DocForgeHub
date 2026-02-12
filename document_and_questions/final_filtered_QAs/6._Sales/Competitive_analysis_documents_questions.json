@@ -1,0 +1,486 @@
+{
+  "document_name": "Competitive Analysis Document",
+  "document_type": "Competitive Analysis Document",
+  "estimated_completion_time": "25-35 minutes",
+  "total_questions": 26,
+  "question_categories": [
+    {
+      "category": "Document Information",
+      "order": 1,
+      "questions": [
+        {
+          "question_id": "company_name",
+          "question": "What is your company name?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Acme Corp",
+          "description": "Used in document header and competitor comparisons",
+          "answer": ""
+        },
+        {
+          "question_id": "product_service_name",
+          "question": "What is the name of the product or service being analyzed?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Acme Analytics Platform",
+          "description": "Identifies the offering for competitive comparison",
+          "answer": ""
+        },
+        {
+          "question_id": "industry_market",
+          "question": "What industry or market are you competing in?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Business Intelligence Software",
+          "description": "Defines the competitive landscape scope",
+          "answer": ""
+        },
+        {
+          "question_id": "geographic_scope",
+          "question": "What is the geographic scope of this analysis?",
+          "answer_type": "select",
+          "required": true,
+          "options": [
+            "Global",
+            "Regional",
+            "Country",
+            "Local"
+          ],
+          "description": "Sets the competitive market boundaries",
+          "answer": ""
+        },
+        {
+          "question_id": "analysis_period",
+          "question": "What is the analysis period for this competitive review?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "January 2024 - December 2024",
+          "description": "Timeframe for the competitive assessment",
+          "answer": ""
+        },
+        {
+          "question_id": "prepared_by",
+          "question": "Which team is preparing this analysis?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Strategy Team",
+          "description": "Identifies the document owner",
+          "answer": ""
+        },
+        {
+          "question_id": "document_version",
+          "question": "What is the version number of this document?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "1.0",
+          "description": "Tracks document revisions",
+          "answer": ""
+        },
+        {
+          "question_id": "last_updated_date",
+          "question": "When was this document last updated?",
+          "answer_type": "date",
+          "required": true,
+          "description": "Shows document currency",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Market Overview",
+      "order": 2,
+      "questions": [
+        {
+          "question_id": "market_size",
+          "question": "What is the current market size in dollars?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "$2.5 Billion",
+          "description": "Provides market scale context",
+          "answer": ""
+        },
+        {
+          "question_id": "growth_rate_cagr",
+          "question": "What is the market growth rate (CAGR %)?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "12.5%",
+          "description": "Shows market momentum",
+          "answer": ""
+        },
+        {
+          "question_id": "market_stage",
+          "question": "What stage is the market in?",
+          "answer_type": "select",
+          "required": true,
+          "options": [
+            "Emerging",
+            "Growth",
+            "Mature",
+            "Declining"
+          ],
+          "description": "Indicates competitive dynamics",
+          "answer": ""
+        },
+        {
+          "question_id": "demand_drivers",
+          "question": "What are the primary demand drivers in this market?",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "Digital adoption, automation needs, cost optimization",
+          "description": "Explains market growth factors",
+          "answer": ""
+        },
+        {
+          "question_id": "regulatory_influence",
+          "question": "What is the level of regulatory influence?",
+          "answer_type": "select",
+          "required": true,
+          "options": [
+            "Low",
+            "Moderate",
+            "High"
+          ],
+          "description": "Assesses regulatory impact on competition",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Executive Summary - Key Insights",
+      "order": 3,
+      "questions": [
+        {
+          "question_id": "market_leaders",
+          "question": "Who are the current market leaders?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Microsoft, Tableau, Qlik",
+          "description": "Identifies dominant competitors",
+          "answer": ""
+        },
+        {
+          "question_id": "competitor_differentiation_factors",
+          "question": "How do competitors primarily differentiate themselves?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Pricing, advanced features, integrations, customer experience",
+          "description": "Explains competitive positioning strategies",
+          "answer": ""
+        },
+        {
+          "question_id": "underserved_segment_gap",
+          "question": "What key opportunity exists in an underserved segment or feature gap?",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "Small business segment lacks affordable solutions with enterprise features",
+          "description": "Identifies market opportunity",
+          "answer": ""
+        },
+        {
+          "question_id": "competitive_pressure_source",
+          "question": "What is the source of increasing competitive pressure?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "New cloud-native entrants, aggressive pricing, rapid innovation",
+          "description": "Explains competitive threats",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Competitor Information",
+      "order": 4,
+      "questions": [
+        {
+          "question_id": "competitor_categories",
+          "question": "What competitor categories should be included?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Category",
+              "type": "text"
+            },
+            {
+              "name": "Description",
+              "type": "text"
+            },
+            {
+              "name": "Example Competitors",
+              "type": "text"
+            }
+          ],
+          "description": "Defines competitive segments and examples",
+          "answer": "",
+          "answers": []
+        },
+        {
+          "question_id": "competitive_factors",
+          "question": "Rate the following competitive factors (1-5 scale)",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Factor",
+              "type": "text"
+            },
+            {
+              "name": "Rating (1-5)",
+              "type": "number"
+            },
+            {
+              "name": "Notes",
+              "type": "text"
+            }
+          ],
+          "description": "Assesses competitive intensity across key factors",
+          "answer": "",
+          "answers": []
+        },
+        {
+          "question_id": "competitor_profiles",
+          "question": "Provide details for each main competitor",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Competitor Name",
+              "type": "text"
+            },
+            {
+              "name": "Founded Year",
+              "type": "number"
+            },
+            {
+              "name": "Headquarters",
+              "type": "text"
+            },
+            {
+              "name": "Market Position",
+              "type": "select",
+              "options": [
+                "Leader",
+                "Challenger",
+                "Niche"
+              ]
+            },
+            {
+              "name": "Market Share %",
+              "type": "text"
+            },
+            {
+              "name": "Primary Offering",
+              "type": "text"
+            }
+          ],
+          "description": "Creates detailed competitor profiles",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Feature & Competitive Comparison",
+      "order": 5,
+      "questions": [
+        {
+          "question_id": "feature_comparison",
+          "question": "Which features should be compared across competitors?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Feature",
+              "type": "text"
+            },
+            {
+              "name": "Your Company",
+              "type": "select",
+              "options": [
+                "✓",
+                "✗"
+              ]
+            },
+            {
+              "name": "Competitor 1",
+              "type": "select",
+              "options": [
+                "✓",
+                "✗"
+              ]
+            },
+            {
+              "name": "Competitor 2",
+              "type": "select",
+              "options": [
+                "✓",
+                "✗"
+              ]
+            },
+            {
+              "name": "Competitor 3",
+              "type": "select",
+              "options": [
+                "✓",
+                "✗"
+              ]
+            }
+          ],
+          "description": "Creates feature comparison matrix",
+          "answer": "",
+          "answers": []
+        },
+        {
+          "question_id": "competitive_scoring",
+          "question": "Score your company and competitors on key criteria (1-5)",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Criteria",
+              "type": "text"
+            },
+            {
+              "name": "Your Company Score",
+              "type": "number"
+            },
+            {
+              "name": "Competitor 1 Score",
+              "type": "number"
+            },
+            {
+              "name": "Competitor 2 Score",
+              "type": "number"
+            },
+            {
+              "name": "Competitor 3 Score",
+              "type": "number"
+            }
+          ],
+          "description": "Creates competitive scoring matrix",
+          "answer": "",
+          "answers": []
+        },
+        {
+          "question_id": "value_proposition_comparison",
+          "question": "Compare value propositions across competitors",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Company",
+              "type": "text"
+            },
+            {
+              "name": "Primary Value Proposition",
+              "type": "text"
+            },
+            {
+              "name": "Target Customer",
+              "type": "text"
+            }
+          ],
+          "description": "Shows competitive positioning differences",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Strategic Recommendations & Roadmap",
+      "order": 6,
+      "questions": [
+        {
+          "question_id": "strategic_recommendations",
+          "question": "What are your strategic recommendations?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Priority",
+              "type": "select",
+              "options": [
+                "High",
+                "Medium",
+                "Low"
+              ]
+            },
+            {
+              "name": "Recommendation",
+              "type": "text"
+            },
+            {
+              "name": "Expected Impact",
+              "type": "text"
+            }
+          ],
+          "description": "Creates prioritized action plan",
+          "answer": "",
+          "answers": []
+        },
+        {
+          "question_id": "implementation_roadmap",
+          "question": "Define your implementation roadmap phases",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Phase",
+              "type": "text"
+            },
+            {
+              "name": "Timeline",
+              "type": "text"
+            },
+            {
+              "name": "Key Actions",
+              "type": "text"
+            },
+            {
+              "name": "Owner",
+              "type": "text"
+            }
+          ],
+          "description": "Creates execution timeline",
+          "answer": "",
+          "answers": []
+        },
+        {
+          "question_id": "monitoring_schedule",
+          "question": "Set up your competitive monitoring schedule",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Review Type",
+              "type": "text"
+            },
+            {
+              "name": "Frequency",
+              "type": "select",
+              "options": [
+                "Weekly",
+                "Monthly",
+                "Quarterly",
+                "Annually"
+              ]
+            },
+            {
+              "name": "Owner",
+              "type": "text"
+            }
+          ],
+          "description": "Establishes ongoing competitive intelligence",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    }
+  ],
+  "_metadata": {
+    "page_id": "2fc89db1-5e5b-80b4-aa50-caa1aae6b6b2",
+    "extraction_date": "2026-02-09T17:14:32.374288",
+    "model_used": "moonshotai/kimi-k2-instruct-0905"
+  }
+}

@@ -1,0 +1,269 @@
+{
+  "document_name": "Content Calendar",
+  "document_type": "Content Calendar",
+  "estimated_completion_time": "15-20 minutes",
+  "total_questions": 13,
+  "question_categories": [
+    {
+      "category": "Document Metadata",
+      "order": 1,
+      "questions": [
+        {
+          "question_id": "time_period",
+          "question": "What time period does this content calendar cover?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "e.g., Q2 2026, March 2026, or Annual 2026",
+          "description": "Sets the overall timeframe for the content calendar",
+          "answer": ""
+        },
+        {
+          "question_id": "document_version",
+          "question": "What is the version number for this document?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "e.g., 1.0, 2.3",
+          "description": "Tracks document revisions",
+          "answer": ""
+        },
+        {
+          "question_id": "effective_date",
+          "question": "When does this content calendar become effective?",
+          "answer_type": "date",
+          "required": true,
+          "description": "Start date for the calendar",
+          "answer": ""
+        },
+        {
+          "question_id": "last_review_date",
+          "question": "When was this content calendar last reviewed?",
+          "answer_type": "date",
+          "required": false,
+          "description": "Tracks when the document was last reviewed",
+          "answer": ""
+        },
+        {
+          "question_id": "approved_by",
+          "question": "Who approved this content calendar?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Approver's name and title",
+          "description": "Identifies who has approved the calendar",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Content Scope",
+      "order": 2,
+      "questions": [
+        {
+          "question_id": "included_content_types",
+          "question": "Which content types are included in this calendar?",
+          "answer_type": "multi_select",
+          "required": true,
+          "options": [
+            "Blog and website content",
+            "Social media posts",
+            "Email newsletters",
+            "Campaign content",
+            "Product marketing content",
+            "Sales enablement content"
+          ],
+          "description": "Defines what content types will be managed through this calendar",
+          "answer": ""
+        },
+        {
+          "question_id": "out_of_scope_content",
+          "question": "What content types are explicitly out of scope?",
+          "answer_type": "long_text",
+          "required": false,
+          "placeholder": "List any content types that should not be included",
+          "description": "Clarifies boundaries for content management",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Content Planning Items",
+      "order": 3,
+      "questions": [
+        {
+          "question_id": "content_items",
+          "question": "What content items should be included in your calendar?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Publish Date",
+              "type": "date"
+            },
+            {
+              "name": "Content Title",
+              "type": "text"
+            },
+            {
+              "name": "Content Type",
+              "type": "select",
+              "options": [
+                "Blog",
+                "Social",
+                "Email",
+                "Video",
+                "Podcast",
+                "Webinar",
+                "Whitepaper",
+                "Case Study"
+              ]
+            },
+            {
+              "name": "Channel",
+              "type": "text"
+            },
+            {
+              "name": "Funnel Stage",
+              "type": "select",
+              "options": [
+                "Awareness",
+                "Consideration",
+                "Conversion",
+                "Retention"
+              ]
+            },
+            {
+              "name": "Owner",
+              "type": "text"
+            },
+            {
+              "name": "Status",
+              "type": "select",
+              "options": [
+                "Planned",
+                "In Progress",
+                "Review",
+                "Scheduled",
+                "Published"
+              ]
+            }
+          ],
+          "description": "Add each content item with all required planning details",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Publishing Frequency",
+      "order": 4,
+      "questions": [
+        {
+          "question_id": "publishing_frequency",
+          "question": "What is your publishing frequency for each channel?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Channel",
+              "type": "text"
+            },
+            {
+              "name": "Frequency",
+              "type": "text"
+            }
+          ],
+          "description": "Define how often you will publish on each channel (e.g., Blog: 2x per week, LinkedIn: daily)",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Team Roles and Responsibilities",
+      "order": 5,
+      "questions": [
+        {
+          "question_id": "team_roles",
+          "question": "Who are your team members and what are their responsibilities?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Role",
+              "type": "text"
+            },
+            {
+              "name": "Responsibility",
+              "type": "text"
+            }
+          ],
+          "description": "Define each team role and their specific content responsibilities",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Dependencies and Risks",
+      "order": 6,
+      "questions": [
+        {
+          "question_id": "dependencies_risks",
+          "question": "What dependencies and risks could impact your content calendar?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Dependency",
+              "type": "text"
+            },
+            {
+              "name": "Impact",
+              "type": "text"
+            },
+            {
+              "name": "Mitigation",
+              "type": "text"
+            }
+          ],
+          "description": "Identify potential risks and how to mitigate them",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Review and Revision",
+      "order": 7,
+      "questions": [
+        {
+          "question_id": "review_frequency",
+          "question": "How often will this content calendar be reviewed?",
+          "answer_type": "select",
+          "required": true,
+          "options": [
+            "Weekly",
+            "Bi-weekly",
+            "Monthly",
+            "Quarterly"
+          ],
+          "description": "Sets the review cadence for the calendar",
+          "answer": ""
+        },
+        {
+          "question_id": "approval_process",
+          "question": "Describe your content approval process",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "Outline who reviews and approves content before publishing",
+          "description": "Defines the workflow for content approval",
+          "answer": ""
+        }
+      ]
+    }
+  ],
+  "_metadata": {
+    "page_id": "2fc89db1-5e5b-8093-b2ff-f60ce71e1560",
+    "extraction_date": "2026-02-09T17:21:30.469960",
+    "model_used": "moonshotai/kimi-k2-instruct-0905"
+  }
+}

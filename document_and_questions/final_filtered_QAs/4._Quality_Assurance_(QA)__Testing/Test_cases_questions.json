@@ -1,0 +1,140 @@
+{
+  "document_name": "Test Case Document",
+  "document_type": "Test Case Document",
+  "estimated_completion_time": "15-20 minutes",
+  "total_questions": 8,
+  "question_categories": [
+    {
+      "category": "Document Information",
+      "order": 1,
+      "questions": [
+        {
+          "question_id": "document_name",
+          "question": "What is the name of this test case document?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "e.g., Login Module Test Cases",
+          "description": "Used to identify the test document",
+          "answer": ""
+        },
+        {
+          "question_id": "product_system",
+          "question": "What product or system are these test cases for?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "e.g., Customer Portal",
+          "description": "Identifies the system under test",
+          "answer": ""
+        },
+        {
+          "question_id": "module_feature",
+          "question": "Which module or feature do these test cases cover?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "e.g., User Authentication",
+          "description": "Specifies the area being tested",
+          "answer": ""
+        },
+        {
+          "question_id": "version",
+          "question": "What version of the system are these test cases for?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "e.g., v2.1.0",
+          "description": "Tracks version compatibility",
+          "answer": ""
+        },
+        {
+          "question_id": "prepared_by",
+          "question": "Who prepared these test cases?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "e.g., QA Engineer Name",
+          "description": "Records the test author",
+          "answer": ""
+        },
+        {
+          "question_id": "reviewed_by",
+          "question": "Who reviewed these test cases?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "e.g., Senior QA Lead",
+          "description": "Records the reviewer",
+          "answer": ""
+        },
+        {
+          "question_id": "document_date",
+          "question": "What is the creation date for this document?",
+          "answer_type": "date",
+          "required": true,
+          "description": "Records when the document was created",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Test Case Details",
+      "order": 2,
+      "questions": [
+        {
+          "question_id": "test_cases",
+          "question": "What test cases should be included in this document?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Test Case ID",
+              "type": "text"
+            },
+            {
+              "name": "Test Case Title",
+              "type": "text"
+            },
+            {
+              "name": "Module/Feature",
+              "type": "text"
+            },
+            {
+              "name": "Requirement Reference",
+              "type": "text"
+            },
+            {
+              "name": "Priority",
+              "type": "select",
+              "options": [
+                "High",
+                "Medium",
+                "Low"
+              ]
+            },
+            {
+              "name": "Severity",
+              "type": "select",
+              "options": [
+                "Critical",
+                "Major",
+                "Minor"
+              ]
+            },
+            {
+              "name": "Preconditions",
+              "type": "text"
+            },
+            {
+              "name": "Expected Result",
+              "type": "text"
+            }
+          ],
+          "description": "Define each test case with all required fields",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    }
+  ],
+  "_metadata": {
+    "page_id": "2fc89db1-5e5b-807b-9292-edf655e1bdf9",
+    "extraction_date": "2026-02-09T16:03:42.478511",
+    "model_used": "moonshotai/kimi-k2-instruct-0905"
+  }
+}

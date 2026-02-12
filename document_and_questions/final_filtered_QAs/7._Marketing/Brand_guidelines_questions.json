@@ -1,0 +1,303 @@
+{
+  "document_name": "Brand Guidelines",
+  "document_type": "Brand Guidelines",
+  "estimated_completion_time": "20-30 minutes",
+  "total_questions": 19,
+  "question_categories": [
+    {
+      "category": "Document Metadata",
+      "order": 1,
+      "questions": [
+        {
+          "question_id": "brand_name",
+          "question": "What is your brand name?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Acme Corporation",
+          "description": "The official brand name that will replace placeholder text throughout the document",
+          "answer": ""
+        },
+        {
+          "question_id": "document_version",
+          "question": "What is the version number for this brand guidelines document?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "1.0",
+          "description": "Version number for tracking document revisions",
+          "answer": ""
+        },
+        {
+          "question_id": "effective_date",
+          "question": "When do these brand guidelines go into effect?",
+          "answer_type": "date",
+          "required": true,
+          "description": "The date when these guidelines become active",
+          "answer": ""
+        },
+        {
+          "question_id": "last_review_date",
+          "question": "When was this document last reviewed?",
+          "answer_type": "date",
+          "required": true,
+          "description": "Date of the most recent review before this version",
+          "answer": ""
+        },
+        {
+          "question_id": "approved_by",
+          "question": "Who approved these brand guidelines?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Chief Marketing Officer",
+          "description": "Name or title of the person who approved this document",
+          "answer": ""
+        },
+        {
+          "question_id": "document_owner",
+          "question": "Who is the document owner responsible for maintaining these guidelines?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Brand / Marketing Team",
+          "description": "Team or individual responsible for document maintenance",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Brand Foundation",
+      "order": 2,
+      "questions": [
+        {
+          "question_id": "brand_mission",
+          "question": "What is your brand mission statement?",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "To empower businesses through innovative technology solutions that drive growth and efficiency.",
+          "description": "The core purpose and reason for your brand's existence",
+          "answer": ""
+        },
+        {
+          "question_id": "brand_vision",
+          "question": "What is your brand vision statement?",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "To be the world's most trusted technology partner, transforming how businesses operate and succeed.",
+          "description": "Your aspirational view of what the brand aims to achieve in the future",
+          "answer": ""
+        },
+        {
+          "question_id": "brand_values",
+          "question": "What are your core brand values?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Value",
+              "type": "text"
+            }
+          ],
+          "description": "List 4-6 core values that guide your brand's behavior and decisions",
+          "answer": "",
+          "answers": []
+        },
+        {
+          "question_id": "brand_positioning",
+          "question": "How is your brand positioned in the market?",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "We serve mid-market B2B companies seeking reliable, scalable technology solutions, differentiating through exceptional customer service and proven ROI.",
+          "description": "Describe your target audience, market position, and key differentiators",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Tone of Voice Guidelines",
+      "order": 3,
+      "questions": [
+        {
+          "question_id": "tone_contexts",
+          "question": "What communication contexts does your brand use and what tone should each have?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Context",
+              "type": "text"
+            },
+            {
+              "name": "Tone Guidance",
+              "type": "text"
+            }
+          ],
+          "description": "Define how your brand should sound in different contexts (e.g., Marketing, Product, Sales, Support)",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Color System",
+      "order": 4,
+      "questions": [
+        {
+          "question_id": "primary_colors",
+          "question": "What are your primary brand colors?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Color Name",
+              "type": "text"
+            },
+            {
+              "name": "HEX",
+              "type": "text"
+            },
+            {
+              "name": "RGB",
+              "type": "text"
+            },
+            {
+              "name": "Usage",
+              "type": "text"
+            }
+          ],
+          "description": "List your primary brand colors with technical specifications and usage guidance",
+          "answer": "",
+          "answers": []
+        },
+        {
+          "question_id": "secondary_colors",
+          "question": "What are your secondary brand colors?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Color Name",
+              "type": "text"
+            },
+            {
+              "name": "HEX",
+              "type": "text"
+            },
+            {
+              "name": "RGB",
+              "type": "text"
+            },
+            {
+              "name": "Usage",
+              "type": "text"
+            }
+          ],
+          "description": "List your secondary/supporting colors with technical specifications and usage guidance",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Typography",
+      "order": 5,
+      "questions": [
+        {
+          "question_id": "primary_typography",
+          "question": "What fonts should be used for primary typography?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Usage",
+              "type": "select",
+              "options": [
+                "Headings",
+                "Body Text"
+              ]
+            },
+            {
+              "name": "Font",
+              "type": "text"
+            }
+          ],
+          "description": "Specify the fonts to use for headings and body text",
+          "answer": "",
+          "answers": []
+        },
+        {
+          "question_id": "fallback_fonts",
+          "question": "What fallback fonts should be used when primary fonts aren't available?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Usage",
+              "type": "select",
+              "options": [
+                "Web Fallback",
+                "System Fallback"
+              ]
+            },
+            {
+              "name": "Font",
+              "type": "text"
+            }
+          ],
+          "description": "Specify fallback fonts for web and system environments",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Scope and Review",
+      "order": 6,
+      "questions": [
+        {
+          "question_id": "scope_departments",
+          "question": "Which specific departments or areas within your company do these guidelines apply to?",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "Marketing, Product Development, Sales, Customer Success, HR, Finance",
+          "description": "List all departments that must follow these brand guidelines",
+          "answer": ""
+        },
+        {
+          "question_id": "out_of_scope_items",
+          "question": "What items are specifically out of scope for these brand guidelines?",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "Experimental campaign branding, partner co-branded materials, internal training documents",
+          "description": "Specify what is not covered by these guidelines",
+          "answer": ""
+        },
+        {
+          "question_id": "review_schedule",
+          "question": "How often should these brand guidelines be reviewed?",
+          "answer_type": "select",
+          "required": true,
+          "options": [
+            "Quarterly",
+            "Bi-annually",
+            "Annually",
+            "Every 2 years"
+          ],
+          "description": "Set the review frequency for keeping guidelines current",
+          "answer": ""
+        },
+        {
+          "question_id": "responsible_team",
+          "question": "Which team is responsible for reviewing and updating these guidelines?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Brand Marketing Team",
+          "description": "Identify the team responsible for maintaining the guidelines",
+          "answer": ""
+        }
+      ]
+    }
+  ],
+  "_metadata": {
+    "page_id": "2fc89db1-5e5b-806e-859e-f8c81887330a",
+    "extraction_date": "2026-02-09T17:19:22.064796",
+    "model_used": "moonshotai/kimi-k2-instruct-0905"
+  }
+}

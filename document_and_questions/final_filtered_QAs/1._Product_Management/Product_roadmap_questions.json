@@ -1,0 +1,220 @@
+{
+  "document_name": "Product Roadmap",
+  "document_type": "Product Roadmap",
+  "estimated_completion_time": "15-20 minutes",
+  "total_questions": 14,
+  "question_categories": [
+    {
+      "category": "Document Metadata",
+      "order": 1,
+      "questions": [
+        {
+          "question_id": "document_id",
+          "question": "What is your Document ID for this roadmap?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "e.g., PM-RD-001",
+          "description": "Unique identifier for tracking this document",
+          "answer": ""
+        },
+        {
+          "question_id": "document_version",
+          "question": "What is the version number of this roadmap?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "e.g., 1.0",
+          "description": "Version number for change tracking",
+          "answer": ""
+        },
+        {
+          "question_id": "document_owner",
+          "question": "Who owns this roadmap document?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "e.g., Product Management",
+          "description": "Team or person responsible for maintaining the roadmap",
+          "answer": ""
+        },
+        {
+          "question_id": "approved_by",
+          "question": "Who approves this roadmap?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "e.g., Head of Product",
+          "description": "Person with approval authority",
+          "answer": ""
+        },
+        {
+          "question_id": "effective_date",
+          "question": "What is the effective date of this roadmap?",
+          "answer_type": "date",
+          "required": true,
+          "description": "Date when this roadmap becomes active",
+          "answer": ""
+        },
+        {
+          "question_id": "review_cycle",
+          "question": "How often will this roadmap be reviewed?",
+          "answer_type": "select",
+          "required": true,
+          "options": [
+            "Monthly",
+            "Quarterly",
+            "Bi-annually",
+            "Annually"
+          ],
+          "description": "Frequency of roadmap reviews",
+          "answer": ""
+        },
+        {
+          "question_id": "document_status",
+          "question": "What is the current status of this roadmap?",
+          "answer_type": "select",
+          "required": true,
+          "options": [
+            "Draft",
+            "In Review",
+            "Approved",
+            "Archived"
+          ],
+          "description": "Current status of the roadmap document",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Purpose and Scope",
+      "order": 2,
+      "questions": [
+        {
+          "question_id": "company_name",
+          "question": "What is your company name?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "e.g., Acme Corp",
+          "description": "Company name for document context",
+          "answer": ""
+        },
+        {
+          "question_id": "product_name",
+          "question": "What is your product or platform name?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "e.g., CloudSuite Platform",
+          "description": "Product name for roadmap context",
+          "answer": ""
+        },
+        {
+          "question_id": "roadmap_timeframe",
+          "question": "What time period does this roadmap cover?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "e.g., Q2-Q4 2026",
+          "description": "Overall timeframe for the roadmap",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Roadmap Items",
+      "order": 3,
+      "questions": [
+        {
+          "question_id": "roadmap_items",
+          "question": "What items should be included in your product roadmap?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Timeframe",
+              "type": "select",
+              "options": [
+                "Q1 2026",
+                "Q2 2026",
+                "Q3 2026",
+                "Q4 2026",
+                "Q1 2027",
+                "Q2 2027",
+                "Q3 2027",
+                "Q4 2027"
+              ]
+            },
+            {
+              "name": "Initiative / Feature",
+              "type": "text"
+            },
+            {
+              "name": "Description",
+              "type": "text"
+            },
+            {
+              "name": "Priority",
+              "type": "select",
+              "options": [
+                "High",
+                "Medium",
+                "Low"
+              ]
+            },
+            {
+              "name": "Owner",
+              "type": "text"
+            },
+            {
+              "name": "Status",
+              "type": "select",
+              "options": [
+                "Planned",
+                "Proposed",
+                "In Progress",
+                "Completed",
+                "Cancelled"
+              ]
+            }
+          ],
+          "description": "Add each roadmap item with all required fields",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Strategic Overview",
+      "order": 4,
+      "questions": [
+        {
+          "question_id": "strategic_goals",
+          "question": "What are your strategic goals for this roadmap period?",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "List your strategic goals, one per line",
+          "description": "High-level strategic objectives driving the roadmap",
+          "answer": ""
+        },
+        {
+          "question_id": "target_customers",
+          "question": "Who are your target customers for these initiatives?",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "Describe your target customer segments",
+          "description": "Primary customer segments this roadmap serves",
+          "answer": ""
+        },
+        {
+          "question_id": "key_assumptions",
+          "question": "What are the key assumptions behind this roadmap?",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "List key assumptions, one per line",
+          "description": "Critical assumptions that support the roadmap planning",
+          "answer": ""
+        }
+      ]
+    }
+  ],
+  "_metadata": {
+    "page_id": "2fc89db1-5e5b-807f-a8bc-c164033aa17d",
+    "extraction_date": "2026-02-09T15:39:13.108801",
+    "model_used": "moonshotai/kimi-k2-instruct-0905"
+  }
+}

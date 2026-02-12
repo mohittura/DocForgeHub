@@ -1,0 +1,175 @@
+{
+  "document_name": "HR Policies & Procedures",
+  "document_type": "HR Policies & Procedures",
+  "estimated_completion_time": "10-15 minutes",
+  "total_questions": 10,
+  "question_categories": [
+    {
+      "category": "Document Metadata",
+      "order": 1,
+      "questions": [
+        {
+          "question_id": "company_name",
+          "question": "What is your company's legal name?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Acme Corporation",
+          "description": "Replaces {{Company Name}} placeholder throughout the document",
+          "answer": ""
+        },
+        {
+          "question_id": "document_version",
+          "question": "What version number should this document be?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "1.0",
+          "description": "Used for document version control",
+          "answer": ""
+        },
+        {
+          "question_id": "effective_date",
+          "question": "When should these HR policies become effective?",
+          "answer_type": "date",
+          "required": true,
+          "description": "Sets the official start date for these policies",
+          "answer": ""
+        },
+        {
+          "question_id": "last_review_date",
+          "question": "When was this document last reviewed?",
+          "answer_type": "date",
+          "required": true,
+          "description": "Used for tracking document review cycles",
+          "answer": ""
+        },
+        {
+          "question_id": "approved_by",
+          "question": "Who is the authorized approver for this HR policy document?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Chief Human Resources Officer",
+          "description": "Name or title of person who approved this document",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Employment Scope",
+      "order": 2,
+      "questions": [
+        {
+          "question_id": "employment_types",
+          "question": "Which employment types are covered by these policies?",
+          "answer_type": "multi_select",
+          "required": true,
+          "options": [
+            "Full-time employees",
+            "Part-time employees",
+            "Contract employees",
+            "Temporary staff",
+            "Interns",
+            "Consultants"
+          ],
+          "description": "Determines which worker categories these policies apply to",
+          "answer": ""
+        },
+        {
+          "question_id": "geographic_variations",
+          "question": "Do you need different policy versions for different geographic locations?",
+          "answer_type": "select",
+          "required": true,
+          "options": [
+            "Yes - multiple locations with different laws",
+            "Yes - but minor variations only",
+            "No - single location or consistent globally"
+          ],
+          "description": "Determines if location-specific policy variations are needed",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Policy Review Process",
+      "order": 3,
+      "questions": [
+        {
+          "question_id": "review_frequency",
+          "question": "How often should this HR policy document be reviewed?",
+          "answer_type": "select",
+          "required": true,
+          "options": [
+            "Annually",
+            "Every 2 years",
+            "Every 3 years",
+            "As needed"
+          ],
+          "description": "Sets the mandatory review schedule for keeping policies current",
+          "answer": ""
+        },
+        {
+          "question_id": "review_responsible_party",
+          "question": "Who is responsible for reviewing and updating this document?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Human Resources Director",
+          "description": "Identifies the person or role accountable for maintaining this document",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Document Information Table",
+      "order": 4,
+      "questions": [
+        {
+          "question_id": "document_metadata",
+          "question": "Complete the document metadata fields",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Document Name",
+              "type": "text"
+            },
+            {
+              "name": "Department",
+              "type": "text"
+            },
+            {
+              "name": "Organization",
+              "type": "text"
+            },
+            {
+              "name": "Document Owner",
+              "type": "text"
+            },
+            {
+              "name": "Version",
+              "type": "text"
+            },
+            {
+              "name": "Effective Date",
+              "type": "date"
+            },
+            {
+              "name": "Last Review Date",
+              "type": "date"
+            },
+            {
+              "name": "Approved By",
+              "type": "text"
+            }
+          ],
+          "description": "Fills in the document information table at the beginning of the policy",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    }
+  ],
+  "_metadata": {
+    "page_id": "2fc89db1-5e5b-806c-b719-c26618aafd3a",
+    "extraction_date": "2026-02-09T17:58:54.184976",
+    "model_used": "moonshotai/kimi-k2-instruct-0905"
+  }
+}

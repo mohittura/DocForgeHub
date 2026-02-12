@@ -1,0 +1,220 @@
+{
+  "document_name": "Leave and Benefits Policy",
+  "document_type": "Leave and Benefits Policy",
+  "estimated_completion_time": "20-30 minutes",
+  "total_questions": 14,
+  "question_categories": [
+    {
+      "category": "Document Metadata",
+      "order": 1,
+      "questions": [
+        {
+          "question_id": "company_name",
+          "question": "What is your company name?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Acme Corporation",
+          "description": "Used throughout the policy document",
+          "answer": ""
+        },
+        {
+          "question_id": "document_version",
+          "question": "What is the version number of this policy?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "1.0",
+          "description": "For document version control",
+          "answer": ""
+        },
+        {
+          "question_id": "effective_date",
+          "question": "When does this policy become effective?",
+          "answer_type": "date",
+          "required": true,
+          "description": "Date when the policy takes effect",
+          "answer": ""
+        },
+        {
+          "question_id": "last_review_date",
+          "question": "When was this policy last reviewed?",
+          "answer_type": "date",
+          "required": true,
+          "description": "For tracking policy updates",
+          "answer": ""
+        },
+        {
+          "question_id": "approved_by",
+          "question": "Who approved this policy?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "HR Director Name",
+          "description": "Name/title of the policy approver",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Leave Types and Eligibility",
+      "order": 2,
+      "questions": [
+        {
+          "question_id": "leave_types",
+          "question": "What leave types does your company offer?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Leave Type",
+              "type": "text"
+            },
+            {
+              "name": "Description",
+              "type": "text"
+            },
+            {
+              "name": "Eligibility Criteria",
+              "type": "text"
+            }
+          ],
+          "description": "Define each leave type your company provides",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Leave Entitlements",
+      "order": 3,
+      "questions": [
+        {
+          "question_id": "leave_entitlements",
+          "question": "What are the annual leave entitlements for each leave type?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Leave Type",
+              "type": "text"
+            },
+            {
+              "name": "Annual Entitlement (Days)",
+              "type": "number"
+            },
+            {
+              "name": "Carry Forward Allowed",
+              "type": "select",
+              "options": [
+                "Yes",
+                "No"
+              ]
+            },
+            {
+              "name": "Notes",
+              "type": "text"
+            }
+          ],
+          "description": "Specify days allowed per year and carry forward rules",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Policy Scope",
+      "order": 4,
+      "questions": [
+        {
+          "question_id": "employment_types",
+          "question": "Which employment types does this policy cover?",
+          "answer_type": "multi_select",
+          "required": true,
+          "options": [
+            "Full-time employees",
+            "Part-time employees",
+            "Probationary employees",
+            "Contract employees",
+            "Interns"
+          ],
+          "description": "Select all that apply to your organization",
+          "answer": ""
+        },
+        {
+          "question_id": "location_variations",
+          "question": "Are there location-specific variations in leave eligibility?",
+          "answer_type": "long_text",
+          "required": false,
+          "placeholder": "Describe any regional differences in leave policies",
+          "description": "Account for different regional labor laws",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Employee Benefits",
+      "order": 5,
+      "questions": [
+        {
+          "question_id": "health_wellness_benefits",
+          "question": "What health and wellness benefits does your company provide?",
+          "answer_type": "long_text",
+          "required": false,
+          "placeholder": "List health insurance, gym allowances, mental health support, etc.",
+          "description": "Detail health-related employee benefits",
+          "answer": ""
+        },
+        {
+          "question_id": "financial_benefits",
+          "question": "What financial benefits are offered?",
+          "answer_type": "long_text",
+          "required": false,
+          "placeholder": "Retirement plans, bonuses, stock options, etc.",
+          "description": "Describe monetary benefits beyond salary",
+          "answer": ""
+        },
+        {
+          "question_id": "work_environment_benefits",
+          "question": "What work environment benefits are available?",
+          "answer_type": "long_text",
+          "required": false,
+          "placeholder": "Remote work, flexible hours, office amenities, etc.",
+          "description": "Non-monetary workplace benefits",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Review Process",
+      "order": 6,
+      "questions": [
+        {
+          "question_id": "review_frequency",
+          "question": "How often will this policy be reviewed?",
+          "answer_type": "select",
+          "required": true,
+          "options": [
+            "Annually",
+            "Bi-annually",
+            "Every 3 years",
+            "As needed"
+          ],
+          "description": "Establish regular review schedule",
+          "answer": ""
+        },
+        {
+          "question_id": "review_process",
+          "question": "Describe your policy review process",
+          "answer_type": "long_text",
+          "required": false,
+          "placeholder": "Who reviews, approval process, stakeholder involvement",
+          "description": "Detail how policy updates are managed",
+          "answer": ""
+        }
+      ]
+    }
+  ],
+  "_metadata": {
+    "page_id": "2fc89db1-5e5b-8049-be04-e6f120abf74e",
+    "extraction_date": "2026-02-09T18:03:14.383837",
+    "model_used": "moonshotai/kimi-k2-instruct-0905"
+  }
+}

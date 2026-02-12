@@ -1,0 +1,231 @@
+{
+  "document_name": "Incident Response Plan",
+  "document_type": "Incident Response Plan",
+  "estimated_completion_time": "20-30 minutes",
+  "total_questions": 13,
+  "question_categories": [
+    {
+      "category": "Document Metadata",
+      "order": 1,
+      "questions": [
+        {
+          "question_id": "document_owner",
+          "question": "Who owns this Incident Response Plan?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "e.g., Information Security Team",
+          "description": "Identifies the team responsible for maintaining this plan",
+          "answer": ""
+        },
+        {
+          "question_id": "approved_by",
+          "question": "Who approves this plan?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "e.g., Chief Information Security Officer",
+          "description": "The authority that signs off on the plan",
+          "answer": ""
+        },
+        {
+          "question_id": "effective_date",
+          "question": "When does this plan become effective?",
+          "answer_type": "date",
+          "required": true,
+          "description": "The date the plan is officially implemented",
+          "answer": ""
+        },
+        {
+          "question_id": "review_cycle",
+          "question": "How often will this plan be reviewed?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "e.g., Annually or after major incidents",
+          "description": "Defines the review frequency for keeping the plan current",
+          "answer": ""
+        },
+        {
+          "question_id": "version",
+          "question": "What is the version number of this plan?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "e.g., 1.0",
+          "description": "Version tracking for document control",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Incident Severity Classification",
+      "order": 2,
+      "questions": [
+        {
+          "question_id": "severity_levels",
+          "question": "Define your incident severity levels",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Severity Level",
+              "type": "text"
+            },
+            {
+              "name": "Description",
+              "type": "text"
+            },
+            {
+              "name": "Example",
+              "type": "text"
+            }
+          ],
+          "description": "Customize the severity matrix to match your organization's risk tolerance",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Team Roles and Responsibilities",
+      "order": 3,
+      "questions": [
+        {
+          "question_id": "team_roles",
+          "question": "Who fills each incident response role?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Role",
+              "type": "text"
+            },
+            {
+              "name": "Assigned Person / Team",
+              "type": "text"
+            },
+            {
+              "name": "Contact Info",
+              "type": "text"
+            }
+          ],
+          "description": "Assign actual people to each defined role with contact details",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Communication Plan",
+      "order": 4,
+      "questions": [
+        {
+          "question_id": "communication_stages",
+          "question": "Define your incident communication stages",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Stage",
+              "type": "text"
+            },
+            {
+              "name": "Audience",
+              "type": "text"
+            },
+            {
+              "name": "Method",
+              "type": "text"
+            },
+            {
+              "name": "Timing",
+              "type": "text"
+            }
+          ],
+          "description": "Specify who gets notified, when, and how at each incident stage",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Plan Scope",
+      "order": 5,
+      "questions": [
+        {
+          "question_id": "scope_people",
+          "question": "Which groups does this plan apply to?",
+          "answer_type": "multi_select",
+          "required": true,
+          "options": [
+            "All employees",
+            "Contractors",
+            "Third-party vendors",
+            "Consultants",
+            "Interns"
+          ],
+          "description": "Select all groups covered by this incident response plan",
+          "answer": ""
+        },
+        {
+          "question_id": "scope_systems",
+          "question": "Which systems are in scope?",
+          "answer_type": "multi_select",
+          "required": true,
+          "options": [
+            "Cloud infrastructure",
+            "On-premise servers",
+            "Applications",
+            "Databases",
+            "Network equipment",
+            "End-user devices"
+          ],
+          "description": "Select all system types covered by this plan",
+          "answer": ""
+        },
+        {
+          "question_id": "scope_incidents",
+          "question": "Which incident types are covered?",
+          "answer_type": "multi_select",
+          "required": true,
+          "options": [
+            "Security breaches",
+            "Data leaks",
+            "Service outages",
+            "Malware infections",
+            "Insider threats",
+            "Physical security incidents"
+          ],
+          "description": "Select all incident types this plan addresses",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Post-Incident Activities",
+      "order": 6,
+      "questions": [
+        {
+          "question_id": "post_incident_team",
+          "question": "Who leads post-incident reviews?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "e.g., Incident Review Board chaired by CISO",
+          "description": "Identify the team or individual responsible for conducting post-incident analysis",
+          "answer": ""
+        },
+        {
+          "question_id": "improvement_timeline",
+          "question": "How soon after an incident must improvements be implemented?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "e.g., Within 30 days for critical findings",
+          "description": "Define the timeline for implementing lessons learned",
+          "answer": ""
+        }
+      ]
+    }
+  ],
+  "_metadata": {
+    "page_id": "2fc89db1-5e5b-80bf-a467-c9653d0bdefe",
+    "extraction_date": "2026-02-09T15:55:55.301617",
+    "model_used": "moonshotai/kimi-k2-instruct-0905"
+  }
+}

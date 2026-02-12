@@ -1,0 +1,221 @@
+{
+  "document_name": "Test Strategy Document",
+  "document_type": "Test Strategy Document",
+  "estimated_completion_time": "15-20 minutes",
+  "total_questions": 13,
+  "question_categories": [
+    {
+      "category": "Document Metadata",
+      "order": 1,
+      "questions": [
+        {
+          "question_id": "product_name",
+          "question": "What is the name of the product or system being tested?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "e.g., Customer Portal v2.3",
+          "description": "Used throughout the document to identify the system under test",
+          "answer": ""
+        },
+        {
+          "question_id": "document_version",
+          "question": "What is the version number of this test strategy document?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "e.g., 1.0",
+          "description": "Tracks document revision history",
+          "answer": ""
+        },
+        {
+          "question_id": "document_owner",
+          "question": "Who is the owner of this test strategy document?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "e.g., QA Lead or Engineering Team",
+          "description": "Identifies responsibility for maintaining the document",
+          "answer": ""
+        },
+        {
+          "question_id": "approved_by",
+          "question": "Who will approve this test strategy document?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "e.g., QA Manager, Product Owner",
+          "description": "Identifies the approver for document sign-off",
+          "answer": ""
+        },
+        {
+          "question_id": "last_updated",
+          "question": "What is the last updated date for this document?",
+          "answer_type": "date",
+          "required": true,
+          "description": "Tracks when the document was last modified",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Testing Strategy Overview",
+      "order": 2,
+      "questions": [
+        {
+          "question_id": "testing_strategy_description",
+          "question": "Describe your overall testing strategy approach for this product.",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "Outline your testing philosophy, methodology, and high-level approach...",
+          "description": "Provides the strategic direction for all testing activities",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Testing Scope",
+      "order": 3,
+      "questions": [
+        {
+          "question_id": "in_scope_items",
+          "question": "What features, components, or activities are IN SCOPE for testing?",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "List each item on a new line, e.g.:\n- User authentication module\n- Payment processing API\n- Mobile app UI\n- Database migrations",
+          "description": "Defines what will be tested to set clear boundaries",
+          "answer": ""
+        },
+        {
+          "question_id": "out_of_scope_items",
+          "question": "What features, components, or activities are OUT OF SCOPE for testing?",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "List each item on a new line, e.g.:\n- Third-party integrations\n- Legacy data migration\n- Performance testing beyond 1000 users",
+          "description": "Explicitly excludes items to prevent scope creep",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Testing Levels",
+      "order": 4,
+      "questions": [
+        {
+          "question_id": "testing_levels",
+          "question": "What testing levels will you implement and who is responsible for each?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Testing Level",
+              "type": "text"
+            },
+            {
+              "name": "Description",
+              "type": "text"
+            },
+            {
+              "name": "Responsibility",
+              "type": "text"
+            }
+          ],
+          "description": "Defines the testing hierarchy and ownership",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Team Responsibilities",
+      "order": 5,
+      "questions": [
+        {
+          "question_id": "team_responsibilities",
+          "question": "What are the specific testing responsibilities for each team role?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Role",
+              "type": "text"
+            },
+            {
+              "name": "Responsibility",
+              "type": "text"
+            }
+          ],
+          "description": "Clarifies who does what in the testing process",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Testing Environments",
+      "order": 6,
+      "questions": [
+        {
+          "question_id": "testing_environments",
+          "question": "What testing environments will you use and what is the purpose of each?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Environment",
+              "type": "text"
+            },
+            {
+              "name": "Purpose",
+              "type": "text"
+            }
+          ],
+          "description": "Defines the environment strategy for testing phases",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Defect Severity",
+      "order": 7,
+      "questions": [
+        {
+          "question_id": "defect_severity",
+          "question": "How do you classify defect severity levels in your project?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Severity",
+              "type": "text"
+            },
+            {
+              "name": "Description",
+              "type": "text"
+            }
+          ],
+          "description": "Establishes consistent defect classification",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Reporting and Metrics",
+      "order": 8,
+      "questions": [
+        {
+          "question_id": "reporting_metrics",
+          "question": "What testing metrics will you track and how will you report them?",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "Describe your metrics (test coverage, defect density, etc.) and reporting frequency/format...",
+          "description": "Defines how testing progress and quality will be measured and communicated",
+          "answer": ""
+        }
+      ]
+    }
+  ],
+  "_metadata": {
+    "page_id": "2fc89db1-5e5b-80c1-90c1-eb9381d22564",
+    "extraction_date": "2026-02-09T16:02:33.710712",
+    "model_used": "moonshotai/kimi-k2-instruct-0905"
+  }
+}

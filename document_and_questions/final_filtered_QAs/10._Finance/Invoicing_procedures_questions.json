@@ -1,0 +1,204 @@
+{
+  "document_name": "Invoicing Procedures",
+  "document_type": "Procedures",
+  "estimated_completion_time": "15-20 minutes",
+  "total_questions": 12,
+  "question_categories": [
+    {
+      "category": "Document Metadata",
+      "order": 1,
+      "questions": [
+        {
+          "question_id": "company_name",
+          "question": "What is your company name?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Acme Corporation",
+          "description": "Replaces {{Company Name}} placeholder throughout the document",
+          "answer": ""
+        },
+        {
+          "question_id": "document_version",
+          "question": "What is the document version number?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "1.0",
+          "description": "Used for version control and tracking changes",
+          "answer": ""
+        },
+        {
+          "question_id": "effective_date",
+          "question": "When does this procedure become effective?",
+          "answer_type": "date",
+          "required": true,
+          "description": "Sets the official start date for the invoicing procedures",
+          "answer": ""
+        },
+        {
+          "question_id": "last_review_date",
+          "question": "When was this document last reviewed?",
+          "answer_type": "date",
+          "required": false,
+          "description": "Tracks when the document was last reviewed for accuracy",
+          "answer": ""
+        },
+        {
+          "question_id": "approved_by",
+          "question": "Who approved this document?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "CFO Name",
+          "description": "Records the person who authorized these procedures",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Invoice Components",
+      "order": 2,
+      "questions": [
+        {
+          "question_id": "invoice_components",
+          "question": "What components should be included in your invoices?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Component",
+              "type": "text"
+            },
+            {
+              "name": "Description",
+              "type": "text"
+            }
+          ],
+          "description": "Defines what information must appear on every invoice",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Approval Workflow",
+      "order": 3,
+      "questions": [
+        {
+          "question_id": "approval_thresholds",
+          "question": "What are your invoice amount thresholds and required approvals?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Invoice Amount Range",
+              "type": "text"
+            },
+            {
+              "name": "Required Approval Level",
+              "type": "select",
+              "options": [
+                "Finance Associate",
+                "Finance Manager",
+                "Department Head",
+                "CFO",
+                "Executive Approval"
+              ]
+            }
+          ],
+          "description": "Sets up approval hierarchy based on invoice amounts",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Business Scope",
+      "order": 4,
+      "questions": [
+        {
+          "question_id": "billing_types",
+          "question": "What types of billing does your company use?",
+          "answer_type": "multi_select",
+          "required": true,
+          "options": [
+            "SaaS subscriptions",
+            "Professional services",
+            "Usage-based fees",
+            "Licensing",
+            "One-time purchases",
+            "Recurring billing",
+            "Project-based billing"
+          ],
+          "description": "Defines what types of charges your company invoices for",
+          "answer": ""
+        },
+        {
+          "question_id": "customer_segments",
+          "question": "What customer segments do you serve?",
+          "answer_type": "multi_select",
+          "required": true,
+          "options": [
+            "Enterprise",
+            "SMB",
+            "Government",
+            "Non-profit",
+            "Individual consumers",
+            "Resellers",
+            "Partners"
+          ],
+          "description": "Identifies which types of customers receive invoices",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Process Steps",
+      "order": 5,
+      "questions": [
+        {
+          "question_id": "invoicing_steps",
+          "question": "What are the steps in your invoicing process?",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "1. Invoice Preparation\n2. Invoice Review\n3. Approval\n4. Invoice Issuance\n5. Payment Tracking",
+          "description": "Documents the workflow for creating and sending invoices",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Review Schedule",
+      "order": 6,
+      "questions": [
+        {
+          "question_id": "review_frequency",
+          "question": "How often should this document be reviewed?",
+          "answer_type": "select",
+          "required": true,
+          "options": [
+            "Monthly",
+            "Quarterly",
+            "Annually",
+            "Bi-annually",
+            "As needed"
+          ],
+          "description": "Sets the review schedule to keep procedures current",
+          "answer": ""
+        },
+        {
+          "question_id": "review_responsibility",
+          "question": "Who is responsible for reviewing this document?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Finance Manager",
+          "description": "Identifies the person or role responsible for document reviews",
+          "answer": ""
+        }
+      ]
+    }
+  ],
+  "_metadata": {
+    "page_id": "2fc89db1-5e5b-80d2-90f2-eb1b81ddb1d0",
+    "extraction_date": "2026-02-09T18:11:39.516223",
+    "model_used": "moonshotai/kimi-k2-instruct-0905"
+  }
+}

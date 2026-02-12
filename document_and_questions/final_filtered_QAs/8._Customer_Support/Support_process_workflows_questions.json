@@ -1,0 +1,266 @@
+{
+  "document_name": "Support Process Workflow",
+  "document_type": "Support Process Workflow",
+  "estimated_completion_time": "15-20 minutes",
+  "total_questions": 15,
+  "question_categories": [
+    {
+      "category": "Document Metadata",
+      "order": 1,
+      "questions": [
+        {
+          "question_id": "company_name",
+          "question": "What is your company name?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Acme Corp",
+          "description": "Used in the document header and overview",
+          "answer": ""
+        },
+        {
+          "question_id": "product_name",
+          "question": "What is the name of the product or platform this workflow covers?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Acme Cloud Platform",
+          "description": "Replaces {{Product Name}} placeholder",
+          "answer": ""
+        },
+        {
+          "question_id": "support_channels",
+          "question": "Which support channels does your team offer?",
+          "answer_type": "multi_select",
+          "required": true,
+          "options": [
+            "Email",
+            "Chat",
+            "Ticketing",
+            "Phone",
+            "Portal"
+          ],
+          "description": "Replaces {{Email / Chat / Ticketing / Phone / Portal}} placeholder",
+          "answer": ""
+        },
+        {
+          "question_id": "document_owner",
+          "question": "Who is the document owner (role or name)?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Head of Customer Support",
+          "description": "Person responsible for maintaining this document",
+          "answer": ""
+        },
+        {
+          "question_id": "version",
+          "question": "What is the initial version number?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "1.0",
+          "description": "Document version for change tracking",
+          "answer": ""
+        },
+        {
+          "question_id": "effective_date",
+          "question": "When does this workflow become effective?",
+          "answer_type": "date",
+          "required": true,
+          "description": "Date the workflow goes live",
+          "answer": ""
+        },
+        {
+          "question_id": "approver_name",
+          "question": "Who approves this document (name or role)?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "VP Customer Success",
+          "description": "Person who signs off on the workflow",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Scope Definition",
+      "order": 2,
+      "questions": [
+        {
+          "question_id": "in_scope_items",
+          "question": "What types of requests are in-scope for this workflow?",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "Customer-reported issues, technical questions, billing inquiries...",
+          "description": "Items the support team will handle",
+          "answer": ""
+        },
+        {
+          "question_id": "out_of_scope_items",
+          "question": "What is explicitly out of scope?",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "Sales inquiries, internal IT issues, feature requests...",
+          "description": "Items the support team will not handle",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Support Roles",
+      "order": 3,
+      "questions": [
+        {
+          "question_id": "support_roles",
+          "question": "What support roles exist in your organization?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Role Title",
+              "type": "text"
+            },
+            {
+              "name": "Responsibility",
+              "type": "text"
+            }
+          ],
+          "description": "List each role and its core responsibility",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Ticket Categories",
+      "order": 4,
+      "questions": [
+        {
+          "question_id": "ticket_categories",
+          "question": "What ticket categories does your team use?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Category",
+              "type": "text"
+            },
+            {
+              "name": "Examples",
+              "type": "text"
+            }
+          ],
+          "description": "Categories like How-To, Bug, Billing, etc.",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Priority Levels",
+      "order": 5,
+      "questions": [
+        {
+          "question_id": "priority_levels",
+          "question": "Define your priority levels and descriptions",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Priority",
+              "type": "text"
+            },
+            {
+              "name": "Description",
+              "type": "text"
+            }
+          ],
+          "description": "E.g., P1 Critical - Service unavailable",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "SLA Targets",
+      "order": 6,
+      "questions": [
+        {
+          "question_id": "sla_targets",
+          "question": "Set SLA targets for each priority",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Priority",
+              "type": "select",
+              "options": [
+                "P1",
+                "P2",
+                "P3",
+                "P4"
+              ]
+            },
+            {
+              "name": "First Response Time",
+              "type": "text"
+            },
+            {
+              "name": "Resolution Target",
+              "type": "text"
+            }
+          ],
+          "description": "Time targets like 15 minutes, 4 hours, 1 business day",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Performance Metrics",
+      "order": 7,
+      "questions": [
+        {
+          "question_id": "performance_metrics",
+          "question": "Which metrics will you track?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Metric",
+              "type": "text"
+            },
+            {
+              "name": "Purpose",
+              "type": "text"
+            }
+          ],
+          "description": "E.g., First Response Time - Responsiveness",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Review Process",
+      "order": 8,
+      "questions": [
+        {
+          "question_id": "review_frequency",
+          "question": "How often will this workflow be reviewed?",
+          "answer_type": "select",
+          "required": true,
+          "options": [
+            "Monthly",
+            "Quarterly",
+            "Semi-annually",
+            "Annually"
+          ],
+          "description": "Sets the review cadence",
+          "answer": ""
+        }
+      ]
+    }
+  ],
+  "_metadata": {
+    "page_id": "2fc89db1-5e5b-803f-b03a-e2c1fe0ec2ce",
+    "extraction_date": "2026-02-09T17:50:45.455710",
+    "model_used": "moonshotai/kimi-k2-instruct-0905"
+  }
+}

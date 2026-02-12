@@ -1,0 +1,173 @@
+{
+  "document_name": "Sales Process Workflow Documentation",
+  "document_type": "Sales Process Workflow Documentation",
+  "estimated_completion_time": "15-20 minutes",
+  "total_questions": 11,
+  "question_categories": [
+    {
+      "category": "Document Metadata",
+      "order": 1,
+      "questions": [
+        {
+          "question_id": "company_name",
+          "question": "What is your company name?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Acme Corporation",
+          "description": "Used throughout the document to personalize the sales workflow",
+          "answer": ""
+        },
+        {
+          "question_id": "product_service",
+          "question": "What product or service does this sales process cover?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Enterprise SaaS Platform",
+          "description": "Specifies what is being sold under this workflow",
+          "answer": ""
+        },
+        {
+          "question_id": "document_version",
+          "question": "What is the current version of this document?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "v1.0",
+          "description": "Tracks document revisions",
+          "answer": ""
+        },
+        {
+          "question_id": "effective_date",
+          "question": "When does this sales process become effective?",
+          "answer_type": "date",
+          "required": true,
+          "description": "Sets the implementation date for the new process",
+          "answer": ""
+        },
+        {
+          "question_id": "approver_name",
+          "question": "Who is the approver for this document?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "VP of Sales",
+          "description": "Identifies who has authority to approve this process",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Roles and Responsibilities",
+      "order": 2,
+      "questions": [
+        {
+          "question_id": "sales_roles",
+          "question": "What sales roles exist in your organization?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Role Title",
+              "type": "text"
+            },
+            {
+              "name": "Primary Responsibility",
+              "type": "text"
+            }
+          ],
+          "description": "Define each role and their main responsibility in the sales process",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Key Performance Indicators",
+      "order": 3,
+      "questions": [
+        {
+          "question_id": "sales_kpis",
+          "question": "What KPIs will you track for your sales process?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "KPI Name",
+              "type": "text"
+            },
+            {
+              "name": "Description",
+              "type": "text"
+            }
+          ],
+          "description": "Define the key metrics you'll use to measure sales performance",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Process Scope",
+      "order": 4,
+      "questions": [
+        {
+          "question_id": "applicable_departments",
+          "question": "Which departments does this sales process apply to?",
+          "answer_type": "multi_select",
+          "required": true,
+          "options": [
+            "Sales / Revenue",
+            "Sales Operations",
+            "Customer Success",
+            "Marketing",
+            "Finance",
+            "Legal"
+          ],
+          "description": "Identifies which teams must follow this process",
+          "answer": ""
+        },
+        {
+          "question_id": "scope_boundaries",
+          "question": "What activities are out of scope for this process?",
+          "answer_type": "long_text",
+          "required": false,
+          "placeholder": "Marketing campaign execution, post-sales customer lifecycle management",
+          "description": "Clarifies what the sales process does not cover",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Review and Maintenance",
+      "order": 5,
+      "questions": [
+        {
+          "question_id": "review_frequency",
+          "question": "How often should this document be reviewed?",
+          "answer_type": "select",
+          "required": true,
+          "options": [
+            "Monthly",
+            "Quarterly",
+            "Semi-annually",
+            "Annually"
+          ],
+          "description": "Sets the review cycle for keeping the process current",
+          "answer": ""
+        },
+        {
+          "question_id": "approval_process",
+          "question": "Describe your document approval process",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "Document owner reviews quarterly, VP Sales approves changes",
+          "description": "Defines who reviews and approves updates to this process",
+          "answer": ""
+        }
+      ]
+    }
+  ],
+  "_metadata": {
+    "page_id": "2fc89db1-5e5b-8018-82be-f2767a5705ba",
+    "extraction_date": "2026-02-09T17:17:11.019504",
+    "model_used": "moonshotai/kimi-k2-instruct-0905"
+  }
+}

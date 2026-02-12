@@ -1,0 +1,326 @@
+{
+  "document_name": "Social Media Guidelines",
+  "document_type": "Social Media Guidelines",
+  "estimated_completion_time": "15-20 minutes",
+  "total_questions": 21,
+  "question_categories": [
+    {
+      "category": "Document Metadata",
+      "order": 1,
+      "questions": [
+        {
+          "question_id": "company_name",
+          "question": "What is your company name?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Acme Corp",
+          "description": "Used throughout the document to personalize guidelines",
+          "answer": ""
+        },
+        {
+          "question_id": "department",
+          "question": "Which department owns this document?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Marketing / Content",
+          "description": "Identifies the responsible department",
+          "answer": ""
+        },
+        {
+          "question_id": "platforms_covered",
+          "question": "Which social media platforms are covered by these guidelines?",
+          "answer_type": "multi_select",
+          "required": true,
+          "options": [
+            "LinkedIn",
+            "Twitter/X",
+            "YouTube",
+            "Facebook",
+            "Instagram",
+            "TikTok",
+            "Other"
+          ],
+          "description": "Defines the scope of platforms addressed",
+          "answer": ""
+        },
+        {
+          "question_id": "document_owner",
+          "question": "Who is the document owner?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Marketing / Social Media",
+          "description": "Person or team responsible for maintaining the guidelines",
+          "answer": ""
+        },
+        {
+          "question_id": "version",
+          "question": "What is the current version number?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "1.0",
+          "description": "Version tracking for document control",
+          "answer": ""
+        },
+        {
+          "question_id": "effective_date",
+          "question": "When does this version become effective?",
+          "answer_type": "date",
+          "required": true,
+          "description": "Date the guidelines take effect",
+          "answer": ""
+        },
+        {
+          "question_id": "last_review_date",
+          "question": "When was this document last reviewed?",
+          "answer_type": "date",
+          "required": true,
+          "description": "Date of last review for audit trail",
+          "answer": ""
+        },
+        {
+          "question_id": "approved_by",
+          "question": "Who approved this document?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Marketing Director",
+          "description": "Name or title of approver",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Social Media Objectives",
+      "order": 2,
+      "questions": [
+        {
+          "question_id": "primary_objectives",
+          "question": "What are the main goals of social media for your company?",
+          "answer_type": "multi_select",
+          "required": true,
+          "options": [
+            "Brand awareness",
+            "Lead generation",
+            "Product education",
+            "Hiring",
+            "Community building",
+            "Customer support"
+          ],
+          "description": "Defines the primary objectives driving social media strategy",
+          "answer": ""
+        },
+        {
+          "question_id": "success_definition",
+          "question": "How do you define success for social media activities?",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "e.g., 20% increase in engagement, 500 new followers per month",
+          "description": "Sets measurable success criteria",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Target Audience",
+      "order": 3,
+      "questions": [
+        {
+          "question_id": "primary_audience",
+          "question": "Who is your primary target audience on social media?",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "C-suite executives in tech companies, aged 35-55, North America",
+          "description": "Defines the core audience for content and engagement",
+          "answer": ""
+        },
+        {
+          "question_id": "audience_intent_mapping",
+          "question": "Map audience intent types to content objectives",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Intent Type",
+              "type": "text"
+            },
+            {
+              "name": "Content Objective",
+              "type": "text"
+            }
+          ],
+          "description": "Aligns content goals with audience journey stages",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Brand Voice and Tone",
+      "order": 4,
+      "questions": [
+        {
+          "question_id": "voice_characteristics",
+          "question": "Describe your brand voice characteristics",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "Professional, knowledgeable, approachable",
+          "description": "Defines how the brand should sound across platforms",
+          "answer": ""
+        },
+        {
+          "question_id": "platform_tone_adaptations",
+          "question": "How should tone adapt per platform?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Platform",
+              "type": "select",
+              "options": [
+                "LinkedIn",
+                "Twitter/X",
+                "YouTube",
+                "Facebook",
+                "Instagram",
+                "TikTok",
+                "Other"
+              ]
+            },
+            {
+              "name": "Tone Adaptation",
+              "type": "text"
+            }
+          ],
+          "description": "Platform-specific tone adjustments",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Content Strategy",
+      "order": 5,
+      "questions": [
+        {
+          "question_id": "content_pillars",
+          "question": "What are your content pillars?",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "Industry insights, product updates, customer stories",
+          "description": "Core themes for content creation",
+          "answer": ""
+        },
+        {
+          "question_id": "content_type_mapping",
+          "question": "Define content types and their purposes",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Content Type",
+              "type": "text"
+            },
+            {
+              "name": "Purpose",
+              "type": "text"
+            }
+          ],
+          "description": "Clarifies what each content type aims to achieve",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Engagement Guidelines",
+      "order": 6,
+      "questions": [
+        {
+          "question_id": "engagement_scenarios",
+          "question": "Define response actions for common engagement scenarios",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Scenario",
+              "type": "text"
+            },
+            {
+              "name": "Action",
+              "type": "text"
+            }
+          ],
+          "description": "Standardizes community management responses",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Performance Measurement",
+      "order": 7,
+      "questions": [
+        {
+          "question_id": "performance_metrics",
+          "question": "Which metrics will you track and why?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Metric",
+              "type": "text"
+            },
+            {
+              "name": "Purpose",
+              "type": "text"
+            }
+          ],
+          "description": "Defines KPIs aligned to objectives",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Scope and Review",
+      "order": 8,
+      "questions": [
+        {
+          "question_id": "out_of_scope_items",
+          "question": "What is explicitly out of scope for these guidelines?",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "Personal accounts, competitor analysis, crisis management",
+          "description": "Clarifies boundaries of the guidelines",
+          "answer": ""
+        },
+        {
+          "question_id": "review_cadence",
+          "question": "How often will this document be reviewed?",
+          "answer_type": "select",
+          "required": true,
+          "options": [
+            "Quarterly",
+            "Semi-annually",
+            "Annually",
+            "Bi-annually"
+          ],
+          "description": "Sets review frequency for keeping guidelines current",
+          "answer": ""
+        },
+        {
+          "question_id": "next_review_date",
+          "question": "When is the next scheduled review?",
+          "answer_type": "date",
+          "required": true,
+          "description": "Next review date for calendar planning",
+          "answer": ""
+        }
+      ]
+    }
+  ],
+  "_metadata": {
+    "page_id": "2fc89db1-5e5b-8031-92d7-c9024ababcd4",
+    "extraction_date": "2026-02-09T17:26:48.067765",
+    "model_used": "moonshotai/kimi-k2-instruct-0905"
+  }
+}

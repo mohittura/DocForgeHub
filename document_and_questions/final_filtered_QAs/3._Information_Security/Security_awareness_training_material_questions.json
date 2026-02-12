@@ -1,0 +1,129 @@
+{
+  "document_name": "Security awareness training material",
+  "document_type": "Security awareness training material",
+  "estimated_completion_time": "10-15 minutes",
+  "total_questions": 7,
+  "question_categories": [
+    {
+      "category": "Company Information",
+      "order": 1,
+      "questions": [
+        {
+          "question_id": "organization_name",
+          "question": "What is your organization or product name?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Acme Corp",
+          "description": "Used throughout the training material to personalize content",
+          "answer": ""
+        },
+        {
+          "question_id": "work_model",
+          "question": "What is your primary work model?",
+          "answer_type": "select",
+          "required": true,
+          "options": [
+            "Remote",
+            "Hybrid",
+            "Office"
+          ],
+          "description": "Determines which security practices to emphasize",
+          "answer": ""
+        },
+        {
+          "question_id": "primary_systems",
+          "question": "What are your primary systems used? (Cloud SaaS, internal tools, customer systems)",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "Salesforce, AWS, Office 365",
+          "description": "Customizes examples and scenarios in the training",
+          "answer": ""
+        },
+        {
+          "question_id": "security_contact",
+          "question": "What is the name of your security team or contact person?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "security@company.com or John Smith, Security Team Lead",
+          "description": "Provides contact information for reporting incidents",
+          "answer": ""
+        },
+        {
+          "question_id": "regulatory_context",
+          "question": "What regulatory frameworks apply to your organization? (Optional)",
+          "answer_type": "multi_select",
+          "required": false,
+          "options": [
+            "SOC 2",
+            "ISO 27001",
+            "GDPR",
+            "HIPAA",
+            "PCI DSS",
+            "None"
+          ],
+          "description": "Adds compliance-specific requirements to training",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Data Classification",
+      "order": 2,
+      "questions": [
+        {
+          "question_id": "data_classifications",
+          "question": "What data classification levels does your organization use?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Classification",
+              "type": "text"
+            },
+            {
+              "name": "Examples",
+              "type": "text"
+            },
+            {
+              "name": "Employee Responsibility",
+              "type": "text"
+            }
+          ],
+          "description": "Defines how employees should handle different types of data",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Security Actions",
+      "order": 3,
+      "questions": [
+        {
+          "question_id": "security_actions",
+          "question": "What specific actions should employees take for common security scenarios?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Scenario",
+              "type": "text"
+            },
+            {
+              "name": "Action",
+              "type": "text"
+            }
+          ],
+          "description": "Provides clear instructions for handling security incidents",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    }
+  ],
+  "_metadata": {
+    "page_id": "2fc89db1-5e5b-802b-b2e4-ee13402d94d5",
+    "extraction_date": "2026-02-09T15:58:48.297341",
+    "model_used": "moonshotai/kimi-k2-instruct-0905"
+  }
+}

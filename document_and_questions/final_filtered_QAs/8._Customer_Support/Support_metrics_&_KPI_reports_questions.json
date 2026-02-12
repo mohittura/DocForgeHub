@@ -1,0 +1,427 @@
+{
+  "document_name": "Support Metrics & KPI Report",
+  "document_type": "Support Metrics & KPI Report",
+  "estimated_completion_time": "25-30 minutes",
+  "total_questions": 19,
+  "question_categories": [
+    {
+      "category": "Document Metadata",
+      "order": 1,
+      "questions": [
+        {
+          "question_id": "company_name",
+          "question": "What is your company name?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Acme Corporation",
+          "description": "Used in document header and overview",
+          "answer": ""
+        },
+        {
+          "question_id": "reporting_period",
+          "question": "What reporting period does this report cover?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Q1 2024",
+          "description": "Defines the time frame for all metrics",
+          "answer": ""
+        },
+        {
+          "question_id": "product_name",
+          "question": "What product or solution is this report for?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Acme Cloud Platform",
+          "description": "Identifies which product's support is being analyzed",
+          "answer": ""
+        },
+        {
+          "question_id": "support_channels",
+          "question": "Which support channels are included in this report?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "Email, Live Chat, Phone, In-App",
+          "description": "Lists all channels analyzed",
+          "answer": ""
+        },
+        {
+          "question_id": "document_version",
+          "question": "What is the version number of this report?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "1.0",
+          "description": "Document version tracking",
+          "answer": ""
+        },
+        {
+          "question_id": "report_date",
+          "question": "What is the report generation date?",
+          "answer_type": "date",
+          "required": true,
+          "description": "Date when report was created",
+          "answer": ""
+        },
+        {
+          "question_id": "approver_name",
+          "question": "Who approved this report?",
+          "answer_type": "text",
+          "required": true,
+          "placeholder": "John Smith, Support Director",
+          "description": "Person who approved the final report",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Performance Overview",
+      "order": 2,
+      "questions": [
+        {
+          "question_id": "performance_summary",
+          "question": "Provide a brief summary of overall support performance for this period",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "Support performance improved significantly this quarter with 95% SLA compliance and increased customer satisfaction...",
+          "description": "High-level summary for executive overview",
+          "answer": ""
+        },
+        {
+          "question_id": "key_highlights",
+          "question": "What are the top 3 key highlights from this reporting period?",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "1. Achieved 98% SLA compliance\n2. Reduced average resolution time by 20%\n3. Launched new chat support channel",
+          "description": "Major achievements or positive developments",
+          "answer": ""
+        },
+        {
+          "question_id": "key_challenges",
+          "question": "What are the top 3 key challenges faced during this period?",
+          "answer_type": "long_text",
+          "required": true,
+          "placeholder": "1. Staff shortage during holiday season\n2. Increased technical issue complexity\n3. Knowledge base gaps",
+          "description": "Major obstacles or issues encountered",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "category": "Ticket Volume Metrics",
+      "order": 3,
+      "questions": [
+        {
+          "question_id": "ticket_volume_data",
+          "question": "What are your ticket volume metrics for this period?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Metric",
+              "type": "select",
+              "options": [
+                "Total Tickets Received",
+                "Tickets Resolved",
+                "Backlog at Period End",
+                "Reopened Tickets"
+              ]
+            },
+            {
+              "name": "Value",
+              "type": "number"
+            },
+            {
+              "name": "Change vs Previous Period (%)",
+              "type": "text"
+            }
+          ],
+          "description": "Core ticket volume metrics with period-over-period changes",
+          "answer": "",
+          "answers": []
+        },
+        {
+          "question_id": "channel_distribution",
+          "question": "How were tickets distributed across support channels?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Channel",
+              "type": "text"
+            },
+            {
+              "name": "Ticket Volume",
+              "type": "number"
+            },
+            {
+              "name": "Percentage (%)",
+              "type": "text"
+            }
+          ],
+          "description": "Breakdown of tickets by support channel",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Response & Resolution Metrics",
+      "order": 4,
+      "questions": [
+        {
+          "question_id": "response_metrics",
+          "question": "What are your response time metrics?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Metric",
+              "type": "select",
+              "options": [
+                "First Response Time (FRT)",
+                "Average Response Time",
+                "First Contact Resolution Rate"
+              ]
+            },
+            {
+              "name": "Value",
+              "type": "text"
+            },
+            {
+              "name": "Target",
+              "type": "text"
+            },
+            {
+              "name": "Status",
+              "type": "select",
+              "options": [
+                "Met",
+                "At Risk",
+                "Not Met"
+              ]
+            }
+          ],
+          "description": "Response time performance against targets",
+          "answer": "",
+          "answers": []
+        },
+        {
+          "question_id": "resolution_metrics",
+          "question": "What are your resolution metrics?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Metric",
+              "type": "select",
+              "options": [
+                "Average Resolution Time",
+                "Resolution Within SLA",
+                "Escalation Rate"
+              ]
+            },
+            {
+              "name": "Value",
+              "type": "text"
+            },
+            {
+              "name": "Target",
+              "type": "text"
+            },
+            {
+              "name": "Status",
+              "type": "select",
+              "options": [
+                "Met",
+                "At Risk",
+                "Not Met"
+              ]
+            }
+          ],
+          "description": "Resolution performance against targets",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "SLA & Customer Satisfaction",
+      "order": 5,
+      "questions": [
+        {
+          "question_id": "sla_compliance",
+          "question": "What is your SLA compliance by priority level?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Priority Level",
+              "type": "select",
+              "options": [
+                "Critical",
+                "High",
+                "Medium",
+                "Low"
+              ]
+            },
+            {
+              "name": "Total Tickets",
+              "type": "number"
+            },
+            {
+              "name": "Met SLA",
+              "type": "number"
+            },
+            {
+              "name": "Breached SLA",
+              "type": "number"
+            },
+            {
+              "name": "Compliance %",
+              "type": "text"
+            }
+          ],
+          "description": "SLA performance breakdown by priority",
+          "answer": "",
+          "answers": []
+        },
+        {
+          "question_id": "satisfaction_metrics",
+          "question": "What are your customer satisfaction metrics?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Metric",
+              "type": "select",
+              "options": [
+                "CSAT Score",
+                "NPS (if applicable)",
+                "Survey Response Rate"
+              ]
+            },
+            {
+              "name": "Value",
+              "type": "text"
+            },
+            {
+              "name": "Change vs Previous Period (%)",
+              "type": "text"
+            }
+          ],
+          "description": "Customer satisfaction scores and trends",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Issue Categories & Team Performance",
+      "order": 6,
+      "questions": [
+        {
+          "question_id": "issue_categories",
+          "question": "How were tickets distributed by issue category?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Category",
+              "type": "text"
+            },
+            {
+              "name": "Volume",
+              "type": "number"
+            },
+            {
+              "name": "Percentage (%)",
+              "type": "text"
+            },
+            {
+              "name": "Trend",
+              "type": "select",
+              "options": [
+                "Increasing",
+                "Stable",
+                "Decreasing"
+              ]
+            }
+          ],
+          "description": "Ticket volume by issue type with trends",
+          "answer": "",
+          "answers": []
+        },
+        {
+          "question_id": "team_productivity",
+          "question": "What are your team productivity metrics?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Metric",
+              "type": "select",
+              "options": [
+                "Tickets per Agent",
+                "Average Handle Time",
+                "Resolution Rate per Agent"
+              ]
+            },
+            {
+              "name": "Value",
+              "type": "text"
+            }
+          ],
+          "description": "Team performance productivity indicators",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "category": "Action Plan",
+      "order": 7,
+      "questions": [
+        {
+          "question_id": "optimization_actions",
+          "question": "What optimization actions are planned based on this analysis?",
+          "answer_type": "structured_list",
+          "required": true,
+          "fields": [
+            {
+              "name": "Area",
+              "type": "text"
+            },
+            {
+              "name": "Action",
+              "type": "text"
+            },
+            {
+              "name": "Owner",
+              "type": "text"
+            },
+            {
+              "name": "Priority",
+              "type": "select",
+              "options": [
+                "High",
+                "Medium",
+                "Low"
+              ]
+            },
+            {
+              "name": "Timeline",
+              "type": "date"
+            }
+          ],
+          "description": "Improvement actions with owners and deadlines",
+          "answer": "",
+          "answers": []
+        }
+      ]
+    }
+  ],
+  "_metadata": {
+    "page_id": "2fc89db1-5e5b-80e1-a306-eaeea9989f29",
+    "extraction_date": "2026-02-09T17:56:29.385508",
+    "model_used": "moonshotai/kimi-k2-instruct-0905"
+  }
+}

@@ -104,11 +104,7 @@ if "history" not in st.session_state:
     st.session_state.history = pages
 
 if "answers" not in st.session_state:
-    st.session_state.answers = {
-        "q1": "",
-        "q2": "",
-        "qn": "",
-    }
+    st.session_state.answers = {}
 
 if "markdown_doc" not in st.session_state:
     st.session_state.markdown_doc = ""
@@ -118,17 +114,7 @@ if "markdown_doc" not in st.session_state:
 # Generator (we will replace this with our agent logic(from different file) to generate the docuement)
 # -------------------------------------------------
 def generate_document():
-    st.session_state.markdown_doc = f"""# Generated Document
-
-## Question 1
-{st.session_state.answers['q1']}
-
-## Question 2   
-{st.session_state.answers['q2']}
-
-## Question N
-{st.session_state.answers['qn']}
-"""
+    st.session_state.markdown_doc = f"## Agent making is in progress so please hold your horses"
 
 
 # =================================================
@@ -153,8 +139,8 @@ with st.sidebar:
     doc_types = get_document_types_from_fastapi(selected_department) if valid_dept else []
     document_names = [d["document_type"] for d in doc_types] #here document_type is the fastapi endpoint parameter
 
-    st.selectbox(
-        "Document",
+    selected_document = st.selectbox(
+        "Document",  
         document_names or ["(no departments found)"],
         label_visibility="collapsed",
     )
@@ -164,16 +150,30 @@ with st.sidebar:
     history_container = st.container(height=350)
     with history_container:
         for h in st.session_state.history:
-            st.markdown(f"<a href='{h.get('url','#')}'>{h.get('title','Untitled')}</a>", unsafe_allow_html=True)
+            st.markdown(f"<a href='{h.get('url','#')}' style='text-decoration: none; color: beige;'>{h.get('title','Untitled')}</a>", unsafe_allow_html=True)
 
 # =================================================
 # MAIN AREA
 # =================================================
 col_questions, col_editor = st.columns([2, 3])
 
+
+########################################
+# getting questions as per departments
+########################################
+
+valid_document = selected_document and selected_document != "(select a department first)"
+questions = get_questions_from_fastapi(selected_document) if valid_document else []
+
+for i, _question in enumerate(questions): # the _question variable is used for internal purpose
+    key = f"answer_{i}"
+    if key not in st.session_state.answers:
+        st.session_state.answers[key] = _question.get("answer", "") or ""
+
 # -------------------------------
 # QUESTIONS PANEL
 # -------------------------------
+
 with col_questions:
     # =================================================
     # The questions will also be fetched from the mongodb and will change based on the document dropdown selection
@@ -184,20 +184,31 @@ with col_questions:
 
     st.markdown('<div class="scrollable">', unsafe_allow_html=True)
 
-    st.session_state.answers["q1"] = st.text_area(
-        "Question 1",
-        value=st.session_state.answers["q1"]
-    )
+    if not questions:
+        st.info("Select a department and document to load questions.")
+    else:
+        current_category = ""
+        for i, ques in enumerate(questions):
+            # Show a category heading when it changes
+            category = ques.get("category", "")
+            if category and category != current_category:
+                current_category = category
+                st.subheader(category)
 
-    st.session_state.answers["q2"] = st.text_area(
-        "Question 2",
-        value=st.session_state.answers["q2"],
-    )
+            label = ques.get("question", f"Question {i + 1}")
+            key = f"answer_{i}"
 
-    st.session_state.answers["qn"] = st.text_area(
-        "Question N",
-        value=st.session_state.answers["qn"],
-    )
+            # Render a text area for each question fetched 
+            if ques.get("answer_type") == "structured_list":
+                st.session_state.answers[key] = st.text_area(
+                    label, value=st.session_state.answers.get(key, ""),
+                    help="Enter items separated by newlines",
+                )
+            else:
+                st.session_state.answers[key] = st.text_area(
+                    label, value=st.session_state.answers.get(key, ""),
+                )
+
 
     if st.button("Generate Document"):
         generate_document()

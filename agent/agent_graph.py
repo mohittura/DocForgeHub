@@ -166,3 +166,43 @@ def format_required_section_for_prompt(required_section: dict) -> str:
     return "\n".join(lines)
 
 
+def is_table_only_schema(required_section: dict) -> bool:
+    """
+    Return True if the schema is ONLY a single table with no subsections.
+
+    Pattern A schemas look like:
+        {"sections": [{"type": "table", "columns": [...]}]}
+    These should produce table-only output, not prose documents.
+    """
+    sections = required_section.get("sections", [])
+    if not sections:
+        return False
+        
+    # Debug: log the section types/structure to help diagnose issues
+    try:
+        debug_info = [
+            f"type={s.get('type')}, subs={bool(s.get('subsections'))}" 
+            for s in sections
+        ]
+        logger.info("   🔍 Checking is_table_only_schema: %s", debug_info)
+    except Exception:
+        pass
+
+    # Every section must be a direct table (no subsections)
+    # Using 'not s.get("subsections")' handles: missing key, None, and []
+    return all(
+        s.get("type") == "table" and not s.get("subsections")
+        for s in sections
+    )
+
+
+def get_table_columns(required_section: dict) -> list[str]:
+    """
+    Extract column names from a table-only schema.
+    Returns the columns from the first table section.
+    """
+    for section in required_section.get("sections", []):
+        if section.get("type") == "table":
+            return section.get("columns", [])
+    return []
+

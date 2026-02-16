@@ -7,3 +7,4 @@ added fastapi endpoint to receive the generated documents url
 ui added fastapi helper functions to get and populate the departments, document_types, generated page history and questions in the ui
 added some backend agent schema
 added fastapi endpoint to get the required sections from mongo
+added helper functions in agent to check table only schema as well as added a helper function to return the columns from the tabular schema

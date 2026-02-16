@@ -143,3 +143,24 @@ def get_all_urls_endpoint():
     
     pages = retrieve_all_child_pages_recursive(formatted_root_page_id)
     return {"root_page_id": root_page_id, "page_count": len(pages), "pages": pages}
+
+
+@app.get("/required-section")
+async def get_required_section(
+    department: str = Query(..., description="Department name"),
+    document_name: str = Query(..., description="Document name"),
+):
+    """Return the required section schema for the given department and document name."""
+    db = get_db()
+    schema_document = await db["required_section"].find_one(
+        {"department": department, "document_name": document_name},
+        {"_id": 0},
+    )
+    if not schema_document:
+        raise HTTPException(
+            status_code=404,
+            detail=f"No schema found for department='{department}', document_name='{document_name}'",
+        )
+    return {"required_section": schema_document}
+
+

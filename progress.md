@@ -11,3 +11,4 @@ added helper functions in agent to check table only schema as well as added a he
 added a fill schema gaps graph node which induces relevant content to the text with areas which have low to no questions
 added a fastapi post endpoint "generate" to send the request to the LLM for document generation
 added build prompt node, made a generate document node, made a helper function validate document structure which validates that the generated document follows the schema structure and returns a list of error messages if its not valid in the agent backend schema
+added quality gate node which checks every possibility of bad generations and will fail if bad generation is caught

@@ -729,3 +729,148 @@ def fix_document(state: AgentState) -> dict:
         "generated_document": fixed_text,
         "retry_count": current_retry,
     }
+
+
+
+#  Section 5: Routing Logic
+#
+#  After the quality_gate runs, this function decides whether the
+#  document is good enough (→ END) or needs fixing (→ fix_document).
+
+def decide_after_quality_gate(state: AgentState) -> Literal["fix_document", "end"]:
+    """
+    After quality_gate runs, decide:
+        - If passed → END
+        - If failed AND retries < 2 → fix_document
+        - If failed AND retries >= 2 → END (accept with issues)
+    """
+    if state["status"] == "passed":
+        logger.info("✅ Routing → END (quality gate passed)")
+        return "end"
+
+    if state["retry_count"] >= 2:
+        logger.warning("⚠️  Routing → END (max retries reached, accepting with issues)")
+        return "end"
+
+    logger.info("🔄 Routing → fix_document (retry needed)")
+    return "fix_document"
+
+
+#  Section 6: Build and Compile the Graph
+#
+#  This function wires all the nodes together with edges and
+#  compiles the graph into a runnable agent.
+
+def build_document_generation_graph() -> StateGraph:
+    """
+    Assemble the LangGraph:
+
+        START → fill_schema_gaps → build_prompt → generate_document → quality_gate
+            quality_gate  →  fix_document (if failed)  OR  END (if passed)
+            fix_document  →  quality_gate (re-check)
+    """
+    logger.info("🔨 Building document generation graph...")
+
+    graph = StateGraph(AgentState)
+
+    # Add the five nodes
+    graph.add_node("fill_schema_gaps", fill_schema_gaps)
+    graph.add_node("build_prompt", build_prompt)
+    graph.add_node("generate_document", generate_document)
+    graph.add_node("quality_gate", quality_gate)
+    graph.add_node("fix_document", fix_document)
+
+    # Connect them with edges
+    graph.set_entry_point("fill_schema_gaps")
+    graph.add_edge("fill_schema_gaps", "build_prompt")
+    graph.add_edge("build_prompt", "generate_document")
+    graph.add_edge("generate_document", "quality_gate")
+    graph.add_conditional_edges(
+        "quality_gate",
+        decide_after_quality_gate,
+        {"fix_document": "fix_document", "end": END},
+    )
+    graph.add_edge("fix_document", "quality_gate")
+
+    compiled_graph = graph.compile()
+    logger.info("✅ Graph compiled — 5 nodes, entry=fill_schema_gaps")
+
+    return compiled_graph
+
+
+# ── Compiled graph singleton (created once at import time) ───────
+document_generation_agent = build_document_generation_graph()
+
+
+
+#  Section 7: Public API — run_agent
+#
+#  This is the function called by the FastAPI endpoint (POST /generate).
+#  It feeds inputs into the graph and returns the final result.
+
+async def run_agent(
+    department: str,
+    document_type: str,
+    questions_and_answers: list[dict],
+    required_section: dict,
+) -> dict:
+    """
+    Run the document generation agent end-to-end.
+
+    Args:
+        department:              e.g. "Product Management"
+        document_type:           e.g. "Feature Prioritization Framework"
+        questions_and_answers:   List of dicts [{question, answer, category, ...}]
+        required_section:        Document schema from MongoDB
+
+    Returns:
+        dict with keys:
+            generated_document  – the final Markdown text
+            status              – "passed" or "failed"
+            quality_issues      – any remaining issues
+            quality_scores      – LLM quality scores (if available)
+            quality_suggestions – improvement suggestions
+            retry_count         – how many fix attempts were made
+    """
+    logger.info(
+        "🚀 run_agent called — department=%s, document_type=%s, answers=%d",
+        department,
+        document_type,
+        len(questions_and_answers),
+    )
+
+    initial_state: AgentState = {
+        "department": department,
+        "document_type": document_type,
+        "questions_and_answers": questions_and_answers,
+        "required_section": required_section,
+        "supplementary_content": "",
+        "system_prompt": "",
+        "generated_document": "",
+        "quality_scores": {},
+        "quality_issues": [],
+        "quality_suggestions": [],
+        "retry_count": 0,
+        "status": "generating",
+    }
+
+    # LangGraph's invoke() is synchronous — run in a thread for async FastAPI
+    final_state = await asyncio.to_thread(
+        document_generation_agent.invoke, initial_state
+    )
+
+    logger.info(
+        "🏁 Agent finished — status=%s, retries=%d, doc_length=%d chars",
+        final_state.get("status", "unknown"),
+        final_state.get("retry_count", 0),
+        len(final_state.get("generated_document", "")),
+    )
+
+    return {
+        "generated_document": final_state.get("generated_document", ""),
+        "status": final_state.get("status", "unknown"),
+        "quality_issues": final_state.get("quality_issues", []),
+        "quality_scores": final_state.get("quality_scores", {}),
+        "quality_suggestions": final_state.get("quality_suggestions", []),
+        "retry_count": final_state.get("retry_count", 0),
+    }

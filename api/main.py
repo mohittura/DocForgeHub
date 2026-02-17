@@ -5,6 +5,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from api.db import get_db, close_client
 from notion_client import Client
 from typing import List, Dict, Any
+from pydantic import BaseModel
+from agent.agent_graph import run_agent
 
 
 @asynccontextmanager #defining the db lifespan in the project 
@@ -164,3 +166,69 @@ async def get_required_section(
     return {"required_section": schema_document}
 
 
+class GenerateDocumentRequest(BaseModel):
+    """
+    The body of a POST /generate request.
+
+    Fields:
+        department:              e.g. "Product Management"
+        document_type:           e.g. "Feature Prioritization Framework"
+        document_name:           e.g. "Feature prioritization framework"
+        questions_and_answers:   list of {question, answer, category, ...}
+        required_section:        the document schema (sections) — optional,
+                                 will be fetched from MongoDB if not provided
+    """
+    department: str
+    document_type: str
+    document_name: str
+    questions_and_answers: List[Dict[str, Any]]
+    required_section: Dict[str, Any] | None = None
+
+
+@app.post("/generate")
+async def generate_document(request: GenerateDocumentRequest):
+    """
+    Run the LangGraph agent to generate a professional Markdown document.
+
+    1. If required_section is not provided in the body, fetch it from MongoDB
+    2. Call the agent with (department, document_type, Q&A, required_section)
+    3. Return the generated Markdown + quality status
+    """
+
+    # ── Fetch schema if not included in the request ──────────────
+    required_section = request.required_section
+
+    if not required_section:
+        db = get_db()
+        schema_doc = await db["required_section"].find_one(
+            {
+                "department": request.department,
+                "document_name": request.document_name,
+            },
+            {"_id": 0},
+        )
+        if schema_doc:
+            required_section = schema_doc
+        else:
+            required_section = {"sections": []}
+
+    # ── Run the agent ────────────────────────────────────────────
+
+    try:
+        agent_result = await run_agent(
+            department=request.department,
+            document_type=request.document_type,
+            questions_and_answers=request.questions_and_answers,
+            required_section=required_section,
+        )
+    except Exception as agent_error:
+        raise HTTPException(status_code=500, detail=f"Agent error: {agent_error}")
+
+    return {
+        "generated_document": agent_result["generated_document"],
+        "status": agent_result["status"],
+        "quality_issues": agent_result.get("quality_issues", []),
+        "quality_scores": agent_result.get("quality_scores", {}),
+        "quality_suggestions": agent_result.get("quality_suggestions", []),
+        "retry_count": agent_result.get("retry_count", 0),
+    }

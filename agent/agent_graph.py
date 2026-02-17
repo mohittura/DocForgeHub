@@ -670,3 +670,62 @@ def quality_gate(state: AgentState) -> dict:
         "status": "passed",
     }
 
+
+def fix_document(state: AgentState) -> dict:
+    """
+    NODE 5: Ask the LLM to fix quality issues in the document.
+
+    Sends the original document + the list of issues + suggestions
+    and asks the LLM to produce a corrected version.
+    """
+    current_retry = state["retry_count"] + 1
+    logger.info(
+        "🔧 Node: fix_document — retry %d/2, fixing %d issues...",
+        current_retry,
+        len(state["quality_issues"]),
+    )
+
+    issues_text = "\n".join(f"- {issue}" for issue in state["quality_issues"])
+    suggestions_text = "\n".join(
+        f"- {suggestion}" for suggestion in state.get("quality_suggestions", [])
+    )
+
+    fix_instruction = f"""The following document was generated but failed quality review:
+
+--- DOCUMENT START ---
+{state['generated_document']}
+--- DOCUMENT END ---
+
+## Quality Issues Found:
+{issues_text}
+"""
+
+    if suggestions_text:
+        fix_instruction += f"""
+## Reviewer Suggestions:
+{suggestions_text}
+"""
+
+    fix_instruction += """
+## Instructions:
+1. Fix ALL the issues listed above.
+2. Expand any thin or superficial sections into substantive, professional content.
+3. Ensure every section has at least 2-3 detailed sentences with specific details.
+4. Remove any placeholder text.
+5. Add concrete metrics, timelines, or action items where appropriate.
+6. Output ONLY the corrected Markdown document — no commentary."""
+
+    messages = [
+        SystemMessage(content=state["system_prompt"]),
+        HumanMessage(content=fix_instruction),
+    ]
+
+    llm_response = llm.invoke(messages)
+    fixed_text = llm_response.content
+
+    logger.info("   ✅ LLM returned fixed document (%d characters)", len(fixed_text))
+
+    return {
+        "generated_document": fixed_text,
+        "retry_count": current_retry,
+    }

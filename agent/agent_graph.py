@@ -4,17 +4,18 @@ import logging
 import asyncio
 from typing import TypedDict, Literal
 from dotenv import load_dotenv
+import re
 
 from langchain_core.messages import SystemMessage, HumanMessage
 from langchain_groq import ChatGroq
 from langgraph.graph import StateGraph, END
 
-# from agent.prompts import (
-#     build_system_prompt,
-#     build_table_only_prompt,
-#     build_gap_filler_prompt,
-#     build_quality_review_prompt,
-# )
+from agent.prompts import (
+    build_system_prompt,
+    build_table_only_prompt,
+    build_gap_filler_prompt,
+    build_quality_review_prompt,
+)
 
 logging.basicConfig(
     level=logging.INFO,
@@ -30,7 +31,7 @@ load_dotenv()
 llm = ChatGroq(
     api_key=os.getenv("GROQ_API_KEY"),
     model="moonshotai/kimi-k2-instruct-0905",
-    temperature=0.3,
+    temperature=0.1,
     max_tokens=8192,
 )
 
@@ -206,3 +207,50 @@ def get_table_columns(required_section: dict) -> list[str]:
             return section.get("columns", [])
     return []
 
+
+def fill_schema_gaps(state: AgentState) -> dict:
+    """
+    NODE 1: Identify schema sections not covered by existing Q&A.
+
+    Compares the required_section schema against the questions_and_answers.
+    If there are gaps, asks the LLM to generate supplementary content
+    so the document writer has material for every section.
+
+    Why?  Some document types have 15+ sections but only 5-8 questions.
+    Without this node, those sections would be empty or very thin.
+    """
+    logger.info("📋 Node: fill_schema_gaps — checking for uncovered schema sections")
+
+    formatted_schema = format_required_section_for_prompt(state["required_section"])
+    formatted_answers = format_questions_and_answers_for_prompt(state["questions_and_answers"])
+
+    gap_filler_prompt = build_gap_filler_prompt(
+        department=state["department"],
+        document_type=state["document_type"],
+        required_section=formatted_schema,
+        questions_and_answers=formatted_answers,
+    )
+
+    try:
+        messages = [
+            SystemMessage(content=gap_filler_prompt),
+            HumanMessage(content="Analyze the schema vs Q&A and provide supplementary content now."),
+        ]
+        llm_response = llm.invoke(messages)
+        supplementary_content = llm_response.content
+
+        if "All sections are adequately covered" in supplementary_content:
+            logger.info("   ✅ All schema sections are covered by existing Q&A")
+            return {"supplementary_content": ""}
+        else:
+            # Count how many sections were supplemented
+            section_count = supplementary_content.count("**")
+            logger.info(
+                "   📝 Generated supplementary content for ~%d uncovered sections",
+                section_count // 2,  # each section has opening + closing **
+            )
+            return {"supplementary_content": supplementary_content}
+
+    except Exception as gap_error:
+        logger.warning("   ⚠️  Gap filler failed (non-critical): %s", gap_error)
+        return {"supplementary_content": ""}

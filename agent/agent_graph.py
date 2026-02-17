@@ -444,3 +444,229 @@ def validate_document_structure(document_text: str, required_section: dict) -> l
     return errors
 
 
+def quality_gate(state: AgentState) -> dict:
+    """
+    NODE 4: Validate the generated document.
+
+    For TABLE-ONLY schemas: deterministic structural validation.
+        - Extracts the Markdown table from the output
+        - Strips all prose (introductions, overviews, etc.)
+        - Checks column headers match the schema exactly
+        - Auto-fixes the document by keeping ONLY heading + table
+
+    For MIXED schemas: LLM-based review with rule-based fallback.
+    """
+    logger.info("🔍 Node: quality_gate — reviewing document quality...")
+
+    document_text = state.get("generated_document", "")
+
+    #  TABLE-ONLY SCHEMAS: Deterministic validation (no LLM review)
+    if is_table_only_schema(state["required_section"]):
+        logger.info("   📊 Table-only schema — using deterministic validation")
+
+        expected_columns = get_table_columns(state["required_section"])
+        doc_name = state.get("document_type", "Document")
+
+        lines = document_text.split("\n")
+        table_lines = []
+        heading_line = ""
+
+        for line in lines:
+            stripped = line.strip()
+            # Keep heading (# Title)
+            if stripped.startswith("# ") and not stripped.startswith("## "):
+                heading_line = stripped
+            # Keep table rows (lines with pipes)
+            elif "|" in stripped and stripped.startswith("|"):
+                table_lines.append(stripped)
+
+        if len(table_lines) < 3:  # header + separator + at least 1 row
+            logger.warning("   ❌ No Markdown table found in output")
+            return {
+                "quality_scores": {},
+                "quality_issues": [
+                    "TABLE-ONLY SCHEMA: No Markdown table found in output. "
+                    f"Output ONLY: # {doc_name} followed by a Markdown table with "
+                    f"columns: {', '.join(expected_columns)}. "
+                    "NO introductions, NO overviews, NO descriptions — JUST THE TABLE."
+                ],
+                "quality_suggestions": [],
+                "status": "failed",
+            }
+
+        header_line = table_lines[0]
+        actual_columns = [
+            col.strip()
+            for col in header_line.split("|")
+            if col.strip()  # skip empty strings from leading/trailing pipes
+        ]
+
+        # Normalize for comparison (lowercase, strip whitespace)
+        expected_normalized = [c.lower().strip() for c in expected_columns]
+        actual_normalized = [c.lower().strip() for c in actual_columns]
+
+        columns_match = expected_normalized == actual_normalized
+
+        if not columns_match:
+            logger.warning(
+                "   ❌ Column mismatch — expected: %s, got: %s",
+                expected_columns,
+                actual_columns,
+            )
+            return {
+                "quality_scores": {},
+                "quality_issues": [
+                    f"TABLE-ONLY SCHEMA: Wrong columns. "
+                    f"Expected EXACTLY: | {' | '.join(expected_columns)} |  "
+                    f"Got: | {' | '.join(actual_columns)} |  "
+                    f"Use the EXACT column headers from the schema. "
+                    f"Output ONLY: # {doc_name} + the table. NO other content."
+                ],
+                "quality_suggestions": [],
+                "status": "failed",
+            }
+
+        if not heading_line:
+            heading_line = f"# {doc_name}"
+
+        cleaned_output = heading_line + "\n\n" + "\n".join(table_lines) + "\n"
+
+        # Check if we actually stripped something
+        if len(cleaned_output.strip()) < len(document_text.strip()) * 0.9:
+            logger.info(
+                "   🧹 Stripped prose — %d chars → %d chars",
+                len(document_text),
+                len(cleaned_output),
+            )
+
+        logger.info(
+            "   ✅ Table-only validation PASSED — %d columns, %d data rows",
+            len(actual_columns),
+            len(table_lines) - 2,  # minus header and separator
+        )
+
+        return {
+            "generated_document": cleaned_output,
+            "quality_scores": {"structure": 5, "completeness": 5},
+            "quality_issues": [],
+            "quality_suggestions": [],
+            "status": "passed",
+        }
+
+    #  MIXED SCHEMAS: Strict Structural Validation + LLM Review
+
+    structure_errors = validate_document_structure(document_text, state["required_section"])
+    if structure_errors:
+        logger.warning("   ❌ Structural validation failed with %d errors", len(structure_errors))
+        for err in structure_errors:
+            logger.warning("      - %s", err)
+            
+        return {
+            "quality_scores": {"structure": 1},
+            "quality_issues": structure_errors,
+            "quality_suggestions": ["Follow the numbered section structure EXACTLY.", "Do not skip sections or change orders."],
+            "status": "failed",
+        }
+
+    logger.info("   ✅ Structural validation PASSED")
+
+    try:
+        review_prompt = build_quality_review_prompt(
+            department=state["department"],
+            document_type=state["document_type"],
+            generated_document=document_text,
+        )
+
+        messages = [
+            SystemMessage(content=review_prompt),
+            HumanMessage(content="Review the document and return the JSON assessment now."),
+        ]
+
+        review_response = llm.invoke(messages)
+        review_text = review_response.content
+
+        # Parse JSON from the response (handle markdown code blocks)
+        json_text = review_text
+        if "```json" in json_text:
+            json_text = json_text.split("```json")[1].split("```")[0].strip()
+        elif "```" in json_text:
+            json_text = json_text.split("```")[1].split("```")[0].strip()
+
+        review_result = json.loads(json_text)
+
+        scores = review_result.get("scores", {})
+        overall_score = review_result.get("overall_score", 3)
+        passed = review_result.get("passed", overall_score >= 3)
+        issues = review_result.get("issues", [])
+        suggestions = review_result.get("suggestions", [])
+
+        logger.info("   📊 LLM Quality Scores:")
+        for criterion, score in scores.items():
+            logger.info("      %s: %d/5", criterion, score)
+        logger.info("   📊 Overall: %d/5 — %s", overall_score, "PASSED" if passed else "FAILED")
+
+        if passed:
+            return {
+                "quality_scores": scores,
+                "quality_issues": [],
+                "quality_suggestions": suggestions,
+                "status": "passed",
+            }
+        else:
+            return {
+                "quality_scores": scores,
+                "quality_issues": issues,
+                "quality_suggestions": suggestions,
+                "status": "failed",
+            }
+
+    except (json.JSONDecodeError, KeyError, Exception) as review_error:
+        logger.warning("   ⚠️  LLM quality review failed, falling back to rules: %s", review_error)
+
+    # ── Fallback: Rule-based checks (for mixed schemas only) ─────
+    issues_found = []
+
+    if len(document_text) < 500:
+        issues_found.append("Document is too short (less than 500 characters) — needs more depth")
+
+    forbidden_phrases = [
+        "TBD", "to be decided", "[Company Name]", "[Insert",
+        "Lorem ipsum", "[Your", "[Enter", "[Add",
+    ]
+    for phrase in forbidden_phrases:
+        if phrase.lower() in document_text.lower():
+            issues_found.append(f"Contains forbidden placeholder: '{phrase}'")
+
+    heading_count = document_text.count("\n#")
+    if heading_count < 5:
+        issues_found.append(
+            f"Too few sections ({heading_count} headings found, expected at least 5 for a professional document)"
+        )
+
+    # Check for very short sections (less than 50 chars between headings)
+    sections_split = document_text.split("\n## ")
+    thin_sections = [s for s in sections_split[1:] if len(s.strip()) < 100]
+    if thin_sections:
+        issues_found.append(
+            f"{len(thin_sections)} sections are too thin (under 100 characters) — expand with professional detail"
+        )
+
+    if issues_found:
+        logger.warning("   ⚠️  Rule-based gate FAILED — %d issues:", len(issues_found))
+        for issue in issues_found:
+            logger.warning("      - %s", issue)
+        return {
+            "quality_scores": {},
+            "quality_issues": issues_found,
+            "quality_suggestions": [],
+            "status": "failed",
+        }
+
+    logger.info("   ✅ Rule-based quality gate PASSED")
+    return {
+        "quality_scores": {},
+        "quality_issues": [],
+        "quality_suggestions": [],
+        "status": "passed",
+    }
+

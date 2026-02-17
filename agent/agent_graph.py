@@ -254,3 +254,193 @@ def fill_schema_gaps(state: AgentState) -> dict:
     except Exception as gap_error:
         logger.warning("   ⚠️  Gap filler failed (non-critical): %s", gap_error)
         return {"supplementary_content": ""}
+    
+
+def build_prompt(state: AgentState) -> dict:
+    """
+    NODE 2: Assemble the full system prompt.
+
+    Combines:
+        - The document schema (required_section)
+        - The user's Q&A answers
+        - Any supplementary content from the gap filler
+
+    Into the final system prompt that will be sent to the LLM.
+
+    For TABLE-ONLY schemas (e.g. Change Request Log), uses a strict
+    table-only prompt that produces ONLY a heading + Markdown table.
+    """
+    logger.info("📝 Node: build_prompt — assembling system prompt")
+
+    formatted_answers = format_questions_and_answers_for_prompt(
+        state["questions_and_answers"]
+    )
+
+    if is_table_only_schema(state["required_section"]):
+        columns = get_table_columns(state["required_section"])
+        logger.info(
+            "   📊 Table-only schema detected — columns: %s",
+            ", ".join(columns),
+        )
+        system_prompt = build_table_only_prompt(
+            department=state["department"],
+            document_type=state["document_type"],
+            columns=columns,
+            questions_and_answers=formatted_answers,
+            supplementary_content=state.get("supplementary_content", ""),
+        )
+    else:
+        formatted_schema = format_required_section_for_prompt(
+            state["required_section"]
+        )
+        system_prompt = build_system_prompt(
+            department=state["department"],
+            document_type=state["document_type"],
+            required_section=formatted_schema,
+            questions_and_answers=formatted_answers,
+            supplementary_content=state.get("supplementary_content", ""),
+        )
+
+    logger.info(
+        "   ✅ Prompt built — %d chars, department=%s, document=%s, answers=%d",
+        len(system_prompt),
+        state["department"],
+        state["document_type"],
+        len(state["questions_and_answers"]),
+    )
+
+    return {
+        "system_prompt": system_prompt,
+        "retry_count": 0,
+        "status": "generating",
+    }
+
+
+
+def generate_document(state: AgentState) -> dict:
+    """
+    NODE 3: Call the LLM to generate the Markdown document.
+
+    Sends the system prompt + a targeted instruction.
+    For table-only schemas, the instruction emphasizes table output.
+    """
+    logger.info("🤖 Node: generate_document — calling LLM...")
+
+    # Tailor the human message based on schema type
+    if is_table_only_schema(state["required_section"]):
+        human_instruction = (
+            f"Generate the {state['document_type']} as a Markdown table now. "
+            f"Output ONLY the heading and table — no introductions, no descriptions, "
+            f"no extra sections. Just the title and the table with data rows."
+        )
+    else:
+        human_instruction = (
+            f"Generate the complete {state['document_type']} document now. "
+            f"Remember: elevate every answer into professional, industry-grade prose. "
+            f"Do NOT copy answers verbatim."
+        )
+
+    messages = [
+        SystemMessage(content=state["system_prompt"]),
+        HumanMessage(content=human_instruction),
+    ]
+
+    llm_response = llm.invoke(messages)
+    generated_text = llm_response.content
+
+    logger.info("   ✅ LLM returned %d characters of Markdown", len(generated_text))
+
+    return {"generated_document": generated_text}
+
+
+# ── Helper: Structure Validator ─────────────────────────────────
+
+def validate_document_structure(document_text: str, required_section: dict) -> list[str]:
+    """
+    Validate that the document follows the schema structure EXACTLY.
+    Returns a list of error messages (empty if valid).
+    """
+    errors = []
+    
+    expected_sections = []
+    sections = required_section.get("sections", [])
+    
+    for i, section in enumerate(sections, start=1):
+        # Pattern A or B main section
+        expected_sections.append({
+            "number": f"{i}", 
+            "title": section.get("title", section.get("type", "Section")),
+            "type": section.get("type", "text")
+        })
+        
+        # Subsections
+        for j, sub in enumerate(section.get("subsections", []), start=1):
+             expected_sections.append({
+                "number": f"{i}.{j}", 
+                "title": sub.get("title", "Subsection"), 
+                "type": sub.get("type", "text")
+            })
+
+    lines = document_text.split('\n')
+    actual_sections = []
+    
+    # Regex to capture: ## 1. Title or ### 1.1. Title
+    # Group 2 is the number (e.g. "1" or "1.1")
+    # Group 3 is the title
+    header_pattern = re.compile(r"^(#{2,3})\s+(\d+(?:\.\d+)?)\.?\s+(.*)")
+    
+    # Track content for type validation
+    current_section_index = -1
+    
+    for line in lines:
+        stripped = line.strip()
+        match = header_pattern.match(stripped)
+        
+        if match:
+            # Found a new header
+            current_section_index += 1
+            actual_sections.append({
+                "number": match.group(2),
+                "title": match.group(3).strip(),
+                "content_lines": []
+            })
+        elif current_section_index >= 0:
+            actual_sections[current_section_index]["content_lines"].append(stripped)
+
+
+
+    if not actual_sections:
+         return ["Structure check failed: No numbered sections found. Output must start with '## 1. [Title]'"]
+    
+    # Check count mismatch
+    if len(actual_sections) != len(expected_sections):
+         errors.append(f"Structure mismatch: Expected {len(expected_sections)} sections, found {len(actual_sections)}.")
+    
+    # Iterate and check strict 1:1 match
+    for idx, expected in enumerate(expected_sections):
+        if idx >= len(actual_sections):
+            errors.append(f"Missing section #{idx+1}: '{expected['number']} {expected['title']}'")
+            continue
+            
+        actual = actual_sections[idx]
+        
+        # Check number
+        if actual["number"] != expected["number"]:
+            errors.append(f"Section {idx+1} numbering mismatch: Expected '{expected['number']}', found '{actual['number']}'")
+        
+        # Check type (Content Validation)
+        content_text = "\n".join(actual["content_lines"]).strip()
+        
+        # Loose table check: looks for pipe bars and separator lines
+        is_table_content = "|" in content_text and "-|-" in content_text
+        
+        if expected["type"] == "table":
+            if not is_table_content:
+                errors.append(f"Section {expected['number']} ('{expected['title']}') must be a TABLE, but found text.")
+        elif expected["type"] == "text":
+            if is_table_content:
+                errors.append(f"Section {expected['number']} ('{expected['title']}') must be TEXT only, but found a table.")
+
+    return errors
+
+

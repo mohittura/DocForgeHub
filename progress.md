@@ -8,3 +8,5 @@ ui added fastapi helper functions to get and populate the departments, document_
 added some backend agent schema
 added fastapi endpoint to get the required sections from mongo
 added helper functions in agent to check table only schema as well as added a helper function to return the columns from the tabular schema
+added a fill schema gaps graph node which induces relevant content to the text with areas which have low to no questions
+added a fastapi post endpoint "generate" to send the request to the LLM for document generation

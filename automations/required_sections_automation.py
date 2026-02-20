@@ -1,116 +1,159 @@
 """
 Automation to process all notion_documents JSON files and push to MongoDB Atlas.
-- Adds "order" field to each section/subsection title
-- Sets "department" from the parent folder name
+
+- Fetches exact department names from GET /departments
+- Fetches exact document_type & document_name strings from GET /document-types
+- API is the ONLY source of truth for department, document_type, document_name
+- Local filenames are used ONLY to find the right file to read — never written to DB
+- Adds "order" field to each section/subsection
 - Pushes to `required_section` collection in MongoDB Atlas
 """
 
 import os
 import json
+import requests
 from pymongo import MongoClient
 
 # ─── CONFIG ──────────────────────────────────────────────────────────────────
-MONGO_URI = "mongodb+srv://mohitturabit_db_user:yqAjPzqe5HuZ91Gl@cluster0.uzrpe8f.mongodb.net/"  # e.g. mongodb+srv://user:pass@cluster.mongodb.net/
-DB_NAME = "document_automation"
-COLLECTION_NAME = "required_section"
-
-# Root folder containing department subfolders (e.g. 1._Product_Management, etc.)
-ROOT_DIR = "../document_and_questions/notion_documents"
+MONGO_URI  = ""
+DB_NAME    = "document_automation"
+COLLECTION = "required_section"
+API_BASE   = "http://localhost:8000"
+ROOT_DIR   = "../document_and_questions/notion_documents"
 # ─────────────────────────────────────────────────────────────────────────────
 
 
-def get_document_type(file_name: str) -> str:
-    """
-    Convert filename like 'Feature_prioritization_framework.json'
-    → 'Feature prioritization framework'
-    """
-    name = file_name.replace(".json", "")
-    return " ".join(name.replace("_", " ").split())
+def normalize(s: str) -> str:
+    return " ".join(s.lower().strip().split())
 
 
-def get_department_name(folder_name: str) -> str:
-    """
-    Convert folder name like '1._Product_Management' → 'Product_Management'
-    Strips the leading number prefix.
-    """
+def folder_to_normalized(folder_name: str) -> str:
     parts = folder_name.split("_", 1)
-    # parts[0] is the number, parts[1] is the rest
-    if len(parts) == 2 and parts[0].rstrip(".").isdigit():
-        return " ".join(parts[1].replace("_", " ").split())
-    return " ".join(folder_name.replace("_", " ").split())
+    base = parts[1] if len(parts) == 2 and parts[0].rstrip(".").isdigit() else folder_name
+    return normalize(base.replace("_", " "))
+
+
+def filename_to_normalized(file_name: str) -> str:
+    return normalize(file_name.replace(".json", "").replace("_", " "))
+
+
+def best_match(raw_file: str, doc_type_lookup: dict) -> dict | None:
+    """Find the best matching API document for a normalized filename."""
+    # 1. Exact
+    if raw_file in doc_type_lookup:
+        return doc_type_lookup[raw_file]
+
+    file_tokens = set(raw_file.split())
+    best_score  = 0
+    best_entry  = None
+
+    for api_name, doc_meta in doc_type_lookup.items():
+        api_tokens = set(api_name.split())
+
+        # 2. Substring containment
+        if raw_file in api_name or api_name in raw_file:
+            return doc_meta
+
+        # 3. Jaccard token overlap
+        intersection = file_tokens & api_tokens
+        union        = file_tokens | api_tokens
+        score        = len(intersection) / len(union) if union else 0
+        if score > best_score:
+            best_score = score
+            best_entry = doc_meta
+
+    return best_entry if best_score >= 0.5 else None
+
+
+def fetch_departments() -> list:
+    resp = requests.get(f"{API_BASE}/departments")
+    resp.raise_for_status()
+    return resp.json()["departments"]
+
+
+def fetch_document_types(department_name: str) -> list:
+    resp = requests.get(f"{API_BASE}/document-types", params={"department": department_name})
+    resp.raise_for_status()
+    return resp.json()["document_types"]
 
 
 def add_order(document: dict) -> dict:
-    """
-    Traverse sections and subsections, adding an 'order' field
-    based on their position in the list (1-indexed).
-    """
-    sections = document.get("sections", [])
-    for sec_idx, section in enumerate(sections):
+    for sec_idx, section in enumerate(document.get("sections", [])):
         section["order"] = sec_idx + 1
-        subsections = section.get("subsections", [])
-        for sub_idx, subsection in enumerate(subsections):
+        for sub_idx, subsection in enumerate(section.get("subsections", [])):
             subsection["order"] = sub_idx + 1
     return document
 
 
 def process_and_push():
-    client = MongoClient(MONGO_URI)
-    db = client[DB_NAME]
-    collection = db[COLLECTION_NAME]
+    client     = MongoClient(MONGO_URI)
+    collection = client[DB_NAME][COLLECTION]
+
+    print("Fetching departments from API...")
+    dept_lookup = {
+        normalize(d["name"]): d
+        for d in fetch_departments()
+    }
+    print(f"  Found {len(dept_lookup)} departments\n")
 
     total_inserted = 0
-    total_files = 0
+    total_skipped  = 0
 
     for folder_name in sorted(os.listdir(ROOT_DIR)):
         folder_path = os.path.join(ROOT_DIR, folder_name)
         if not os.path.isdir(folder_path):
             continue
 
-        department = get_department_name(folder_name)
+        dept_obj = dept_lookup.get(folder_to_normalized(folder_name))
+        if not dept_obj:
+            print(f"⚠  No API match for folder '{folder_name}' — skipping")
+            continue
+
+        dept_name = dept_obj["name"]
+        print(f"📂 [{dept_name}]")
+
+        try:
+            api_doc_types = fetch_document_types(dept_name)
+        except requests.HTTPError as e:
+            print(f"   ⚠  Could not fetch document types: {e} — skipping")
+            continue
+
+        # API names → metadata lookup (normalized for matching only)
+        doc_type_lookup = {normalize(d["document_name"]): d for d in api_doc_types}
 
         for file_name in sorted(os.listdir(folder_path)):
             if not file_name.endswith(".json"):
                 continue
 
-            file_path = os.path.join(folder_path, file_name)
-            total_files += 1
+            # Match file to API entry — filename used ONLY for lookup, never saved
+            doc_meta = best_match(filename_to_normalized(file_name), doc_type_lookup)
+            if not doc_meta:
+                print(f"   ⚠  No API match for '{file_name}' — skipping")
+                total_skipped += 1
+                continue
 
-            with open(file_path, "r", encoding="utf-8") as f:
+            # Parse JSON
+            with open(os.path.join(folder_path, file_name), "r", encoding="utf-8") as f:
                 raw = f.read().strip()
-
-            # Handle files that may contain duplicated JSON (as in your example)
-            # Try parsing; if it fails, try splitting and taking the first valid JSON
             try:
                 document = json.loads(raw)
             except json.JSONDecodeError:
-                # Attempt to extract the first valid JSON object
-                decoder = json.JSONDecoder()
-                document, _ = decoder.raw_decode(raw)
+                document, _ = json.JSONDecoder().raw_decode(raw)
 
-            # Add order fields
+            # Build document — everything comes from the API
             document = add_order(document)
-
-            # Derive document_type from filename and sync document_name to it
-            document_type = get_document_type(file_name)
-            document["document_type"] = document_type
-            document["document_name"] = document_type
-
-            # Add department (from folder), no other metadata
-            document["department"] = department
-
-            # Remove MongoDB _id if already present to avoid conflicts on re-runs
+            document["document_type"] = doc_meta["document_type"]   # from API
+            document["document_name"] = doc_meta["document_name"]   # from API
+            document["department"]    = dept_name                    # from API
             document.pop("_id", None)
 
             collection.insert_one(document)
-
-            # insert_one adds _id in-place; remove it from local dict (optional cleanup)
             document.pop("_id", None)
 
             total_inserted += 1
-            print(f"  ✓ [{department}] {file_name}")
+            print(f"   ✓  {file_name}  →  '{doc_meta['document_name']}'")
 
-    print(f"\nDone. Processed {total_files} files, inserted {total_inserted} documents.")
+    print(f"\n✅ Done. Inserted: {total_inserted}  |  Skipped: {total_skipped}")
     client.close()
 
 

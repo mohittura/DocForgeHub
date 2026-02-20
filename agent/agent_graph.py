@@ -191,6 +191,42 @@ def get_table_columns(required_section: dict) -> list[str]:
 
 
 # ═══════════════════════════════════════════════════════════════
+#  NEW HELPER: get_table_section_title
+#  Handles schemas where the table section has no 'title' key
+#  (e.g. Change Request Log pattern: {type, columns, order} — no 'title').
+#  Falls back through: section.title → document_name → document_type → "Data Table"
+# ═══════════════════════════════════════════════════════════════
+
+def get_table_section_title(required_section: dict) -> str:
+    """
+    Return the display title for a table-only schema.
+
+    Handles schemas where the table section omits the 'title' key entirely,
+    falling back to 'document_name' at the top level of required_section,
+    then 'document_type', then a safe generic label.
+
+    This covers the Change Request Log pattern:
+        { "type": "table", "columns": [...], "order": 1 }  ← no 'title' key
+
+    Fallback chain:
+        section["title"]  →  required_section["document_name"]
+                          →  required_section["document_type"]
+                          →  "Data Table"
+    """
+    for section in required_section.get("sections", []):
+        if section.get("type") == "table":
+            title = section.get("title", "").strip()
+            if title:
+                return title
+    # Fall back to document-level name fields
+    return (
+        required_section.get("document_name", "").strip()
+        or required_section.get("document_type", "").strip()
+        or "Data Table"
+    )
+
+
+# ═══════════════════════════════════════════════════════════════
 #  NODE 1 (NEW): analyze_schema_gaps
 # ═══════════════════════════════════════════════════════════════
 
@@ -322,6 +358,8 @@ def build_prompt(state: AgentState) -> dict:
         - Supplementary content notes from analyze_schema_gaps
 
     For TABLE-ONLY schemas uses the strict table-only prompt.
+    Uses get_table_section_title() to correctly resolve the document title
+    for schemas that omit 'title' on the section (e.g. Change Request Log).
     """
     logger.info("📝 Node: build_prompt — assembling system prompt")
 
@@ -331,10 +369,12 @@ def build_prompt(state: AgentState) -> dict:
 
     if is_table_only_schema(state["required_section"]):
         columns = get_table_columns(state["required_section"])
-        logger.info("   📊 Table-only schema — columns: %s", ", ".join(columns))
+        # Use get_table_section_title to handle schemas without a section-level 'title'
+        table_title = get_table_section_title(state["required_section"])
+        logger.info("   📊 Table-only schema — title=%s, columns: %s", table_title, ", ".join(columns))
         system_prompt = build_table_only_prompt(
             department=state["department"],
-            document_type=state["document_type"],
+            document_type=table_title,
             columns=columns,
             questions_and_answers=formatted_answers,
             supplementary_content=state.get("supplementary_content", ""),
@@ -373,8 +413,11 @@ def generate_document(state: AgentState) -> dict:
     logger.info("🤖 Node: generate_document — calling LLM...")
 
     if is_table_only_schema(state["required_section"]):
+        # Use get_table_section_title so the instruction names the document correctly
+        # even when the schema section omits 'title' (e.g. Change Request Log pattern)
+        table_title = get_table_section_title(state["required_section"])
         human_instruction = (
-            f"Generate the {state['document_type']} as a Markdown table now. "
+            f"Generate the {table_title} as a Markdown table now. "
             f"Output ONLY the heading and table — no introductions, no descriptions, "
             f"no extra sections. Just the title and the table with data rows."
         )
@@ -484,7 +527,9 @@ def quality_gate(state: AgentState) -> dict:
         logger.info("   📊 Table-only schema — using deterministic validation")
 
         expected_columns = get_table_columns(state["required_section"])
-        doc_name = state.get("document_type", "Document")
+        # Use get_table_section_title to correctly resolve title for schemas
+        # that omit the 'title' key on the section (e.g. Change Request Log pattern)
+        doc_name = get_table_section_title(state["required_section"])
 
         lines = document_text.split("\n")
         table_lines = []

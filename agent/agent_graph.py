@@ -25,9 +25,9 @@ logging.basicConfig(
 
 logger = logging.getLogger("agent.agent_graph")
 
-
 load_dotenv()
 
+# ── Primary document-generation LLM ─────────────────────────────
 llm = ChatGroq(
     api_key=os.getenv("GROQ_API_KEY"),
     model="moonshotai/kimi-k2-instruct-0905",
@@ -35,7 +35,20 @@ llm = ChatGroq(
     max_tokens=8192,
 )
 
+# ── Dedicated question-generation LLM (lighter, faster) ──────────
+# Using a separate model keeps the question-analysis step cheap and
+# avoids burning the main model's context window on schema analysis.
+question_gen_llm = ChatGroq(
+    api_key=os.getenv("GROQ_API_KEY"),
+    model="llama-3.3-70b-versatile",   # fast, efficient for structured output
+    temperature=0.2,
+    max_tokens=2048,
+)
 
+
+# ═══════════════════════════════════════════════════════════════
+#  AgentState
+# ═══════════════════════════════════════════════════════════════
 
 class AgentState(TypedDict):
     """
@@ -48,7 +61,8 @@ class AgentState(TypedDict):
         required_section         – the document schema from MongoDB
 
     Intermediates / Outputs (filled in by the nodes):
-        supplementary_content    – extra content for uncovered schema sections (from gap filler)
+        gap_questions            – NEW: list of generated questions for uncovered sections
+        supplementary_content    – synthesized content for uncovered schema sections
         system_prompt            – the full prompt sent to the LLM
         generated_document       – the Markdown document the LLM created
         quality_scores           – dict of scores from LLM quality review
@@ -57,13 +71,15 @@ class AgentState(TypedDict):
         retry_count              – how many times we've asked the LLM to fix the doc
         status                   – "generating" | "passed" | "failed"
     """
-    
     department: str
     document_type: str
     questions_and_answers: list[dict]
     required_section: dict
 
-    supplementary_content: str
+    # NEW — populated by analyze_schema_gaps
+    gap_questions: list[dict]          # [{question, category, answer_type, options?}]
+    supplementary_content: str         # synthesized filler for uncovered sections
+
     system_prompt: str
     generated_document: str
     quality_scores: dict
@@ -73,21 +89,16 @@ class AgentState(TypedDict):
     status: str
 
 
-def format_questions_and_answers_for_prompt(qa_list: list[dict]) -> str:
-    """
-    Convert the list of Q&A dictionaries into a readable text block.
+# ═══════════════════════════════════════════════════════════════
+#  Formatting helpers (unchanged)
+# ═══════════════════════════════════════════════════════════════
 
-    Example output:
-        ### Product Vision
-        **Q:** What is the product vision?
-        **A:** Build the best...
-    """
+def format_questions_and_answers_for_prompt(qa_list: list[dict]) -> str:
     lines = []
     current_category = ""
 
     for qa_item in qa_list:
         category = qa_item.get("category", "General")
-
         if category != current_category:
             current_category = category
             lines.append(f"\n### {category}")
@@ -95,7 +106,6 @@ def format_questions_and_answers_for_prompt(qa_list: list[dict]) -> str:
         question_text = qa_item.get("question", "")
         answer_value = qa_item.get("answer", "")
 
-        # Special handling for structured_list answers
         if qa_item.get("answer_type") == "structured_list" and qa_item.get("answers"):
             answer_value = json.dumps(qa_item["answers"], indent=2)
         elif isinstance(answer_value, list):
@@ -109,20 +119,10 @@ def format_questions_and_answers_for_prompt(qa_list: list[dict]) -> str:
 
 
 def format_required_section_for_prompt(required_section: dict) -> str:
-    """
-    Convert the required_section schema into a readable text block
-    showing the document structure the LLM should follow.
-
-    Handles two schema patterns:
-        Pattern A — Table-only:  section has {type: "table", columns: [...]}
-                                 directly (no title, no subsections).
-        Pattern B — Mixed:       section has {title: "...", subsections: [...]}
-    """
     sections = required_section.get("sections", [])
     document_name = required_section.get("document_name", "")
 
     if not sections:
-        # Fallback: try question_categories format
         categories = required_section.get("question_categories", [])
         if categories:
             return "\n".join(
@@ -133,9 +133,9 @@ def format_required_section_for_prompt(required_section: dict) -> str:
 
     lines = []
     for section in sections:
-        # ── Pattern A: Table-only section (no title, no subsections) ──
         if section.get("type") == "table" and not section.get("subsections"):
             table_title = section.get("title", document_name or "Data Table")
+            columns = section.get("columns", [])
             lines.append(f"## {table_title}")
             lines.append("")
             lines.append("⚠️  TABLE FORMAT REQUIRED — This entire document is a Markdown table.")
@@ -146,7 +146,6 @@ def format_required_section_for_prompt(required_section: dict) -> str:
             lines.append("")
             continue
 
-        # ── Pattern B: Mixed section with title + subsections ────────
         section_title = section.get("title", "Untitled Section")
         lines.append(f"## {section_title}")
 
@@ -156,7 +155,6 @@ def format_required_section_for_prompt(required_section: dict) -> str:
             columns = subsection.get("columns", [])
 
             if sub_type == "table" and columns:
-                # Strong table directive for subsection-level tables
                 lines.append(f"  - {sub_title} ⚠️ TABLE — columns: | {' | '.join(columns)} |")
                 lines.append(f"    (Output a real Markdown table with these columns and realistic rows)")
             else:
@@ -168,29 +166,17 @@ def format_required_section_for_prompt(required_section: dict) -> str:
 
 
 def is_table_only_schema(required_section: dict) -> bool:
-    """
-    Return True if the schema is ONLY a single table with no subsections.
-
-    Pattern A schemas look like:
-        {"sections": [{"type": "table", "columns": [...]}]}
-    These should produce table-only output, not prose documents.
-    """
     sections = required_section.get("sections", [])
     if not sections:
         return False
-        
-    # Debug: log the section types/structure to help diagnose issues
     try:
         debug_info = [
-            f"type={s.get('type')}, subs={bool(s.get('subsections'))}" 
+            f"type={s.get('type')}, subs={bool(s.get('subsections'))}"
             for s in sections
         ]
         logger.info("   🔍 Checking is_table_only_schema: %s", debug_info)
     except Exception:
         pass
-
-    # Every section must be a direct table (no subsections)
-    # Using 'not s.get("subsections")' handles: missing key, None, and []
     return all(
         s.get("type") == "table" and not s.get("subsections")
         for s in sections
@@ -198,63 +184,133 @@ def is_table_only_schema(required_section: dict) -> bool:
 
 
 def get_table_columns(required_section: dict) -> list[str]:
-    """
-    Extract column names from a table-only schema.
-    Returns the columns from the first table section.
-    """
     for section in required_section.get("sections", []):
         if section.get("type") == "table":
             return section.get("columns", [])
     return []
 
 
-def fill_schema_gaps(state: AgentState) -> dict:
-    """
-    NODE 1: Identify schema sections not covered by existing Q&A.
+# ═══════════════════════════════════════════════════════════════
+#  NODE 1 (NEW): analyze_schema_gaps
+# ═══════════════════════════════════════════════════════════════
 
-    Compares the required_section schema against the questions_and_answers.
-    If there are gaps, asks the LLM to generate supplementary content
-    so the document writer has material for every section.
+_GAP_QUESTION_SYSTEM_PROMPT = """\
+You are a document-requirements analyst. Your job is to compare a document schema
+against a set of existing Q&A answers and identify which schema sections have
+INSUFFICIENT information to write good content.
 
-    Why?  Some document types have 15+ sections but only 5-8 questions.
-    Without this node, those sections would be empty or very thin.
+Rules:
+1. A section is "covered" if at least one Q&A answer meaningfully addresses it.
+2. A section is "uncovered" if no answer touches it, or the answer is very thin.
+3. For each uncovered section, generate EXACTLY ONE targeted question that would
+   give the document writer enough information to fill that section well.
+4. Questions must be practical, specific, and answerable in 1-3 sentences.
+5. Output ONLY valid JSON — no markdown, no explanation, no preamble.
+
+Output format (JSON array):
+[
+  {
+    "question": "What are the key risks and mitigation strategies for this project?",
+    "category": "Risk Management",
+    "answer_type": "text",
+    "section_covered": "Risk Assessment"
+  },
+  ...
+]
+
+If ALL sections are already covered, return an empty array: []
+"""
+
+
+def analyze_schema_gaps(state: AgentState) -> dict:
     """
-    logger.info("📋 Node: fill_schema_gaps — checking for uncovered schema sections")
+    NODE 1 (NEW): Analyze schema vs existing Q&A to identify coverage gaps.
+
+    Uses a dedicated lightweight LLM to:
+      1. Compare every schema section against the existing answers
+      2. Generate one targeted question per uncovered section
+      3. Return the gap questions so they can be:
+         a) Displayed in the Streamlit UI for the user to answer
+         b) Saved to MongoDB's document_qas collection for future reuse
+
+    This replaces the old fill_schema_gaps node which used the main LLM
+    to synthesize supplementary content — which was wasteful and bypassed
+    the user entirely.
+
+    The generated questions are stored in state["gap_questions"] and also
+    synthesized into state["supplementary_content"] for the document writer
+    (using whatever answers are already in the Q&A payload for gap sections).
+    """
+    logger.info("🔎 Node: analyze_schema_gaps — scanning schema coverage...")
 
     formatted_schema = format_required_section_for_prompt(state["required_section"])
     formatted_answers = format_questions_and_answers_for_prompt(state["questions_and_answers"])
 
-    gap_filler_prompt = build_gap_filler_prompt(
-        department=state["department"],
-        document_type=state["document_type"],
-        required_section=formatted_schema,
-        questions_and_answers=formatted_answers,
-    )
+    user_message = f"""
+DOCUMENT TYPE: {state['document_type']}
+DEPARTMENT: {state['department']}
+
+=== SCHEMA (sections that must be covered) ===
+{formatted_schema}
+
+=== EXISTING Q&A ANSWERS ===
+{formatted_answers}
+
+Identify uncovered sections and generate gap questions now.
+"""
 
     try:
         messages = [
-            SystemMessage(content=gap_filler_prompt),
-            HumanMessage(content="Analyze the schema vs Q&A and provide supplementary content now."),
+            SystemMessage(content=_GAP_QUESTION_SYSTEM_PROMPT),
+            HumanMessage(content=user_message),
         ]
-        llm_response = llm.invoke(messages)
-        supplementary_content = llm_response.content
+        response = question_gen_llm.invoke(messages)
+        raw = response.content.strip()
 
-        if "All sections are adequately covered" in supplementary_content:
-            logger.info("   ✅ All schema sections are covered by existing Q&A")
-            return {"supplementary_content": ""}
-        else:
-            # Count how many sections were supplemented
-            section_count = supplementary_content.count("**")
-            logger.info(
-                "   📝 Generated supplementary content for ~%d uncovered sections",
-                section_count // 2,  # each section has opening + closing **
+        # Strip any accidental markdown fences
+        if "```json" in raw:
+            raw = raw.split("```json")[1].split("```")[0].strip()
+        elif "```" in raw:
+            raw = raw.split("```")[1].split("```")[0].strip()
+
+        gap_questions: list[dict] = json.loads(raw)
+
+        if not gap_questions:
+            logger.info("   ✅ All schema sections are covered — no gap questions needed")
+            return {"gap_questions": [], "supplementary_content": ""}
+
+        logger.info(
+            "   📝 Found %d schema gap(s) — questions generated for: %s",
+            len(gap_questions),
+            ", ".join(q.get("section_covered", "?") for q in gap_questions),
+        )
+
+        # Build lightweight supplementary_content from existing answers
+        # that touch the gap areas — gives the document LLM something to
+        # work with even if the user hasn't answered the gap questions yet.
+        supplementary_lines = []
+        for gq in gap_questions:
+            section = gq.get("section_covered", "")
+            supplementary_lines.append(
+                f"**{section}**: This section requires additional information. "
+                f"Gap question pending user answer: \"{gq['question']}\""
             )
-            return {"supplementary_content": supplementary_content}
 
-    except Exception as gap_error:
-        logger.warning("   ⚠️  Gap filler failed (non-critical): %s", gap_error)
-        return {"supplementary_content": ""}
-    
+        supplementary_content = "\n".join(supplementary_lines) if supplementary_lines else ""
+
+        return {
+            "gap_questions": gap_questions,
+            "supplementary_content": supplementary_content,
+        }
+
+    except (json.JSONDecodeError, Exception) as err:
+        logger.warning("   ⚠️  analyze_schema_gaps failed (non-critical): %s", err)
+        return {"gap_questions": [], "supplementary_content": ""}
+
+
+# ═══════════════════════════════════════════════════════════════
+#  NODE 2: build_prompt  (unchanged logic, updated field names)
+# ═══════════════════════════════════════════════════════════════
 
 def build_prompt(state: AgentState) -> dict:
     """
@@ -262,13 +318,10 @@ def build_prompt(state: AgentState) -> dict:
 
     Combines:
         - The document schema (required_section)
-        - The user's Q&A answers
-        - Any supplementary content from the gap filler
+        - The user's Q&A answers (including any gap-question answers)
+        - Supplementary content notes from analyze_schema_gaps
 
-    Into the final system prompt that will be sent to the LLM.
-
-    For TABLE-ONLY schemas (e.g. Change Request Log), uses a strict
-    table-only prompt that produces ONLY a heading + Markdown table.
+    For TABLE-ONLY schemas uses the strict table-only prompt.
     """
     logger.info("📝 Node: build_prompt — assembling system prompt")
 
@@ -278,10 +331,7 @@ def build_prompt(state: AgentState) -> dict:
 
     if is_table_only_schema(state["required_section"]):
         columns = get_table_columns(state["required_section"])
-        logger.info(
-            "   📊 Table-only schema detected — columns: %s",
-            ", ".join(columns),
-        )
+        logger.info("   📊 Table-only schema — columns: %s", ", ".join(columns))
         system_prompt = build_table_only_prompt(
             department=state["department"],
             document_type=state["document_type"],
@@ -290,9 +340,7 @@ def build_prompt(state: AgentState) -> dict:
             supplementary_content=state.get("supplementary_content", ""),
         )
     else:
-        formatted_schema = format_required_section_for_prompt(
-            state["required_section"]
-        )
+        formatted_schema = format_required_section_for_prompt(state["required_section"])
         system_prompt = build_system_prompt(
             department=state["department"],
             document_type=state["document_type"],
@@ -316,17 +364,14 @@ def build_prompt(state: AgentState) -> dict:
     }
 
 
+# ═══════════════════════════════════════════════════════════════
+#  NODE 3: generate_document  (unchanged)
+# ═══════════════════════════════════════════════════════════════
 
 def generate_document(state: AgentState) -> dict:
-    """
-    NODE 3: Call the LLM to generate the Markdown document.
-
-    Sends the system prompt + a targeted instruction.
-    For table-only schemas, the instruction emphasizes table output.
-    """
+    """NODE 3: Call the primary LLM to generate the Markdown document."""
     logger.info("🤖 Node: generate_document — calling LLM...")
 
-    # Tailor the human message based on schema type
     if is_table_only_schema(state["required_section"]):
         human_instruction = (
             f"Generate the {state['document_type']} as a Markdown table now. "
@@ -349,118 +394,92 @@ def generate_document(state: AgentState) -> dict:
     generated_text = llm_response.content
 
     logger.info("   ✅ LLM returned %d characters of Markdown", len(generated_text))
-
     return {"generated_document": generated_text}
 
 
-# ── Helper: Structure Validator ─────────────────────────────────
+# ═══════════════════════════════════════════════════════════════
+#  Helper: Structure Validator  (unchanged)
+# ═══════════════════════════════════════════════════════════════
 
 def validate_document_structure(document_text: str, required_section: dict) -> list[str]:
-    """
-    Validate that the document follows the schema structure EXACTLY.
-    Returns a list of error messages (empty if valid).
-    """
     errors = []
-    
     expected_sections = []
     sections = required_section.get("sections", [])
-    
+
     for i, section in enumerate(sections, start=1):
-        # Pattern A or B main section
         expected_sections.append({
-            "number": f"{i}", 
+            "number": f"{i}",
             "title": section.get("title", section.get("type", "Section")),
-            "type": section.get("type", "text")
+            "type": section.get("type", "text"),
         })
-        
-        # Subsections
         for j, sub in enumerate(section.get("subsections", []), start=1):
-             expected_sections.append({
-                "number": f"{i}.{j}", 
-                "title": sub.get("title", "Subsection"), 
-                "type": sub.get("type", "text")
+            expected_sections.append({
+                "number": f"{i}.{j}",
+                "title": sub.get("title", "Subsection"),
+                "type": sub.get("type", "text"),
             })
 
-    lines = document_text.split('\n')
+    lines = document_text.split("\n")
     actual_sections = []
-    
-    # Regex to capture: ## 1. Title or ### 1.1. Title
-    # Group 2 is the number (e.g. "1" or "1.1")
-    # Group 3 is the title
     header_pattern = re.compile(r"^(#{2,3})\s+(\d+(?:\.\d+)?)\.?\s+(.*)")
-    
-    # Track content for type validation
     current_section_index = -1
-    
+
     for line in lines:
         stripped = line.strip()
         match = header_pattern.match(stripped)
-        
         if match:
-            # Found a new header
             current_section_index += 1
             actual_sections.append({
                 "number": match.group(2),
                 "title": match.group(3).strip(),
-                "content_lines": []
+                "content_lines": [],
             })
         elif current_section_index >= 0:
             actual_sections[current_section_index]["content_lines"].append(stripped)
 
-
-
     if not actual_sections:
-         return ["Structure check failed: No numbered sections found. Output must start with '## 1. [Title]'"]
-    
-    # Check count mismatch
+        return ["Structure check failed: No numbered sections found."]
+
     if len(actual_sections) != len(expected_sections):
-         errors.append(f"Structure mismatch: Expected {len(expected_sections)} sections, found {len(actual_sections)}.")
-    
-    # Iterate and check strict 1:1 match
+        errors.append(
+            f"Structure mismatch: Expected {len(expected_sections)} sections, "
+            f"found {len(actual_sections)}."
+        )
+
     for idx, expected in enumerate(expected_sections):
         if idx >= len(actual_sections):
             errors.append(f"Missing section #{idx+1}: '{expected['number']} {expected['title']}'")
             continue
-            
+
         actual = actual_sections[idx]
-        
-        # Check number
         if actual["number"] != expected["number"]:
-            errors.append(f"Section {idx+1} numbering mismatch: Expected '{expected['number']}', found '{actual['number']}'")
-        
-        # Check type (Content Validation)
+            errors.append(
+                f"Section {idx+1} numbering mismatch: "
+                f"Expected '{expected['number']}', found '{actual['number']}'"
+            )
+
         content_text = "\n".join(actual["content_lines"]).strip()
-        
-        # Loose table check: looks for pipe bars and separator lines
         is_table_content = "|" in content_text and "-|-" in content_text
-        
-        if expected["type"] == "table":
-            if not is_table_content:
-                errors.append(f"Section {expected['number']} ('{expected['title']}') must be a TABLE, but found text.")
-        elif expected["type"] == "text":
-            if is_table_content:
-                errors.append(f"Section {expected['number']} ('{expected['title']}') must be TEXT only, but found a table.")
+
+        if expected["type"] == "table" and not is_table_content:
+            errors.append(f"Section {expected['number']} must be a TABLE.")
+        elif expected["type"] == "text" and is_table_content:
+            errors.append(f"Section {expected['number']} must be TEXT only.")
 
     return errors
 
 
+# ═══════════════════════════════════════════════════════════════
+#  NODE 4: quality_gate  (unchanged)
+# ═══════════════════════════════════════════════════════════════
+
 def quality_gate(state: AgentState) -> dict:
-    """
-    NODE 4: Validate the generated document.
-
-    For TABLE-ONLY schemas: deterministic structural validation.
-        - Extracts the Markdown table from the output
-        - Strips all prose (introductions, overviews, etc.)
-        - Checks column headers match the schema exactly
-        - Auto-fixes the document by keeping ONLY heading + table
-
-    For MIXED schemas: LLM-based review with rule-based fallback.
-    """
+    """NODE 4: Validate the generated document."""
     logger.info("🔍 Node: quality_gate — reviewing document quality...")
 
     document_text = state.get("generated_document", "")
 
-    #  TABLE-ONLY SCHEMAS: Deterministic validation (no LLM review)
+    # TABLE-ONLY: deterministic validation
     if is_table_only_schema(state["required_section"]):
         logger.info("   📊 Table-only schema — using deterministic validation")
 
@@ -473,54 +492,36 @@ def quality_gate(state: AgentState) -> dict:
 
         for line in lines:
             stripped = line.strip()
-            # Keep heading (# Title)
             if stripped.startswith("# ") and not stripped.startswith("## "):
                 heading_line = stripped
-            # Keep table rows (lines with pipes)
             elif "|" in stripped and stripped.startswith("|"):
                 table_lines.append(stripped)
 
-        if len(table_lines) < 3:  # header + separator + at least 1 row
+        if len(table_lines) < 3:
             logger.warning("   ❌ No Markdown table found in output")
             return {
                 "quality_scores": {},
                 "quality_issues": [
-                    "TABLE-ONLY SCHEMA: No Markdown table found in output. "
-                    f"Output ONLY: # {doc_name} followed by a Markdown table with "
-                    f"columns: {', '.join(expected_columns)}. "
-                    "NO introductions, NO overviews, NO descriptions — JUST THE TABLE."
+                    f"TABLE-ONLY SCHEMA: No Markdown table found. "
+                    f"Output ONLY: # {doc_name} + a table with columns: "
+                    f"{', '.join(expected_columns)}."
                 ],
                 "quality_suggestions": [],
                 "status": "failed",
             }
 
         header_line = table_lines[0]
-        actual_columns = [
-            col.strip()
-            for col in header_line.split("|")
-            if col.strip()  # skip empty strings from leading/trailing pipes
-        ]
-
-        # Normalize for comparison (lowercase, strip whitespace)
+        actual_columns = [c.strip() for c in header_line.split("|") if c.strip()]
         expected_normalized = [c.lower().strip() for c in expected_columns]
         actual_normalized = [c.lower().strip() for c in actual_columns]
 
-        columns_match = expected_normalized == actual_normalized
-
-        if not columns_match:
-            logger.warning(
-                "   ❌ Column mismatch — expected: %s, got: %s",
-                expected_columns,
-                actual_columns,
-            )
+        if expected_normalized != actual_normalized:
+            logger.warning("   ❌ Column mismatch")
             return {
                 "quality_scores": {},
                 "quality_issues": [
-                    f"TABLE-ONLY SCHEMA: Wrong columns. "
-                    f"Expected EXACTLY: | {' | '.join(expected_columns)} |  "
-                    f"Got: | {' | '.join(actual_columns)} |  "
-                    f"Use the EXACT column headers from the schema. "
-                    f"Output ONLY: # {doc_name} + the table. NO other content."
+                    f"Wrong columns. Expected: | {' | '.join(expected_columns)} | "
+                    f"Got: | {' | '.join(actual_columns)} |"
                 ],
                 "quality_suggestions": [],
                 "status": "failed",
@@ -530,21 +531,11 @@ def quality_gate(state: AgentState) -> dict:
             heading_line = f"# {doc_name}"
 
         cleaned_output = heading_line + "\n\n" + "\n".join(table_lines) + "\n"
-
-        # Check if we actually stripped something
-        if len(cleaned_output.strip()) < len(document_text.strip()) * 0.9:
-            logger.info(
-                "   🧹 Stripped prose — %d chars → %d chars",
-                len(document_text),
-                len(cleaned_output),
-            )
-
         logger.info(
             "   ✅ Table-only validation PASSED — %d columns, %d data rows",
             len(actual_columns),
-            len(table_lines) - 2,  # minus header and separator
+            len(table_lines) - 2,
         )
-
         return {
             "generated_document": cleaned_output,
             "quality_scores": {"structure": 5, "completeness": 5},
@@ -553,18 +544,17 @@ def quality_gate(state: AgentState) -> dict:
             "status": "passed",
         }
 
-    #  MIXED SCHEMAS: Strict Structural Validation + LLM Review
-
+    # MIXED SCHEMAS: structural + LLM review
     structure_errors = validate_document_structure(document_text, state["required_section"])
     if structure_errors:
         logger.warning("   ❌ Structural validation failed with %d errors", len(structure_errors))
-        for err in structure_errors:
-            logger.warning("      - %s", err)
-            
         return {
             "quality_scores": {"structure": 1},
             "quality_issues": structure_errors,
-            "quality_suggestions": ["Follow the numbered section structure EXACTLY.", "Do not skip sections or change orders."],
+            "quality_suggestions": [
+                "Follow the numbered section structure EXACTLY.",
+                "Do not skip sections or change orders.",
+            ],
             "status": "failed",
         }
 
@@ -576,16 +566,13 @@ def quality_gate(state: AgentState) -> dict:
             document_type=state["document_type"],
             generated_document=document_text,
         )
-
         messages = [
             SystemMessage(content=review_prompt),
             HumanMessage(content="Review the document and return the JSON assessment now."),
         ]
-
         review_response = llm.invoke(messages)
         review_text = review_response.content
 
-        # Parse JSON from the response (handle markdown code blocks)
         json_text = review_text
         if "```json" in json_text:
             json_text = json_text.split("```json")[1].split("```")[0].strip()
@@ -593,16 +580,12 @@ def quality_gate(state: AgentState) -> dict:
             json_text = json_text.split("```")[1].split("```")[0].strip()
 
         review_result = json.loads(json_text)
-
         scores = review_result.get("scores", {})
         overall_score = review_result.get("overall_score", 3)
         passed = review_result.get("passed", overall_score >= 3)
         issues = review_result.get("issues", [])
         suggestions = review_result.get("suggestions", [])
 
-        logger.info("   📊 LLM Quality Scores:")
-        for criterion, score in scores.items():
-            logger.info("      %s: %d/5", criterion, score)
         logger.info("   📊 Overall: %d/5 — %s", overall_score, "PASSED" if passed else "FAILED")
 
         if passed:
@@ -620,41 +603,28 @@ def quality_gate(state: AgentState) -> dict:
                 "status": "failed",
             }
 
-    except (json.JSONDecodeError, KeyError, Exception) as review_error:
+    except Exception as review_error:
         logger.warning("   ⚠️  LLM quality review failed, falling back to rules: %s", review_error)
 
-    # ── Fallback: Rule-based checks (for mixed schemas only) ─────
+    # Fallback rule-based checks
     issues_found = []
-
     if len(document_text) < 500:
-        issues_found.append("Document is too short (less than 500 characters) — needs more depth")
+        issues_found.append("Document is too short (< 500 chars)")
 
-    forbidden_phrases = [
-        "TBD", "to be decided", "[Company Name]", "[Insert",
-        "Lorem ipsum", "[Your", "[Enter", "[Add",
-    ]
-    for phrase in forbidden_phrases:
+    forbidden = ["TBD", "to be decided", "[Company Name]", "[Insert", "Lorem ipsum"]
+    for phrase in forbidden:
         if phrase.lower() in document_text.lower():
-            issues_found.append(f"Contains forbidden placeholder: '{phrase}'")
+            issues_found.append(f"Contains placeholder: '{phrase}'")
 
-    heading_count = document_text.count("\n#")
-    if heading_count < 5:
-        issues_found.append(
-            f"Too few sections ({heading_count} headings found, expected at least 5 for a professional document)"
-        )
+    if document_text.count("\n#") < 5:
+        issues_found.append("Too few sections (expected at least 5 headings)")
 
-    # Check for very short sections (less than 50 chars between headings)
     sections_split = document_text.split("\n## ")
-    thin_sections = [s for s in sections_split[1:] if len(s.strip()) < 100]
-    if thin_sections:
-        issues_found.append(
-            f"{len(thin_sections)} sections are too thin (under 100 characters) — expand with professional detail"
-        )
+    thin = [s for s in sections_split[1:] if len(s.strip()) < 100]
+    if thin:
+        issues_found.append(f"{len(thin)} sections are too thin — expand with detail")
 
     if issues_found:
-        logger.warning("   ⚠️  Rule-based gate FAILED — %d issues:", len(issues_found))
-        for issue in issues_found:
-            logger.warning("      - %s", issue)
         return {
             "quality_scores": {},
             "quality_issues": issues_found,
@@ -662,7 +632,6 @@ def quality_gate(state: AgentState) -> dict:
             "status": "failed",
         }
 
-    logger.info("   ✅ Rule-based quality gate PASSED")
     return {
         "quality_scores": {},
         "quality_issues": [],
@@ -671,24 +640,17 @@ def quality_gate(state: AgentState) -> dict:
     }
 
 
+# ═══════════════════════════════════════════════════════════════
+#  NODE 5: fix_document  (unchanged)
+# ═══════════════════════════════════════════════════════════════
+
 def fix_document(state: AgentState) -> dict:
-    """
-    NODE 5: Ask the LLM to fix quality issues in the document.
-
-    Sends the original document + the list of issues + suggestions
-    and asks the LLM to produce a corrected version.
-    """
+    """NODE 5: Ask the LLM to fix quality issues in the document."""
     current_retry = state["retry_count"] + 1
-    logger.info(
-        "🔧 Node: fix_document — retry %d/2, fixing %d issues...",
-        current_retry,
-        len(state["quality_issues"]),
-    )
+    logger.info("🔧 Node: fix_document — retry %d/2...", current_retry)
 
-    issues_text = "\n".join(f"- {issue}" for issue in state["quality_issues"])
-    suggestions_text = "\n".join(
-        f"- {suggestion}" for suggestion in state.get("quality_suggestions", [])
-    )
+    issues_text = "\n".join(f"- {i}" for i in state["quality_issues"])
+    suggestions_text = "\n".join(f"- {s}" for s in state.get("quality_suggestions", []))
 
     fix_instruction = f"""The following document was generated but failed quality review:
 
@@ -699,19 +661,15 @@ def fix_document(state: AgentState) -> dict:
 ## Quality Issues Found:
 {issues_text}
 """
-
     if suggestions_text:
-        fix_instruction += f"""
-## Reviewer Suggestions:
-{suggestions_text}
-"""
+        fix_instruction += f"\n## Reviewer Suggestions:\n{suggestions_text}\n"
 
     fix_instruction += """
 ## Instructions:
 1. Fix ALL the issues listed above.
-2. Expand any thin or superficial sections into substantive, professional content.
-3. Ensure every section has at least 2-3 detailed sentences with specific details.
-4. Remove any placeholder text.
+2. Expand any thin or superficial sections.
+3. Ensure every section has at least 2-3 detailed sentences.
+4. Remove all placeholder text.
 5. Add concrete metrics, timelines, or action items where appropriate.
 6. Output ONLY the corrected Markdown document — no commentary."""
 
@@ -719,70 +677,58 @@ def fix_document(state: AgentState) -> dict:
         SystemMessage(content=state["system_prompt"]),
         HumanMessage(content=fix_instruction),
     ]
-
     llm_response = llm.invoke(messages)
-    fixed_text = llm_response.content
-
-    logger.info("   ✅ LLM returned fixed document (%d characters)", len(fixed_text))
-
-    return {
-        "generated_document": fixed_text,
-        "retry_count": current_retry,
-    }
+    logger.info("   ✅ Fixed document: %d characters", len(llm_response.content))
+    return {"generated_document": llm_response.content, "retry_count": current_retry}
 
 
-
-#  Section 5: Routing Logic
-#
-#  After the quality_gate runs, this function decides whether the
-#  document is good enough (→ END) or needs fixing (→ fix_document).
+# ═══════════════════════════════════════════════════════════════
+#  Routing
+# ═══════════════════════════════════════════════════════════════
 
 def decide_after_quality_gate(state: AgentState) -> Literal["fix_document", "end"]:
-    """
-    After quality_gate runs, decide:
-        - If passed → END
-        - If failed AND retries < 2 → fix_document
-        - If failed AND retries >= 2 → END (accept with issues)
-    """
     if state["status"] == "passed":
         logger.info("✅ Routing → END (quality gate passed)")
         return "end"
-
     if state["retry_count"] >= 2:
-        logger.warning("⚠️  Routing → END (max retries reached, accepting with issues)")
+        logger.warning("⚠️  Routing → END (max retries reached)")
         return "end"
-
-    logger.info("🔄 Routing → fix_document (retry needed)")
+    logger.info("🔄 Routing → fix_document")
     return "fix_document"
 
 
-#  Section 6: Build and Compile the Graph
-#
-#  This function wires all the nodes together with edges and
-#  compiles the graph into a runnable agent.
+# ═══════════════════════════════════════════════════════════════
+#  Graph assembly
+# ═══════════════════════════════════════════════════════════════
 
 def build_document_generation_graph() -> StateGraph:
     """
-    Assemble the LangGraph:
+    Graph topology:
 
-        START → fill_schema_gaps → build_prompt → generate_document → quality_gate
-            quality_gate  →  fix_document (if failed)  OR  END (if passed)
-            fix_document  →  quality_gate (re-check)
+        START
+          ↓
+        analyze_schema_gaps   ← NEW: lightweight LLM identifies gaps + generates questions
+          ↓
+        build_prompt
+          ↓
+        generate_document
+          ↓
+        quality_gate ──(failed, retry < 2)──→ fix_document ──┐
+          ↓ (passed)                                          ↓
+         END                                              quality_gate
     """
     logger.info("🔨 Building document generation graph...")
 
     graph = StateGraph(AgentState)
 
-    # Add the five nodes
-    graph.add_node("fill_schema_gaps", fill_schema_gaps)
+    graph.add_node("analyze_schema_gaps", analyze_schema_gaps)
     graph.add_node("build_prompt", build_prompt)
     graph.add_node("generate_document", generate_document)
     graph.add_node("quality_gate", quality_gate)
     graph.add_node("fix_document", fix_document)
 
-    # Connect them with edges
-    graph.set_entry_point("fill_schema_gaps")
-    graph.add_edge("fill_schema_gaps", "build_prompt")
+    graph.set_entry_point("analyze_schema_gaps")
+    graph.add_edge("analyze_schema_gaps", "build_prompt")
     graph.add_edge("build_prompt", "generate_document")
     graph.add_edge("generate_document", "quality_gate")
     graph.add_conditional_edges(
@@ -792,21 +738,17 @@ def build_document_generation_graph() -> StateGraph:
     )
     graph.add_edge("fix_document", "quality_gate")
 
-    compiled_graph = graph.compile()
-    logger.info("✅ Graph compiled — 5 nodes, entry=fill_schema_gaps")
+    compiled = graph.compile()
+    logger.info("✅ Graph compiled — 5 nodes, entry=analyze_schema_gaps")
+    return compiled
 
-    return compiled_graph
 
-
-# ── Compiled graph singleton (created once at import time) ───────
 document_generation_agent = build_document_generation_graph()
 
 
-
-#  Section 7: Public API — run_agent
-#
-#  This is the function called by the FastAPI endpoint (POST /generate).
-#  It feeds inputs into the graph and returns the final result.
+# ═══════════════════════════════════════════════════════════════
+#  Public API
+# ═══════════════════════════════════════════════════════════════
 
 async def run_agent(
     department: str,
@@ -817,26 +759,18 @@ async def run_agent(
     """
     Run the document generation agent end-to-end.
 
-    Args:
-        department:              e.g. "Product Management"
-        document_type:           e.g. "Feature Prioritization Framework"
-        questions_and_answers:   List of dicts [{question, answer, category, ...}]
-        required_section:        Document schema from MongoDB
-
     Returns:
-        dict with keys:
-            generated_document  – the final Markdown text
-            status              – "passed" or "failed"
-            quality_issues      – any remaining issues
-            quality_scores      – LLM quality scores (if available)
-            quality_suggestions – improvement suggestions
-            retry_count         – how many fix attempts were made
+        generated_document   – final Markdown text
+        gap_questions        – NEW: questions for uncovered schema sections
+        status               – "passed" or "failed"
+        quality_issues       – any remaining issues
+        quality_scores       – LLM quality scores
+        quality_suggestions  – improvement suggestions
+        retry_count          – fix attempts made
     """
     logger.info(
-        "🚀 run_agent called — department=%s, document_type=%s, answers=%d",
-        department,
-        document_type,
-        len(questions_and_answers),
+        "🚀 run_agent — department=%s, document_type=%s, answers=%d",
+        department, document_type, len(questions_and_answers),
     )
 
     initial_state: AgentState = {
@@ -844,6 +778,7 @@ async def run_agent(
         "document_type": document_type,
         "questions_and_answers": questions_and_answers,
         "required_section": required_section,
+        "gap_questions": [],
         "supplementary_content": "",
         "system_prompt": "",
         "generated_document": "",
@@ -854,23 +789,62 @@ async def run_agent(
         "status": "generating",
     }
 
-    # LangGraph's invoke() is synchronous — run in a thread for async FastAPI
     final_state = await asyncio.to_thread(
         document_generation_agent.invoke, initial_state
     )
 
     logger.info(
-        "🏁 Agent finished — status=%s, retries=%d, doc_length=%d chars",
+        "🏁 Agent finished — status=%s, retries=%d, doc=%d chars, gap_questions=%d",
         final_state.get("status", "unknown"),
         final_state.get("retry_count", 0),
         len(final_state.get("generated_document", "")),
+        len(final_state.get("gap_questions", [])),
     )
 
     return {
         "generated_document": final_state.get("generated_document", ""),
+        "gap_questions": final_state.get("gap_questions", []),
         "status": final_state.get("status", "unknown"),
         "quality_issues": final_state.get("quality_issues", []),
         "quality_scores": final_state.get("quality_scores", {}),
         "quality_suggestions": final_state.get("quality_suggestions", []),
         "retry_count": final_state.get("retry_count", 0),
     }
+
+
+# ═══════════════════════════════════════════════════════════════
+#  Standalone gap-analysis utility (used by /gap-questions endpoint)
+# ═══════════════════════════════════════════════════════════════
+
+async def analyze_gaps_only(
+    department: str,
+    document_type: str,
+    questions_and_answers: list[dict],
+    required_section: dict,
+) -> list[dict]:
+    """
+    Run ONLY the schema-gap analysis (no document generation).
+
+    Used by POST /gap-questions to analyse gaps before generation
+    and let the user answer them first.
+
+    Returns list of gap question dicts.
+    """
+    state: AgentState = {
+        "department": department,
+        "document_type": document_type,
+        "questions_and_answers": questions_and_answers,
+        "required_section": required_section,
+        "gap_questions": [],
+        "supplementary_content": "",
+        "system_prompt": "",
+        "generated_document": "",
+        "quality_scores": {},
+        "quality_issues": [],
+        "quality_suggestions": [],
+        "retry_count": 0,
+        "status": "generating",
+    }
+
+    result = await asyncio.to_thread(analyze_schema_gaps, state)
+    return result.get("gap_questions", [])

@@ -134,7 +134,8 @@ def format_required_section_for_prompt(required_section: dict) -> str:
     lines = []
     for section in sections:
         if section.get("type") == "table" and not section.get("subsections"):
-            table_title = section.get("title", document_name or "Data Table")
+            # Table-only schema: section has type/columns/order but no title or subsections
+            table_title = section.get("title", "").strip() or document_name or "Data Table"
             columns = section.get("columns", [])
             lines.append(f"## {table_title}")
             lines.append("")
@@ -146,6 +147,7 @@ def format_required_section_for_prompt(required_section: dict) -> str:
             lines.append("")
             continue
 
+        # Mixed schema: section has a title + flat subsections array
         section_title = section.get("title", "Untitled Section")
         lines.append(f"## {section_title}")
 
@@ -191,7 +193,7 @@ def get_table_columns(required_section: dict) -> list[str]:
 
 
 # ═══════════════════════════════════════════════════════════════
-#  NEW HELPER: get_table_section_title
+#  HELPER: get_table_section_title
 #  Handles schemas where the table section has no 'title' key
 #  (e.g. Change Request Log pattern: {type, columns, order} — no 'title').
 #  Falls back through: section.title → document_name → document_type → "Data Table"
@@ -224,6 +226,7 @@ def get_table_section_title(required_section: dict) -> str:
         or required_section.get("document_type", "").strip()
         or "Data Table"
     )
+
 
 
 # ═══════════════════════════════════════════════════════════════
@@ -358,6 +361,8 @@ def build_prompt(state: AgentState) -> dict:
         - Supplementary content notes from analyze_schema_gaps
 
     For TABLE-ONLY schemas uses the strict table-only prompt.
+    For mixed schemas, appends a strict section allowlist to the prompt so
+    the LLM knows upfront exactly which headings to include and nothing more.
     Uses get_table_section_title() to correctly resolve the document title
     for schemas that omit 'title' on the section (e.g. Change Request Log).
     """
@@ -381,10 +386,32 @@ def build_prompt(state: AgentState) -> dict:
         )
     else:
         formatted_schema = format_required_section_for_prompt(state["required_section"])
+
+        # Build the strict allowlist of required headings from the schema subsections
+        # and inject it into the prompt so the LLM knows exactly what to generate.
+        # The LLM must use ONLY these headings — no additions, renames, or omissions.
+        required_headings = []
+        for section in state["required_section"].get("sections", []):
+            for sub in sorted(section.get("subsections", []), key=lambda s: s.get("order", 0)):
+                title = sub.get("title", "").strip()
+                if title:
+                    required_headings.append(title)
+
+        if required_headings:
+            headings_list = "\n".join(f"  - {t}" for t in required_headings)
+            strict_rule = (
+                f"\n\n⚠️  STRICT SECTION RULE:\n"
+                f"Your document MUST contain ALL of the following headings and NO others.\n"
+                f"Do NOT add, rename, merge, reorder, or omit any heading:\n"
+                f"{headings_list}\n"
+            )
+        else:
+            strict_rule = ""
+
         system_prompt = build_system_prompt(
             department=state["department"],
             document_type=state["document_type"],
-            required_section=formatted_schema,
+            required_section=formatted_schema + strict_rule,
             questions_and_answers=formatted_answers,
             supplementary_content=state.get("supplementary_content", ""),
         )
@@ -441,73 +468,177 @@ def generate_document(state: AgentState) -> dict:
 
 
 # ═══════════════════════════════════════════════════════════════
-#  Helper: Structure Validator  (unchanged)
+#  Helper: Structure Validator
+#
+#  Handles the two real MongoDB schema patterns:
+#
+#  Pattern A — Table-only (Change Request Log):
+#    sections: [{ type: "table", columns: [...], order: 1 }]
+#    → No titled headings to validate; quality_gate handles column checking.
+#    → Returns [] immediately.
+#
+#  Pattern B — Mixed with flat subsections (Feature Prioritization Framework):
+#    sections: [{ title: "1. Objective", subsections: [{title, type, order}, ...] }]
+#    → The parent title ("1. Objective") is NOT a required document heading.
+#    → Every subsection title IS a required heading — checked in order.
+#    → Two-way enforcement:
+#        CHECK 1: every subsection title must appear as a heading in the doc.
+#        CHECK 2: no heading in the doc may be absent from the schema allowlist.
+#        CHECK 3: type="table" subsections must contain a Markdown table with correct columns.
 # ═══════════════════════════════════════════════════════════════
 
+def _normalise_heading(raw: str) -> str:
+    """
+    Normalise a heading string for tolerant but content-strict comparison.
+    Strips # markers, leading number prefixes like "4.1 ", and punctuation,
+    then lowercases so "### 4.1 Customer Impact" matches "4.1 Customer Impact".
+    """
+    text = raw.strip().lstrip("#").strip()
+    text = re.sub(r"^\d+(\.\d+)*\.?\s*", "", text)  # remove "4.1 " style prefixes
+    text = re.sub(r"[^\w\s]", "", text)              # remove punctuation
+    return text.lower().strip()
+
+
 def validate_document_structure(document_text: str, required_section: dict) -> list[str]:
-    errors = []
+    """
+    Validate the generated document against the schema.
+
+    Returns a list of error strings (empty = valid).
+
+    Pattern A (table-only): returns [] — quality_gate handles it deterministically.
+    Pattern B (flat subsections): two-way check — missing headings and extra
+    headings are both flagged, plus table column validation.
+    """
+    # Pattern A: table-only — handled by quality_gate's column checks
+    if is_table_only_schema(required_section):
+        return []
+
+    # ── Build expected sections from the schema ──────────────────────────────
+    # For Pattern B, all required headings live in subsections[], sorted by order.
+    # The parent section title is informational only and NOT a required heading.
     expected_sections = []
-    sections = required_section.get("sections", [])
+    for section in required_section.get("sections", []):
+        subsections = section.get("subsections", [])
+        if subsections:
+            # Pattern B: every subsection title = a required document heading
+            for sub in sorted(subsections, key=lambda s: s.get("order", 0)):
+                title = sub.get("title", "").strip()
+                if title:
+                    expected_sections.append({
+                        "title": title,
+                        "type": sub.get("type", "text"),
+                        "columns": sub.get("columns", []),
+                    })
+        else:
+            # Fallback for future schema patterns where section itself is titled
+            title = section.get("title", "").strip()
+            if title:
+                expected_sections.append({
+                    "title": title,
+                    "type": section.get("type", "text"),
+                    "columns": section.get("columns", []),
+                })
 
-    for i, section in enumerate(sections, start=1):
-        expected_sections.append({
-            "number": f"{i}",
-            "title": section.get("title", section.get("type", "Section")),
-            "type": section.get("type", "text"),
-        })
-        for j, sub in enumerate(section.get("subsections", []), start=1):
-            expected_sections.append({
-                "number": f"{i}.{j}",
-                "title": sub.get("title", "Subsection"),
-                "type": sub.get("type", "text"),
-            })
+    if not expected_sections:
+        logger.warning("   ⚠️  validate_document_structure: no expected sections found in schema")
+        return []
 
-    lines = document_text.split("\n")
-    actual_sections = []
-    header_pattern = re.compile(r"^(#{2,3})\s+(\d+(?:\.\d+)?)\.?\s+(.*)")
-    current_section_index = -1
+    errors = []
+    doc_lines = document_text.split("\n")
 
-    for line in lines:
-        stripped = line.strip()
-        match = header_pattern.match(stripped)
-        if match:
-            current_section_index += 1
-            actual_sections.append({
-                "number": match.group(2),
-                "title": match.group(3).strip(),
-                "content_lines": [],
-            })
-        elif current_section_index >= 0:
-            actual_sections[current_section_index]["content_lines"].append(stripped)
+    # Extract all headings from the document as (line_index, raw_text) pairs
+    doc_headings: list[tuple[int, str]] = [
+        (i, line.strip().lstrip("#").strip())
+        for i, line in enumerate(doc_lines)
+        if line.strip().startswith("#")
+    ]
+    doc_headings_norm: list[tuple[int, str]] = [
+        (i, _normalise_heading(raw)) for i, raw in doc_headings
+    ]
 
-    if not actual_sections:
-        return ["Structure check failed: No numbered sections found."]
+    # Normalised allowlist: normalised_title → schema entry
+    # This is the single source of truth for what headings are permitted.
+    allowlist: dict[str, dict] = {
+        _normalise_heading(s["title"]): s
+        for s in expected_sections
+    }
 
-    if len(actual_sections) != len(expected_sections):
-        errors.append(
-            f"Structure mismatch: Expected {len(expected_sections)} sections, "
-            f"found {len(actual_sections)}."
+    # ── CHECK 1: Missing sections ────────────────────────────────────────────
+    # Every schema subsection title must appear as a heading in the document.
+    for norm_title, schema_entry in allowlist.items():
+        found = any(norm_title in doc_norm for _, doc_norm in doc_headings_norm)
+        if not found:
+            errors.append(f"Missing required section: '{schema_entry['title']}'")
+
+    # ── CHECK 2: Extra sections ──────────────────────────────────────────────
+    # Every heading in the document must match something in the allowlist.
+    # Headings the LLM invented beyond the schema are flagged.
+    for (_, raw_heading), (_, norm_heading) in zip(doc_headings, doc_headings_norm):
+        in_allowlist = any(
+            allowed in norm_heading or norm_heading in allowed
+            for allowed in allowlist
         )
-
-    for idx, expected in enumerate(expected_sections):
-        if idx >= len(actual_sections):
-            errors.append(f"Missing section #{idx+1}: '{expected['number']} {expected['title']}'")
-            continue
-
-        actual = actual_sections[idx]
-        if actual["number"] != expected["number"]:
+        if not in_allowlist:
             errors.append(
-                f"Section {idx+1} numbering mismatch: "
-                f"Expected '{expected['number']}', found '{actual['number']}'"
+                f"Extra section not in schema: '{raw_heading}' — "
+                f"remove it, the document must only contain schema-defined sections."
             )
 
-        content_text = "\n".join(actual["content_lines"]).strip()
-        is_table_content = "|" in content_text and "-|-" in content_text
+    # ── CHECK 3: Table content ───────────────────────────────────────────────
+    # For type="table" subsections, the content block under that heading must
+    # contain a real Markdown table with the correct column headers.
+    for norm_title, schema_entry in allowlist.items():
+        if schema_entry["type"] != "table":
+            continue
 
-        if expected["type"] == "table" and not is_table_content:
-            errors.append(f"Section {expected['number']} must be a TABLE.")
-        elif expected["type"] == "text" and is_table_content:
-            errors.append(f"Section {expected['number']} must be TEXT only.")
+        expected_cols = schema_entry.get("columns", [])
+
+        # Find this heading's line index in the document
+        heading_line_idx = next(
+            (idx for idx, norm in doc_headings_norm if norm_title in norm),
+            None,
+        )
+        if heading_line_idx is None:
+            continue  # already caught by CHECK 1
+
+        # Grab lines from this heading until the next heading
+        next_heading_idx = next(
+            (idx for idx, _ in doc_headings_norm if idx > heading_line_idx),
+            len(doc_lines),
+        )
+        block_lines = doc_lines[heading_line_idx:next_heading_idx]
+        block_text = "\n".join(block_lines)
+
+        # Must contain a pipe-delimited table with a separator row
+        has_table = "|" in block_text and re.search(r"\|[\s\-|]+\|", block_text)
+        if not has_table:
+            errors.append(
+                f"Section '{schema_entry['title']}' must contain a Markdown table "
+                f"(expected columns: {', '.join(expected_cols)})"
+            )
+            continue
+
+        # Verify the column headers match the schema exactly
+        if expected_cols:
+            table_lines = [l.strip() for l in block_lines if l.strip().startswith("|")]
+            if table_lines:
+                actual_cols = [c.strip() for c in table_lines[0].split("|") if c.strip()]
+                if [c.lower() for c in expected_cols] != [c.lower() for c in actual_cols]:
+                    errors.append(
+                        f"Section '{schema_entry['title']}' has wrong table columns. "
+                        f"Expected: {expected_cols}. Got: {actual_cols}"
+                    )
+
+    if errors:
+        logger.warning(
+            "   ❌ validate_document_structure: %d error(s): %s",
+            len(errors), errors,
+        )
+    else:
+        logger.info(
+            "   ✅ validate_document_structure passed — %d sections checked, no extras",
+            len(expected_sections),
+        )
 
     return errors
 
@@ -589,17 +720,36 @@ def quality_gate(state: AgentState) -> dict:
             "status": "passed",
         }
 
-    # MIXED SCHEMAS: structural + LLM review
+    # MIXED SCHEMAS: strict two-way structural check + LLM quality review
     structure_errors = validate_document_structure(document_text, state["required_section"])
     if structure_errors:
         logger.warning("   ❌ Structural validation failed with %d errors", len(structure_errors))
+
+        # Split errors by type so fix_document gets targeted instructions
+        missing = [e for e in structure_errors if e.startswith("Missing")]
+        extra   = [e for e in structure_errors if e.startswith("Extra")]
+        table   = [e for e in structure_errors if e.startswith("Section")]
+
+        suggestions = []
+        if missing:
+            suggestions.append(
+                "Add ALL missing sections using their EXACT titles from the schema — do not rename them."
+            )
+        if extra:
+            suggestions.append(
+                "REMOVE every heading not in the schema. "
+                "The document must contain ONLY the sections defined in the schema — nothing more."
+            )
+        if table:
+            suggestions.append(
+                "Ensure every table section contains a real Markdown table "
+                "with the exact column headers specified in the schema."
+            )
+
         return {
             "quality_scores": {"structure": 1},
             "quality_issues": structure_errors,
-            "quality_suggestions": [
-                "Follow the numbered section structure EXACTLY.",
-                "Do not skip sections or change orders.",
-            ],
+            "quality_suggestions": suggestions,
             "status": "failed",
         }
 

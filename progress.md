@@ -41,3 +41,6 @@ Standardize Generate button label to "Generate Document" with use_container_widt
 Standardize Publish button label to "Publish"
 
 added some things in the prompts.py : feat(agent)-notFinal: made some prompts to test the agent which includes system prompts, table only prompts, Schema gap filler prompts, quality review prompts, and made builder functions for the same, these functions will build the final prompt based on the inputs received
+
+
+added progressive generation in the app, made relavant endpoints (generate-section), made ui changes and added pagination to display the questions, as well as added progessive generation toggle button, made changes in the agent schema to handle the same.

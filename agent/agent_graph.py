@@ -1057,31 +1057,45 @@ async def generate_single_section(
     doc_memory: str = "",
 ) -> str:
     """
-    Generate ONE section of a document using the existing LLM.
+    Generate ONE section of a document.
 
-    Args:
-        department:             e.g. "Product Management"
-        document_type:          e.g. "Employee Handbook"
-        section:                schema section dict {title, subsections, type, columns}
-        questions_and_answers:  Q&A relevant to this section
-        doc_memory:             text of previously generated sections (for consistency)
-
-    Returns:
-        Generated Markdown text for this single section.
+    IMPORTANT: `questions_and_answers` must contain ONLY the answered Q&A
+    for this section (filtered by the caller). The section schema is trimmed
+    here to only include subsections whose titles match the answered Q&A
+    categories — so the LLM physically cannot see subsections it has no data for.
     """
     logger.info(
-        "📝 generate_single_section — section=%s",
+        "📝 generate_single_section — section=%s, qa_count=%d",
         section.get("title", "Untitled"),
+        len(questions_and_answers),
     )
 
-    qa_text = format_questions_and_answers_for_prompt(questions_and_answers)
-
     section_title = section.get("title", "Untitled Section")
-    section_lines = [f"## {section_title}"]
 
-    subsections = section.get("subsections", [])
-    if subsections:
-        for sub in subsections:
+    # ── Trim subsections to only those covered by answered Q&A ──────────────
+    # question `category` in MongoDB == subsection `title` in schema.
+    answered_categories = {
+        qa.get("category", "").strip().lower()
+        for qa in questions_and_answers
+        if qa.get("answer", "").strip()
+    }
+
+    all_subsections = section.get("subsections", [])
+    if all_subsections and answered_categories:
+        covered_subsections = [
+            sub for sub in all_subsections
+            if sub.get("title", "").strip().lower() in answered_categories
+        ]
+        # If exact matching found nothing, keep all subsections (table-only or
+        # schema where categories don't align with subsection titles exactly)
+        subsections_to_render = covered_subsections if covered_subsections else all_subsections
+    else:
+        subsections_to_render = all_subsections
+
+    # ── Build section structure string from trimmed subsections ─────────────
+    section_lines = [f"## {section_title}"]
+    if subsections_to_render:
+        for sub in subsections_to_render:
             sub_title = sub.get("title", "")
             sub_type = sub.get("type", "text")
             columns = sub.get("columns", [])
@@ -1090,66 +1104,64 @@ async def generate_single_section(
                     f"  - {sub_title} ⚠️ TABLE — columns: | {' | '.join(columns)} |"
                 )
                 section_lines.append(
-                    f"    (Output a real Markdown table with these columns and realistic rows)"
+                    "    (Output a real Markdown table with these columns and data rows)"
                 )
             else:
                 section_lines.append(f"  - {sub_title} (type: {sub_type})")
     elif section.get("type") == "table":
         columns = section.get("columns", [])
         if columns:
-            section_lines.append(
-                f"⚠️ TABLE FORMAT — columns: | {' | '.join(columns)} |"
-            )
+            section_lines.append(f"⚠️ TABLE FORMAT — columns: | {' | '.join(columns)} |")
 
     section_structure = "\n".join(section_lines)
+
+    logger.info(
+        "   📐 Trimmed to %d/%d subsections for section '%s'",
+        len(subsections_to_render), len(all_subsections), section_title,
+    )
+
+    # ── Only pass Q&A that have actual answers ───────────────────────────────
+    answered_qa = [qa for qa in questions_and_answers if qa.get("answer", "").strip()]
+    qa_text = format_questions_and_answers_for_prompt(answered_qa)
 
     memory_block = ""
     if doc_memory:
         memory_block = (
-            "\n\n## PREVIOUSLY GENERATED SECTIONS (for consistency — do NOT repeat this content)\n"
-            "Use the same terminology, tone, numbers, and decisions established below.\n\n"
+            "\n\n## PREVIOUSLY GENERATED SECTIONS (for consistency — do NOT repeat)\n"
+            "Use the same terminology, tone, and decisions from below.\n\n"
             f"{doc_memory}\n\n"
             "─────────────────────────────────────────────\n"
         )
 
     system_prompt = f"""\
-You are a **senior SaaS document specialist** writing ONE section of a {document_type} \
+You are a **senior SaaS document specialist** writing one section of a {document_type} \
 for the {department} department.
 
 ## YOUR TASK
-Generate ONLY the content for this ONE section. Do not generate any other section.
+Write ONLY the subsections listed below. Do not add any subsection not in this list.
 
-## SECTION STRUCTURE
+## SUBSECTIONS TO WRITE
 {section_structure}
 
 ## WRITING RULES
 - Write professional, industry-grade prose — not a template fill-in.
 - DO NOT copy answers verbatim — elevate them into polished content.
-- Expand brief answers with relevant context, best practices, and implementation details.
-- Be THOROUGH and DETAILED — each section should be comprehensive and production-ready.
-- For type "text": write 3-6 substantial paragraphs of professional prose. Be detailed.
-- For type "table": output a real Markdown table with the exact columns specified and at least 5-8 realistic data rows.
-- ❌ Do NOT generate content for subsections that have no answer provided. Skip them entirely.
-- ✅ Use ONLY the Q&A answers below to generate content. Do not invent information beyond what is provided.
+- For type "text": write 3-6 detailed paragraphs per subsection.
+- For type "table": output a real Markdown table with the exact columns and at least 5 data rows.
 - ❌ No placeholders like [Company Name], [TBD], [Insert here]
-- ❌ No filler like "This section covers..."
-- Start with the section heading: ## {section_title}
+- ❌ Do NOT add subsections beyond the list above
+- Start with: ## {section_title}
 {memory_block}
-## QUESTIONS & ANSWERS FOR THIS SECTION
+## Q&A (source of truth — use these answers to write the subsections above)
 {qa_text}
 """
-
-    # Count answered questions to reinforce scope in human message
-    answered_count = sum(1 for qa in questions_and_answers if qa.get("answer", "").strip())
 
     messages = [
         SystemMessage(content=system_prompt),
         HumanMessage(content=(
-            f"Generate the '{section_title}' section now. "
-            f"You have {answered_count} answered question(s). "
-            f"Write ONLY the subsections covered by those answers. "
-            f"Do NOT generate content for any unanswered subsections. "
-            f"Output ONLY the heading and the answered content — nothing else."
+            f"Write the '{section_title}' section now, covering only these subsections: "
+            f"{', '.join(sub.get('title','') for sub in subsections_to_render)}. "
+            f"Output ONLY the heading and content for this section."
         )),
     ]
 
@@ -1157,7 +1169,7 @@ Generate ONLY the content for this ONE section. Do not generate any other sectio
     section_text = response.content
 
     logger.info(
-        "   ✅ Section '%s' generated — %d characters",
+        "   ✅ Section '%s' generated — %d chars",
         section_title, len(section_text),
     )
     return section_text

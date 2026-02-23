@@ -345,7 +345,10 @@ if "prog_mode" not in st.session_state:
 if "q_page" not in st.session_state:
     st.session_state.q_page = 0
 if "prog_sections" not in st.session_state:
-    st.session_state.prog_sections = {}       # {section_idx: generated_text}
+    st.session_state.prog_sections = {}       # {category_name: generated_text}
+# Purge stale integer keys left from previous sessions
+if any(isinstance(k, int) for k in st.session_state.prog_sections):
+    st.session_state.prog_sections = {}
 if "prog_generating" not in st.session_state:
     st.session_state.prog_generating = False
 
@@ -508,10 +511,15 @@ def render_question_widget(
 
 
 # ═══════════════════════════════════════════════════════════════
-#  Fetch schema sections for progressive mode
+#  Fetch schema for progressive mode
+#  The schema has ONE top-level section whose subsection titles
+#  match question category names exactly.
 # ═══════════════════════════════════════════════════════════════
 
-schema_sections = []
+raw_schema_section = None
+prog_subsections = []
+schema_sections = []   # compat alias
+
 if valid_document and st.session_state.prog_mode:
     document_name_for_schema = document_name_lookup.get(selected_document, selected_document)
     try:
@@ -523,9 +531,13 @@ if valid_document and st.session_state.prog_mode:
         rs_resp.raise_for_status()
         rs_data = rs_resp.json()
         required_section_data = rs_data.get("required_section", rs_data)
-        schema_sections = required_section_data.get("sections", [])
+        _all_schema_sections = required_section_data.get("sections", [])
+        if _all_schema_sections:
+            raw_schema_section = _all_schema_sections[0]
+            prog_subsections = raw_schema_section.get("subsections", [])
+            schema_sections = [raw_schema_section]
     except Exception:
-        pass  # schema_sections stays empty; progressive features degrade gracefully
+        pass
 
 
 # ═══════════════════════════════════════════════════════════════
@@ -551,10 +563,71 @@ for i, q in enumerate(questions):
 for i, gq in enumerate(st.session_state.gap_questions):
     all_questions.append((f"gap_answer_{i}", gq, st.session_state.gap_answers, True))
 
+# ─────────────────────────────────────────────────────────────────────────────
+# Build category helpers — always defined regardless of prog_mode or schema
+# _ordered_categories : unique categories in question order
+# _cat_to_subsection  : category_lower → subsection dict (empty if no schema)
+# ─────────────────────────────────────────────────────────────────────────────
+_ordered_categories: list = []
+_cat_to_subsection: dict = {}
+_seen_cats: set = set()
+_sub_title_lower_map = {
+    sub.get("title", "").strip().lower(): sub
+    for sub in prog_subsections
+} if prog_subsections else {}
+
+for _, _q, _, _ in all_questions:
+    _cat = _q.get("category", "").strip()
+    _cat_lower = _cat.lower()
+    if _cat and _cat_lower not in _seen_cats:
+        _seen_cats.add(_cat_lower)
+        _ordered_categories.append(_cat)
+    if _cat_lower in _sub_title_lower_map:
+        _cat_to_subsection[_cat_lower] = _sub_title_lower_map[_cat_lower]
+
+del _seen_cats, _sub_title_lower_map  # cleanup temps
+
+
+def get_page_categories(page_idx: int) -> list:
+    """Unique categories for the 5 questions on page_idx, in order."""
+    _ps = 5  # PAGE_SIZE defined below; same value
+    p_start = page_idx * _ps
+    p_end = min(p_start + _ps, len(all_questions))
+    seen, cats = set(), []
+    for _, q, _, _ in all_questions[p_start:p_end]:
+        cat = q.get("category", "").strip()
+        if cat and cat not in seen:
+            seen.add(cat)
+            cats.append(cat)
+    return cats
+
+
+def get_subsection_qa(category: str) -> list:
+    """All answered Q&A for a specific category."""
+    cat_lower = category.strip().lower()
+    return [
+        {
+            "question": q.get("question", ""),
+            "answer": sd.get(wk, ""),
+            "category": q.get("category", ""),
+            "answer_type": q.get("answer_type", "text"),
+        }
+        for wk, q, sd, ig in all_questions
+        if q.get("category", "").strip().lower() == cat_lower and sd.get(wk, "").strip()
+    ]
+
+
+def prog_sections_ordered() -> list:
+    """Return (category, text) pairs in document order for all generated sections."""
+    return [
+        (cat, st.session_state.prog_sections[cat])
+        for cat in _ordered_categories
+        if cat in st.session_state.prog_sections
+    ]
+
+
 # ═══════════════════════════════════════════════════════════════
-#  Pagination — always 5 questions per page.
-#  In progressive mode we also track which schema section each
-#  page belongs to, so "Generate This Section" sends the right Q&A.
+#  Pagination — always 5 questions per page
 # ═══════════════════════════════════════════════════════════════
 
 PAGE_SIZE = 5
@@ -838,29 +911,9 @@ with col_questions:
         with nav_col3:
             if page < total_pages - 1:
                 if st.button("Next →", use_container_width=True):
-                    # Progressive mode: auto-generate section for this page before moving
-                    if st.session_state.prog_mode and schema_sections:
-                        sec_idx, current_sec = get_sec_idx_for_page(page, schema_sections)
-                        if current_sec and sec_idx not in st.session_state.prog_sections:
-                            sec_qa = get_section_qa_for_sec_idx(sec_idx, schema_sections)
-                            if sec_qa:
-                                doc_memory = "\n\n".join(
-                                    st.session_state.prog_sections[k]
-                                    for k in sorted(st.session_state.prog_sections.keys())
-                                )
-                                sec_title = current_sec.get("title", "")
-                                with st.spinner(f"⚡ Generating '{sec_title}'..."):
-                                    result = call_generate_section(
-                                        department=selected_department,
-                                        document_type=selected_document,
-                                        section=current_sec,
-                                        questions_and_answers=sec_qa,
-                                        doc_memory=doc_memory,
-                                    )
-                                if result and result.get("section_text"):
-                                    st.session_state.prog_sections[sec_idx] = result["section_text"]
                     st.session_state.q_page += 1
                     st.rerun()
+
 
         with nav_col2:
             if not st.session_state.prog_mode:
@@ -872,57 +925,63 @@ with col_questions:
                     type="primary",
                 )
             else:
-                # ── Progressive mode buttons ──
+                # ── Progressive mode: generate per-category ──
                 generate_button_clicked = False
+                _all_answered = (answered_count == total_questions and total_questions > 0)
+                _remaining = total_questions - answered_count
+                _page_cats = get_page_categories(page)
+                _page_done = bool(_page_cats) and all(c in st.session_state.prog_sections for c in _page_cats)
+                _page_label = ", ".join(_page_cats) if _page_cats else f"Page {page + 1}"
 
-                # Always show the Generate Section button on every page (including last)
-                if schema_sections:
-                    _sec_idx_btn, _current_sec_btn = get_sec_idx_for_page(page, schema_sections)
-                    _sec_already_done = _sec_idx_btn in st.session_state.prog_sections
-                    _sec_name = _current_sec_btn.get("title", f"Section {_sec_idx_btn + 1}") if _current_sec_btn else f"Section {_sec_idx_btn + 1}"
-                    _btn_label = f"✅ Regenerate: {_sec_name}" if _sec_already_done else f"⚡ Generate: {_sec_name}"
-
-                    gen_sec_btn = st.button(
-                        _btn_label,
-                        disabled=st.session_state.prog_generating,
-                        use_container_width=True,
-                        type="primary",
-                    )
-                    if gen_sec_btn:
-                        sec_idx, current_sec = _sec_idx_btn, _current_sec_btn
-                        if current_sec:
-                            sec_qa = get_section_qa_for_sec_idx(sec_idx, schema_sections)
-                            if not sec_qa:
-                                st.warning("⚠️ Answer at least one question for this section before generating.")
-                            else:
-                                doc_memory = "\n\n".join(
-                                    st.session_state.prog_sections[k]
-                                    for k in sorted(st.session_state.prog_sections.keys())
-                                    if k != sec_idx
-                                )
-                                sec_title = current_sec.get("title", "")
-                                with st.spinner(f"⚡ Generating '{sec_title}'..."):
-                                    result = call_generate_section(
-                                        department=selected_department,
-                                        document_type=selected_document,
-                                        section=current_sec,
-                                        questions_and_answers=sec_qa,
-                                        doc_memory=doc_memory,
-                                    )
-                                if result and result.get("section_text"):
-                                    st.session_state.prog_sections[sec_idx] = result["section_text"]
-                                    st.rerun()
-                                else:
-                                    st.error("❌ Section generation failed.")
+                if not _all_answered:
+                    _btn_label = f"🔒 Answer all questions first ({_remaining} remaining)"
+                elif _page_done:
+                    _btn_label = f"✅ Regenerate: {_page_label}"
                 else:
-                    gen_sec_btn = False
+                    _btn_label = f"⚡ Generate: {_page_label}"
 
-                # On the last page, also show Finalize to stitch everything together
+                gen_sec_btn = st.button(
+                    _btn_label,
+                    disabled=(not _all_answered) or st.session_state.prog_generating,
+                    use_container_width=True,
+                    type="primary",
+                )
+                if gen_sec_btn and _all_answered:
+                    for _cat in _page_cats:
+                        _cat_lower = _cat.strip().lower()
+                        _subsec = _cat_to_subsection.get(_cat_lower, {"title": _cat, "type": "text"})
+                        _cat_qa = get_subsection_qa(_cat)
+                        if not _cat_qa:
+                            continue
+                        _section_for_api = {
+                            "title": raw_schema_section.get("title", "Document Overview") if raw_schema_section else "Document Overview",
+                            "subsections": [_subsec],
+                        }
+                        _doc_memory = "\n\n".join(
+                            st.session_state.prog_sections[k]
+                            for k in _ordered_categories
+                            if k in st.session_state.prog_sections and k != _cat
+                        )
+                        with st.spinner(f"⚡ Generating '{_cat}'..."):
+                            _result = call_generate_section(
+                                department=selected_department,
+                                document_type=selected_document,
+                                section=_section_for_api,
+                                questions_and_answers=_cat_qa,
+                                doc_memory=_doc_memory,
+                            )
+                        if _result and _result.get("section_text"):
+                            st.session_state.prog_sections[_cat] = _result["section_text"]
+                    st.rerun()
+
+                # On last page also show Finalize
                 if page == total_pages - 1:
                     generate_button_clicked = st.button(
-                        "📄 Finalize Document",
+                        "📄 Finalize Document" if _all_answered else f"🔒 Finalize ({_remaining} questions remaining)",
+                        disabled=not _all_answered,
                         use_container_width=True,
                     )
+
 
         # ══════════════════════════════════════════════════════
         # Handle single-shot generate OR progressive finalize
@@ -1011,31 +1070,40 @@ with col_questions:
 
             else:
                 # ═══ PROGRESSIVE FINALIZE ═══
-                # Generate any remaining schema sections not yet generated
-                all_qa = collect_all_answered_qa()
-                for s_idx, sec in enumerate(schema_sections):
-                    if s_idx in st.session_state.prog_sections:
-                        continue   # already generated
-                    doc_memory = "\n\n".join(
+                # Generate any category not yet done, then stitch in order
+                for _cat in _ordered_categories:
+                    if _cat in st.session_state.prog_sections:
+                        continue
+                    _cat_lower = _cat.strip().lower()
+                    _subsec = _cat_to_subsection.get(_cat_lower, {"title": _cat, "type": "text"})
+                    _cat_qa = get_subsection_qa(_cat)
+                    if not _cat_qa:
+                        continue
+                    _section_for_api = {
+                        "title": raw_schema_section.get("title", "Document Overview") if raw_schema_section else "Document Overview",
+                        "subsections": [_subsec],
+                    }
+                    _doc_memory = "\n\n".join(
                         st.session_state.prog_sections[k]
-                        for k in sorted(st.session_state.prog_sections.keys())
+                        for k in _ordered_categories
+                        if k in st.session_state.prog_sections and k != _cat
                     )
-                    sec_title = sec.get("title", f"Section {s_idx + 1}")
-                    with st.spinner(f"⚡ Generating '{sec_title}'..."):
+                    with st.spinner(f"⚡ Generating '{_cat}'..."):
                         result = call_generate_section(
                             department=selected_department,
                             document_type=selected_document,
-                            section=sec,
-                            questions_and_answers=all_qa,
-                            doc_memory=doc_memory,
+                            section=_section_for_api,
+                            questions_and_answers=_cat_qa,
+                            doc_memory=_doc_memory,
                         )
                     if result and result.get("section_text"):
-                        st.session_state.prog_sections[s_idx] = result["section_text"]
+                        st.session_state.prog_sections[_cat] = result["section_text"]
 
-                # Stitch all sections together
+                # Stitch in document order
                 full_doc = "\n\n".join(
                     st.session_state.prog_sections[k]
-                    for k in sorted(st.session_state.prog_sections.keys())
+                    for k in _ordered_categories
+                    if k in st.session_state.prog_sections
                 )
                 st.session_state.markdown_doc = full_doc
                 st.success("🎉 Document finalized! View it in the preview panel →")
@@ -1073,7 +1141,7 @@ with col_editor:
 
     if st.session_state.prog_mode and st.session_state.prog_sections:
         # Show each generated section with status
-        for sec_idx in sorted(st.session_state.prog_sections.keys()):
+        for sec_idx in [k for k in _ordered_categories if k in st.session_state.prog_sections]:
             sec_text = st.session_state.prog_sections[sec_idx]
             # Extract title from the generated markdown (first ## heading)
             first_line = sec_text.strip().split("\n")[0] if sec_text else ""
@@ -1085,7 +1153,7 @@ with col_editor:
         # Show a combined preview
         full_preview = "\n\n".join(
             st.session_state.prog_sections[k]
-            for k in sorted(st.session_state.prog_sections.keys())
+            for k in _ordered_categories if k in st.session_state.prog_sections
         )
         st.session_state.markdown_doc = st.text_area(
             "Combined Preview",

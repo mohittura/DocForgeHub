@@ -1129,8 +1129,8 @@ Generate ONLY the content for this ONE section. Do not generate any other sectio
 - Be THOROUGH and DETAILED — each section should be comprehensive and production-ready.
 - For type "text": write 3-6 substantial paragraphs of professional prose. Be detailed.
 - For type "table": output a real Markdown table with the exact columns specified and at least 5-8 realistic data rows.
-- If no answer is available, infer reasonable content and mark with "*(Recommended based on industry best practices)*".
-- Use the Q&A answers to inform content — even answers from other sections provide useful context.
+- ❌ Do NOT generate content for subsections that have no answer provided. Skip them entirely.
+- ✅ Use ONLY the Q&A answers below to generate content. Do not invent information beyond what is provided.
 - ❌ No placeholders like [Company Name], [TBD], [Insert here]
 - ❌ No filler like "This section covers..."
 - Start with the section heading: ## {section_title}
@@ -1139,11 +1139,17 @@ Generate ONLY the content for this ONE section. Do not generate any other sectio
 {qa_text}
 """
 
+    # Count answered questions to reinforce scope in human message
+    answered_count = sum(1 for qa in questions_and_answers if qa.get("answer", "").strip())
+
     messages = [
         SystemMessage(content=system_prompt),
         HumanMessage(content=(
             f"Generate the '{section_title}' section now. "
-            f"Output ONLY the heading and content for this section — nothing else."
+            f"You have {answered_count} answered question(s). "
+            f"Write ONLY the subsections covered by those answers. "
+            f"Do NOT generate content for any unanswered subsections. "
+            f"Output ONLY the heading and the answered content — nothing else."
         )),
     ]
 

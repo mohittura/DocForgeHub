@@ -7,7 +7,7 @@ from notion_client import Client
 from typing import List, Dict, Any, Optional
 from pydantic import BaseModel
 from datetime import datetime
-from agent.agent_graph import run_agent, analyze_gaps_only
+from agent.agent_graph import run_agent, analyze_gaps_only, generate_single_section
 
 
 @asynccontextmanager #defining the db lifespan in the project
@@ -408,3 +408,32 @@ async def generate_document(request: GenerateDocumentRequest):
         "quality_suggestions": agent_result.get("quality_suggestions", []),
         "retry_count": agent_result.get("retry_count", 0),
     }
+
+
+# ═══════════════════════════════════════════════════════════════
+#  Progressive: Generate a single section
+# ═══════════════════════════════════════════════════════════════
+
+class GenerateSectionRequest(BaseModel):
+    department: str
+    document_type: str
+    section: dict
+    questions_and_answers: list
+    doc_memory: str = ""
+
+
+@app.post("/generate-section")
+async def generate_section_endpoint(request: GenerateSectionRequest):
+    """Generate ONE section with memory of previous sections."""
+    try:
+        section_text = await generate_single_section(
+            department=request.department,
+            document_type=request.document_type,
+            section=request.section,
+            questions_and_answers=request.questions_and_answers,
+            doc_memory=request.doc_memory,
+        )
+    except Exception as err:
+        raise HTTPException(status_code=500, detail=f"Section generation error: {err}")
+
+    return {"section_text": section_text}

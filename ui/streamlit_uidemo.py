@@ -575,88 +575,75 @@ page_questions = all_questions[page_start:page_end]
 
 def get_sec_idx_for_page(page_idx: int, sections: list) -> tuple:
     """
-    Return (sec_idx, section_dict) for the schema section that the
-    questions on this page belong to.
+    Map a page index to a schema section index.
 
-    Strategy: look at the categories of the questions on this page and
-    find which schema section they map to. Falls back to a proportional
-    index if no category match is found.
+    Questions in MongoDB are ordered by (category_order, question_order).
+    Schema sections are ordered the same way. So we do a straightforward
+    proportional mapping: spread pages evenly across sections.
+
+    e.g. 27 questions / 5 per page = 6 pages, 6 sections → page N → section N
+         27 questions / 5 per page = 6 pages, 3 sections → pages 0-1→sec 0, 2-3→sec 1, 4-5→sec 2
     """
     if not sections:
-        return page_idx, None
-
-    p_start = page_idx * PAGE_SIZE
-    p_end = min(p_start + PAGE_SIZE, total_questions)
-    page_qs = all_questions[p_start:p_end]
-
-    # Collect categories from this page's questions
-    cats = [q.get("category", "").lower().strip() for _, q, _, _ in page_qs]
-
-    section_titles = [s.get("title", "").lower().strip() for s in sections]
-
-    # Build subsection → section index map
-    sub_to_sec = {}
-    for s_idx, sec in enumerate(sections):
-        for sub in sec.get("subsections", []):
-            sub_title = sub.get("title", "").lower().strip()
-            if sub_title:
-                sub_to_sec[sub_title] = s_idx
-
-    # Score each section by how many page categories match it
-    scores = [0] * len(sections)
-    for cat in cats:
-        if not cat:
-            continue
-        for s_idx, sec_title in enumerate(section_titles):
-            if cat == sec_title or cat in sec_title or sec_title in cat:
-                scores[s_idx] += 1
-                break
-        if cat in sub_to_sec:
-            scores[sub_to_sec[cat]] += 1
-
-    best = scores.index(max(scores)) if max(scores) > 0 else None
-
-    if best is not None:
-        return best, sections[best]
-
-    # Fallback: proportional mapping (spread pages evenly across sections)
-    proportional = min(
+        return 0, None
+    sec_idx = min(
         int(page_idx / max(total_pages, 1) * len(sections)),
         len(sections) - 1,
     )
-    return proportional, sections[proportional]
+    return sec_idx, sections[sec_idx]
 
 
 def get_section_qa_for_sec_idx(sec_idx: int, sections: list) -> list:
     """
-    Return ALL answered Q&A whose category matches sections[sec_idx].
-    Used when generating a section — collects every answer for that
-    section regardless of which page it sits on.
+    Return ALL answered Q&A for sections[sec_idx].
+
+    Since question categories match subsection titles (not top-level section
+    titles), we match against the subsection titles of the target section.
+    As a fallback we also include questions whose category matches the
+    section title itself.
+
+    If NO questions match by category (e.g. categories aren't set), we fall
+    back to the proportional page range so the user always gets output.
     """
     if not sections or sec_idx >= len(sections):
         return []
 
     sec = sections[sec_idx]
     sec_title = sec.get("title", "").lower().strip()
+    # subsection titles are what question categories typically match
     sub_titles = {sub.get("title", "").lower().strip()
                   for sub in sec.get("subsections", [])}
 
-    qa_list = []
+    matched = []
     for wk, q, sd, ig in all_questions:
         cat = q.get("category", "").lower().strip()
         answer = sd.get(wk, "")
         if not answer.strip():
             continue
-        # Match if category aligns with this section or one of its subsections
-        if (cat == sec_title or cat in sec_title or sec_title in cat
-                or cat in sub_titles):
-            qa_list.append({
+        if cat in sub_titles or cat == sec_title or sec_title in cat:
+            matched.append({
                 "question": q.get("question", ""),
                 "answer": answer,
                 "category": q.get("category", ""),
                 "answer_type": q.get("answer_type", "text"),
             })
-    return qa_list
+
+    # Fallback: if category matching found nothing, use proportional page slice
+    if not matched:
+        pages_per_sec = max(1, total_pages // len(sections))
+        p_start = sec_idx * pages_per_sec * PAGE_SIZE
+        p_end = min(p_start + pages_per_sec * PAGE_SIZE, total_questions)
+        for wk, q, sd, ig in all_questions[p_start:p_end]:
+            answer = sd.get(wk, "")
+            if answer.strip():
+                matched.append({
+                    "question": q.get("question", ""),
+                    "answer": answer,
+                    "category": q.get("category", ""),
+                    "answer_type": q.get("answer_type", "text"),
+                })
+
+    return matched
 
 
 def collect_all_answered_qa():
@@ -886,24 +873,24 @@ with col_questions:
                 )
             else:
                 # ── Progressive mode buttons ──
-                if page == total_pages - 1:
-                    generate_button_clicked = st.button(
-                        "📄 Finalize Document",
-                        use_container_width=True,
-                        type="primary",
-                    )
-                else:
-                    generate_button_clicked = False
+                generate_button_clicked = False
+
+                # Always show the Generate Section button on every page (including last)
+                if schema_sections:
+                    _sec_idx_btn, _current_sec_btn = get_sec_idx_for_page(page, schema_sections)
+                    _sec_already_done = _sec_idx_btn in st.session_state.prog_sections
+                    _sec_name = _current_sec_btn.get("title", f"Section {_sec_idx_btn + 1}") if _current_sec_btn else f"Section {_sec_idx_btn + 1}"
+                    _btn_label = f"✅ Regenerate: {_sec_name}" if _sec_already_done else f"⚡ Generate: {_sec_name}"
+
                     gen_sec_btn = st.button(
-                        "⚡ Generate This Section",
+                        _btn_label,
                         disabled=st.session_state.prog_generating,
                         use_container_width=True,
                         type="primary",
                     )
-                    if gen_sec_btn and schema_sections:
-                        sec_idx, current_sec = get_sec_idx_for_page(page, schema_sections)
+                    if gen_sec_btn:
+                        sec_idx, current_sec = _sec_idx_btn, _current_sec_btn
                         if current_sec:
-                            # Collect ALL answers for this section across all pages
                             sec_qa = get_section_qa_for_sec_idx(sec_idx, schema_sections)
                             if not sec_qa:
                                 st.warning("⚠️ Answer at least one question for this section before generating.")
@@ -911,6 +898,7 @@ with col_questions:
                                 doc_memory = "\n\n".join(
                                     st.session_state.prog_sections[k]
                                     for k in sorted(st.session_state.prog_sections.keys())
+                                    if k != sec_idx
                                 )
                                 sec_title = current_sec.get("title", "")
                                 with st.spinner(f"⚡ Generating '{sec_title}'..."):
@@ -922,11 +910,19 @@ with col_questions:
                                         doc_memory=doc_memory,
                                     )
                                 if result and result.get("section_text"):
-                                    # Store by sec_idx — preserves all other sections
                                     st.session_state.prog_sections[sec_idx] = result["section_text"]
                                     st.rerun()
                                 else:
                                     st.error("❌ Section generation failed.")
+                else:
+                    gen_sec_btn = False
+
+                # On the last page, also show Finalize to stitch everything together
+                if page == total_pages - 1:
+                    generate_button_clicked = st.button(
+                        "📄 Finalize Document",
+                        use_container_width=True,
+                    )
 
         # ══════════════════════════════════════════════════════
         # Handle single-shot generate OR progressive finalize

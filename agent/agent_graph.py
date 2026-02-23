@@ -1043,3 +1043,115 @@ async def analyze_gaps_only(
 
     result = await asyncio.to_thread(analyze_schema_gaps, state)
     return result.get("gap_questions", [])
+
+
+# ═══════════════════════════════════════════════════════════════
+#  Progressive: generate a single section with memory
+# ═══════════════════════════════════════════════════════════════
+
+async def generate_single_section(
+    department: str,
+    document_type: str,
+    section: dict,
+    questions_and_answers: list[dict],
+    doc_memory: str = "",
+) -> str:
+    """
+    Generate ONE section of a document using the existing LLM.
+
+    Args:
+        department:             e.g. "Product Management"
+        document_type:          e.g. "Employee Handbook"
+        section:                schema section dict {title, subsections, type, columns}
+        questions_and_answers:  Q&A relevant to this section
+        doc_memory:             text of previously generated sections (for consistency)
+
+    Returns:
+        Generated Markdown text for this single section.
+    """
+    logger.info(
+        "📝 generate_single_section — section=%s",
+        section.get("title", "Untitled"),
+    )
+
+    qa_text = format_questions_and_answers_for_prompt(questions_and_answers)
+
+    section_title = section.get("title", "Untitled Section")
+    section_lines = [f"## {section_title}"]
+
+    subsections = section.get("subsections", [])
+    if subsections:
+        for sub in subsections:
+            sub_title = sub.get("title", "")
+            sub_type = sub.get("type", "text")
+            columns = sub.get("columns", [])
+            if sub_type == "table" and columns:
+                section_lines.append(
+                    f"  - {sub_title} ⚠️ TABLE — columns: | {' | '.join(columns)} |"
+                )
+                section_lines.append(
+                    f"    (Output a real Markdown table with these columns and realistic rows)"
+                )
+            else:
+                section_lines.append(f"  - {sub_title} (type: {sub_type})")
+    elif section.get("type") == "table":
+        columns = section.get("columns", [])
+        if columns:
+            section_lines.append(
+                f"⚠️ TABLE FORMAT — columns: | {' | '.join(columns)} |"
+            )
+
+    section_structure = "\n".join(section_lines)
+
+    memory_block = ""
+    if doc_memory:
+        memory_block = (
+            "\n\n## PREVIOUSLY GENERATED SECTIONS (for consistency — do NOT repeat this content)\n"
+            "Use the same terminology, tone, numbers, and decisions established below.\n\n"
+            f"{doc_memory}\n\n"
+            "─────────────────────────────────────────────\n"
+        )
+
+    system_prompt = f"""\
+You are a **senior SaaS document specialist** writing ONE section of a {document_type} \
+for the {department} department.
+
+## YOUR TASK
+Generate ONLY the content for this ONE section. Do not generate any other section.
+
+## SECTION STRUCTURE
+{section_structure}
+
+## WRITING RULES
+- Write professional, industry-grade prose — not a template fill-in.
+- DO NOT copy answers verbatim — elevate them into polished content.
+- Expand brief answers with relevant context, best practices, and implementation details.
+- Be THOROUGH and DETAILED — each section should be comprehensive and production-ready.
+- For type "text": write 3-6 substantial paragraphs of professional prose. Be detailed.
+- For type "table": output a real Markdown table with the exact columns specified and at least 5-8 realistic data rows.
+- If no answer is available, infer reasonable content and mark with "*(Recommended based on industry best practices)*".
+- Use the Q&A answers to inform content — even answers from other sections provide useful context.
+- ❌ No placeholders like [Company Name], [TBD], [Insert here]
+- ❌ No filler like "This section covers..."
+- Start with the section heading: ## {section_title}
+{memory_block}
+## QUESTIONS & ANSWERS FOR THIS SECTION
+{qa_text}
+"""
+
+    messages = [
+        SystemMessage(content=system_prompt),
+        HumanMessage(content=(
+            f"Generate the '{section_title}' section now. "
+            f"Output ONLY the heading and content for this section — nothing else."
+        )),
+    ]
+
+    response = await asyncio.to_thread(llm.invoke, messages)
+    section_text = response.content
+
+    logger.info(
+        "   ✅ Section '%s' generated — %d characters",
+        section_title, len(section_text),
+    )
+    return section_text

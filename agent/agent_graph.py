@@ -1063,12 +1063,6 @@ async def generate_single_section(
     for this section (filtered by the caller). The section schema is trimmed
     here to only include subsections whose titles match the answered Q&A
     categories — so the LLM physically cannot see subsections it has no data for.
-    Generate ONE section of a document.
-
-    IMPORTANT: `questions_and_answers` must contain ONLY the answered Q&A
-    for this section (filtered by the caller). The section schema is trimmed
-    here to only include subsections whose titles match the answered Q&A
-    categories — so the LLM physically cannot see subsections it has no data for.
     """
     logger.info(
         "📝 generate_single_section — section=%s, qa_count=%d",
@@ -1081,16 +1075,16 @@ async def generate_single_section(
     # ── Trim subsections to only those covered by answered Q&A ──────────────
     # question `category` in MongoDB == subsection `title` in schema.
     answered_categories = {
-        qa.get("category", "").strip().lower()
-        for qa in questions_and_answers
-        if qa.get("answer", "").strip()
+        qa_item.get("category", "").strip().lower()
+        for qa_item in questions_and_answers
+        if qa_item.get("answer", "").strip()
     }
 
     all_subsections = section.get("subsections", [])
     if all_subsections and answered_categories:
         covered_subsections = [
-            sub for sub in all_subsections
-            if sub.get("title", "").strip().lower() in answered_categories
+            subsection_item for subsection_item in all_subsections
+            if subsection_item.get("title", "").strip().lower() in answered_categories
         ]
         # If exact matching found nothing, keep all subsections (table-only or
         # schema where categories don't align with subsection titles exactly)
@@ -1101,10 +1095,10 @@ async def generate_single_section(
     # ── Build section structure string from trimmed subsections ─────────────
     section_lines = [f"## {section_title}"]
     if subsections_to_render:
-        for sub in subsections_to_render:
-            sub_title = sub.get("title", "")
-            sub_type = sub.get("type", "text")
-            columns = sub.get("columns", [])
+        for subsection_item in subsections_to_render:
+            sub_title = subsection_item.get("title", "")
+            sub_type = subsection_item.get("type", "text")
+            columns = subsection_item.get("columns", [])
             if sub_type == "table" and columns:
                 section_lines.append(
                     f"  - {sub_title} ⚠️ TABLE — columns: | {' | '.join(columns)} |"
@@ -1127,7 +1121,7 @@ async def generate_single_section(
     )
 
     # ── Only pass Q&A that have actual answers ───────────────────────────────
-    answered_qa = [qa for qa in questions_and_answers if qa.get("answer", "").strip()]
+    answered_qa = [qa_item for qa_item in questions_and_answers if qa_item.get("answer", "").strip()]
     qa_text = format_questions_and_answers_for_prompt(answered_qa)
 
     memory_block = ""

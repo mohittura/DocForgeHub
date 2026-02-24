@@ -347,7 +347,7 @@ if "q_page" not in st.session_state:
 if "prog_sections" not in st.session_state:
     st.session_state.prog_sections = {}       # {category_name: generated_text}
 # Purge stale integer keys left from previous sessions
-if any(isinstance(k, int) for k in st.session_state.prog_sections):
+if any(isinstance(_category_key, int) for _category_key in st.session_state.prog_sections):
     st.session_state.prog_sections = {}
 if "prog_generating" not in st.session_state:
     st.session_state.prog_generating = False
@@ -560,8 +560,71 @@ for _idx, q in enumerate(questions):
     all_questions.append((f"answer_{_idx}", q, st.session_state.answers, True))
 
 # Session gap questions (freshly generated, stored in gap_answers)
-for i, gq in enumerate(st.session_state.gap_questions):
-    all_questions.append((f"gap_answer_{i}", gq, st.session_state.gap_answers, True))
+for _idx, _gap_question in enumerate(st.session_state.gap_questions):
+    all_questions.append((f"gap_answer_{_idx}", _gap_question, st.session_state.gap_answers, True))
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Build category helpers — always defined regardless of prog_mode or schema
+# _ordered_categories : unique categories in question order
+# _cat_to_subsection  : _category_lower → subsection dict (empty if no schema)
+# ─────────────────────────────────────────────────────────────────────────────
+_ordered_categories: list = []
+_cat_to_subsection: dict = {}
+_seen_cats: set = set()
+_sub_title_lower_map = {
+    _subsection.get("title", "").strip().lower(): _subsection
+    for _subsection in prog_subsections
+} if prog_subsections else {}
+
+for _, _question_dict, _, _ in all_questions:
+    _category = _question_dict.get("category", "").strip()
+    _category_lower = _category.lower()
+    if _category and _category_lower not in _seen_cats:
+        _seen_cats.add(_category_lower)
+        _ordered_categories.append(_category)
+    if _category_lower in _sub_title_lower_map:
+        _cat_to_subsection[_category_lower] = _sub_title_lower_map[_category_lower]
+
+del _seen_cats, _sub_title_lower_map  # cleanup temps
+
+
+def get_page_categories(page_idx: int) -> list:
+    """Unique categories for the 5 questions on page_idx, in order."""
+    _page_size = 5  # PAGE_SIZE defined below; same value
+    p_start = page_idx * _page_size
+    p_end = min(p_start + _page_size, len(all_questions))
+    seen, cats = set(), []
+    for _, _question_dict, _, _ in all_questions[p_start:p_end]:
+        cat = _question_dict.get("category", "").strip()
+        if cat and cat not in seen:
+            seen.add(cat)
+            cats.append(cat)
+    return cats
+
+
+def get_subsection_qa(category: str) -> list:
+    """All answered Q&A for a specific category."""
+    _category_lower = category.strip().lower()
+    return [
+        {
+            "question": _question_dict.get("question", ""),
+            "answer": _state_dict.get(_widget_key, ""),
+            "category": _question_dict.get("category", ""),
+            "answer_type": _question_dict.get("answer_type", "text"),
+        }
+        for _widget_key, _question_dict, _state_dict, _is_gap_flag in all_questions
+        if _question_dict.get("category", "").strip().lower() == _category_lower and _state_dict.get(_widget_key, "").strip()
+    ]
+
+
+def prog_sections_ordered() -> list:
+    """Return (category, text) pairs in document order for all generated sections."""
+    return [
+        (cat, st.session_state.prog_sections[cat])
+        for cat in _ordered_categories
+        if cat in st.session_state.prog_sections
+    ]
+
 
 # ═══════════════════════════════════════════════════════════════
 #  Pagination — always 5 questions per page

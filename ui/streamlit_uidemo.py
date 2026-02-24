@@ -144,7 +144,7 @@ def get_notionpage_urls_from_fastapi():
 
 
 # ═══════════════════════════════════════════════════════════════
-#  NEW: Gap Questions + Save Questions API helpers
+#  Gap Questions + Save Questions API helpers
 # ═══════════════════════════════════════════════════════════════
 
 def call_gap_questions_endpoint(
@@ -176,7 +176,7 @@ def call_gap_questions_endpoint(
         response_received.raise_for_status()
         result = response_received.json()
         logger.info(
-            "   → gap analysis done — source=%s, count=%d",
+            "   -> gap analysis done — source=%s, count=%d",
             result.get("source"),
             result.get("count", 0),
         )
@@ -213,7 +213,7 @@ def call_save_questions_endpoint(
         )
         response_received.raise_for_status()
         result = response_received.json()
-        logger.info("   → saved=%d, updated=%d", result.get("saved", 0), result.get("updated", 0))
+        logger.info("   -> saved=%d, updated=%d", result.get("saved", 0), result.get("updated", 0))
         return result
     except Exception as error:
         logger.error("Save questions failed: %s", error)
@@ -231,7 +231,6 @@ def call_generate_endpoint(
 ):
     """
     POST /generate — Send answers to the agent and get a generated document back.
-
     Returns the full response dict or None on failure.
     """
     logger.info(
@@ -240,7 +239,6 @@ def call_generate_endpoint(
         document_type,
         len(questions_and_answers),
     )
-
     try:
         response_received = requests.post(
             f"{FASTAPI_URL}/generate",
@@ -255,7 +253,7 @@ def call_generate_endpoint(
         response_received.raise_for_status()
         result = response_received.json()
         logger.info(
-            "   → generation complete — status=%s, length=%d chars",
+            "   -> generation complete — status=%s, length=%d chars",
             result.get("status"),
             len(result.get("generated_document", "")),
         )
@@ -275,7 +273,7 @@ def call_generate_section(
 ):
     """Call POST /generate-section to generate one section with memory."""
     try:
-        resp = requests.post(
+        response_received = requests.post(
             f"{FASTAPI_URL}/generate-section",
             json={
                 "department": department,
@@ -286,13 +284,12 @@ def call_generate_section(
             },
             timeout=90,
         )
-        resp.raise_for_status()
-        return resp.json()
+        response_received.raise_for_status()
+        return response_received.json()
     except Exception as error:
         logger.error("Section generation failed: %s", error)
         st.error(f"Section generation failed: {error}")
         return None
-
 
 
 # ---------------------------------------------------
@@ -301,11 +298,11 @@ def call_generate_section(
 
 pages = get_notionpage_urls_from_fastapi()
 departments = get_departments_from_fastapi()
-department_names = [_dept_dict["name"] for _dept_dict in departments]
+department_names = [dept_dict["name"] for dept_dict in departments]
 
 
 # -------------------------------------------------
-# Session State (this will get updated based on the documents which are published into notion as well as we will cache those documents so that there is no need to call the document again and again and waste api limits)
+# Session State
 # -------------------------------------------------
 if "history" not in st.session_state:
     st.session_state.history = pages or []
@@ -334,7 +331,7 @@ if "is_saving" not in st.session_state:
 if "gap_source" not in st.session_state:
     st.session_state.gap_source = ""
 
-# Track which document_type the gap questions belong to — so we clear
+# Track which document_type the gap questions belong to so we clear
 # them automatically when the user switches documents.
 if "gap_doc_type" not in st.session_state:
     st.session_state.gap_doc_type = ""
@@ -347,7 +344,7 @@ if "q_page" not in st.session_state:
 if "prog_sections" not in st.session_state:
     st.session_state.prog_sections = {}       # {category_name: generated_text}
 # Purge stale integer keys left from previous sessions
-if any(isinstance(_category_key, int) for _category_key in st.session_state.prog_sections):
+if any(isinstance(category_key, int) for category_key in st.session_state.prog_sections):
     st.session_state.prog_sections = {}
 if "prog_generating" not in st.session_state:
     st.session_state.prog_generating = False
@@ -361,9 +358,6 @@ with st.sidebar:
     st.write("<h1>📄</br>DocForge Hub</h1>", unsafe_allow_html=True)
 
     st.subheader("Department")
-    # ====================================================
-    # This will also be generated based on the values stored in mongodb and will load things realtime
-    # ====================================================
     selected_department = st.selectbox(
         "Department",
         department_names or ["(no departments found)"],
@@ -371,18 +365,18 @@ with st.sidebar:
     )
 
     st.subheader("Document")
-    valid_dept = selected_department and selected_department != "(no departments found)"
-    doc_types = get_document_types_from_fastapi(selected_department) if valid_dept else []
-    document_names = [_doc_dict["document_type"] for _doc_dict in doc_types] # here document_type is the fastapi endpoint parameter
+    is_valid_department = selected_department and selected_department != "(no departments found)"
+    doc_types = get_document_types_from_fastapi(selected_department) if is_valid_department else []
+    document_names = [doc_dict["document_type"] for doc_dict in doc_types]
 
-    # Build a lookup from document_type → document_name (needed for /generate)
+    # Build a lookup from document_type -> document_name (needed for /generate)
     document_name_lookup = {
-        _doc_dict["document_type"]: _doc_dict.get("document_name", _doc_dict["document_type"])
-        for _doc_dict in doc_types
+        doc_dict["document_type"]: doc_dict.get("document_name", doc_dict["document_type"])
+        for doc_dict in doc_types
     }
 
     # Full department object needed for save-questions
-    department_obj_lookup = {_dept_dict["name"]: _dept_dict for _dept_dict in departments}
+    department_obj_lookup = {dept_dict["name"]: dept_dict for dept_dict in departments}
 
     selected_document = st.selectbox(
         "Document",
@@ -411,8 +405,12 @@ with st.sidebar:
 
     history_container = st.container(height=270)
     with history_container:
-        for _history_item in st.session_state.history:
-            st.markdown(f"<a href='{_history_item.get('url','#')}' style='text-decoration: none; color: beige;'>{_history_item.get('title','Untitled')}</a>", unsafe_allow_html=True)
+        for history_item in st.session_state.history:
+            st.markdown(
+                f"<a href='{history_item.get('url','#')}' style='text-decoration: none; color: beige;'>"
+                f"{history_item.get('title','Untitled')}</a>",
+                unsafe_allow_html=True,
+            )
 
 
 # =================================================
@@ -422,91 +420,93 @@ col_questions, col_editor = st.columns([2, 3])
 
 
 ########################################
-# getting questions as per departments
+# Load questions for the selected document
 ########################################
 
-valid_document = selected_document and selected_document != "(select a department first)"
-questions = get_questions_from_fastapi(selected_document) if valid_document else []
+is_valid_document = selected_document and selected_document != "(select a department first)"
+questions = get_questions_from_fastapi(selected_document) if is_valid_document else []
 
-for _idx, _question_data in enumerate(questions): # the _question_data variable is used for internal purpose
-    key = f"answer_{_idx}"
-    if key not in st.session_state.answers:
-        st.session_state.answers[key] = _question_data.get("answer", "") or ""
+for question_idx, question_data in enumerate(questions):
+    answer_key = f"answer_{question_idx}"
+    if answer_key not in st.session_state.answers:
+        st.session_state.answers[answer_key] = question_data.get("answer", "") or ""
 
 # Seed answer slots for gap questions (if any already loaded)
-for _idx, _gap_question in enumerate(st.session_state.gap_questions):
-    key = f"gap_answer_{_idx}"
-    if key not in st.session_state.gap_answers:
-        st.session_state.gap_answers[key] = _gap_question.get("answer", "") or ""
+for gap_idx, gap_question in enumerate(st.session_state.gap_questions):
+    gap_answer_key = f"gap_answer_{gap_idx}"
+    if gap_answer_key not in st.session_state.gap_answers:
+        st.session_state.gap_answers[gap_answer_key] = gap_question.get("answer", "") or ""
 
 
 # ═══════════════════════════════════════════════════════════════
-#  NEW: Helper to render a single question widget
+#  Helper to render a single question widget
 # ═══════════════════════════════════════════════════════════════
 
 def render_question_widget(
-    ques: dict,
+    question: dict,
     widget_key: str,
-    state_dict: dict,
+    answer_state: dict,
     is_gap: bool = False,
 ) -> None:
     """
     Render one question as the correct Streamlit input widget.
-    Writes the answer back into `state_dict[widget_key]`.
+    Writes the answer back into `answer_state[widget_key]`.
     is_gap=True adds a subtle AI badge next to the label.
     """
-    label = ques.get("question", f"Question")
-    answer_type = ques.get("answer_type", "text")
+    question_label = question.get("question", "Question")
+    answer_type = question.get("answer_type", "text")
 
-    # We can't put HTML in widget labels, so show the badge separately
+    # We can't put HTML in widget labels, so show the badge as a separate markdown element
     if is_gap:
         st.markdown(
             f"<span style='font-size:0.9rem;font-weight:600;color:#eee;'>"
-            f"{label} <span class='gap-badge'>AI</span></span>",
+            f"{question_label} <span class='gap-badge'>AI</span></span>",
             unsafe_allow_html=True,
         )
-        label_for_widget = "\u200b"   # zero-width space → hides default label
+        label_for_widget = "\u200b"   # zero-width space -> hides the default widget label
     else:
-        label_for_widget = label
+        label_for_widget = question_label
+
+    streamlit_widget_key = f"widget_{widget_key}"
 
     if answer_type == "structured_list":
-        state_dict[widget_key] = st.text_area(
+        answer_state[widget_key] = st.text_area(
             label_for_widget,
-            value=state_dict.get(widget_key, ""),
+            value=answer_state.get(widget_key, ""),
             help="Enter items separated by newlines",
-            key=f"widget_{widget_key}",
+            key=streamlit_widget_key,
         )
     elif answer_type == "select":
-        options = ques.get("options", [])
-        current = state_dict.get(widget_key, "")
-        idx = options.index(current) if current in options else 0
-        state_dict[widget_key] = st.selectbox(
+        select_options = question.get("options", [])
+        current_value = answer_state.get(widget_key, "")
+        current_index = select_options.index(current_value) if current_value in select_options else 0
+        answer_state[widget_key] = st.selectbox(
             label_for_widget,
-            options=options,
-            index=idx,
-            key=f"widget_{widget_key}",
+            options=select_options,
+            index=current_index,
+            key=streamlit_widget_key,
         )
     elif answer_type == "multi_select":
-        options = ques.get("options", [])
-        current = state_dict.get(widget_key, "")
-        default_values = (
-            [v.strip() for v in current.split(",") if v.strip()]
-            if isinstance(current, str) and current
+        multi_options = question.get("options", [])
+        current_value = answer_state.get(widget_key, "")
+        default_selected_items = (
+            [item.strip() for item in current_value.split(",") if item.strip()]
+            if isinstance(current_value, str) and current_value
             else []
         )
-        selected_values = st.multiselect(
+        selected_items = st.multiselect(
             label_for_widget,
-            options=options,
-            default=[v for v in default_values if v in options],
-            key=f"widget_{widget_key}",
+            options=multi_options,
+            default=[item for item in default_selected_items if item in multi_options],
+            key=streamlit_widget_key,
         )
-        state_dict[widget_key] = ", ".join(selected_values)
+        answer_state[widget_key] = ", ".join(selected_items)
     else:
         # Default: plain text area
-        state_dict[widget_key] = st.text_area(
+        answer_state[widget_key] = st.text_area(
             label_for_widget,
-            value=state_dict.get(widget_key, ""),
-            key=f"widget_{widget_key}",
+            value=answer_state.get(widget_key, ""),
+            key=streamlit_widget_key,
         )
 
 
@@ -518,22 +518,22 @@ def render_question_widget(
 
 raw_schema_section = None
 prog_subsections = []
-schema_sections = []   # compat alias
+schema_sections = []
 
-if valid_document and st.session_state.prog_mode:
+if is_valid_document and st.session_state.prog_mode:
     document_name_for_schema = document_name_lookup.get(selected_document, selected_document)
     try:
-        required_section_response = requests.get(
+        schema_response = requests.get(
             f"{FASTAPI_URL}/required-section",
             params={"department": selected_department, "document_name": document_name_for_schema},
             timeout=15,
         )
-        required_section_response.raise_for_status()
-        required_section_data = required_section_response.json()
-        required_section_data = required_section_data.get("required_section", required_section_data)
-        _all_schema_sections = required_section_data.get("sections", [])
-        if _all_schema_sections:
-            raw_schema_section = _all_schema_sections[0]
+        schema_response.raise_for_status()
+        schema_response_data = schema_response.json()
+        schema_response_data = schema_response_data.get("required_section", schema_response_data)
+        all_schema_sections = schema_response_data.get("sections", [])
+        if all_schema_sections:
+            raw_schema_section = all_schema_sections[0]
             prog_subsections = raw_schema_section.get("subsections", [])
             schema_sections = [raw_schema_section]
     except Exception:
@@ -542,87 +542,89 @@ if valid_document and st.session_state.prog_mode:
 
 # ═══════════════════════════════════════════════════════════════
 #  Build a UNIFIED question list: core + mongo gap + session gap
-#  Each entry: (widget_key, question_dict, state_dict, is_gap)
+#  Each entry: (widget_key, question_dict, answer_state, is_gap)
 # ═══════════════════════════════════════════════════════════════
 
 all_questions = []
 
 # Core questions (non-gap from MongoDB)
-for _idx, q in enumerate(questions):
-    if q.get("is_gap_question"):
+for question_idx, question in enumerate(questions):
+    if question.get("is_gap_question"):
         continue
-    all_questions.append((f"answer_{_idx}", q, st.session_state.answers, False))
+    all_questions.append((f"answer_{question_idx}", question, st.session_state.answers, False))
 
 # MongoDB-persisted gap questions (is_gap_question=True in main list)
-for _idx, q in enumerate(questions):
-    if not q.get("is_gap_question"):
+for question_idx, question in enumerate(questions):
+    if not question.get("is_gap_question"):
         continue
-    all_questions.append((f"answer_{_idx}", q, st.session_state.answers, True))
+    all_questions.append((f"answer_{question_idx}", question, st.session_state.answers, True))
 
 # Session gap questions (freshly generated, stored in gap_answers)
-for _idx, _gap_question in enumerate(st.session_state.gap_questions):
-    all_questions.append((f"gap_answer_{_idx}", _gap_question, st.session_state.gap_answers, True))
+for gap_idx, gap_question in enumerate(st.session_state.gap_questions):
+    all_questions.append((f"gap_answer_{gap_idx}", gap_question, st.session_state.gap_answers, True))
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Build category helpers — always defined regardless of prog_mode or schema
-# _ordered_categories : unique categories in question order
-# _cat_to_subsection  : _category_lower → subsection dict (empty if no schema)
+# ordered_categories     : unique categories in question order
+# category_to_subsection : category_name_lower -> subsection dict
 # ─────────────────────────────────────────────────────────────────────────────
-_ordered_categories: list = []
-_cat_to_subsection: dict = {}
-_seen_cats: set = set()
-_sub_title_lower_map = {
-    _subsection.get("title", "").strip().lower(): _subsection
-    for _subsection in prog_subsections
+ordered_categories: list = []
+category_to_subsection: dict = {}
+seen_category_names: set = set()
+subsection_title_lower_map = {
+    subsection.get("title", "").strip().lower(): subsection
+    for subsection in prog_subsections
 } if prog_subsections else {}
 
-for _, _question_dict, _, _ in all_questions:
-    _category = _question_dict.get("category", "").strip()
-    _category_lower = _category.lower()
-    if _category and _category_lower not in _seen_cats:
-        _seen_cats.add(_category_lower)
-        _ordered_categories.append(_category)
-    if _category_lower in _sub_title_lower_map:
-        _cat_to_subsection[_category_lower] = _sub_title_lower_map[_category_lower]
+for _, question_dict, _, _ in all_questions:
+    category_name = question_dict.get("category", "").strip()
+    category_name_lower = category_name.lower()
+    if category_name and category_name_lower not in seen_category_names:
+        seen_category_names.add(category_name_lower)
+        ordered_categories.append(category_name)
+    if category_name_lower in subsection_title_lower_map:
+        category_to_subsection[category_name_lower] = subsection_title_lower_map[category_name_lower]
 
-del _seen_cats, _sub_title_lower_map  # cleanup temps
+del seen_category_names, subsection_title_lower_map  # cleanup temps
 
 
 def get_page_categories(page_idx: int) -> list:
     """Unique categories for the 5 questions on page_idx, in order."""
-    _page_size = 5  # PAGE_SIZE defined below; same value
-    p_start = page_idx * _page_size
-    p_end = min(p_start + _page_size, len(all_questions))
-    seen, cats = set(), []
-    for _, _question_dict, _, _ in all_questions[p_start:p_end]:
-        cat = _question_dict.get("category", "").strip()
-        if cat and cat not in seen:
-            seen.add(cat)
-            cats.append(cat)
-    return cats
+    page_size = 5  # same value as PAGE_SIZE defined below
+    page_range_start = page_idx * page_size
+    page_range_end = min(page_range_start + page_size, len(all_questions))
+    seen_categories = set()
+    page_category_list = []
+    for _, question_dict, _, _ in all_questions[page_range_start:page_range_end]:
+        category_name = question_dict.get("category", "").strip()
+        if category_name and category_name not in seen_categories:
+            seen_categories.add(category_name)
+            page_category_list.append(category_name)
+    return page_category_list
 
 
-def get_subsection_qa(category: str) -> list:
+def get_subsection_qa(category_name: str) -> list:
     """All answered Q&A for a specific category."""
-    _category_lower = category.strip().lower()
+    category_name_lower = category_name.strip().lower()
     return [
         {
-            "question": _question_dict.get("question", ""),
-            "answer": _state_dict.get(_widget_key, ""),
-            "category": _question_dict.get("category", ""),
-            "answer_type": _question_dict.get("answer_type", "text"),
+            "question": question_dict.get("question", ""),
+            "answer": answer_state.get(widget_key, ""),
+            "category": question_dict.get("category", ""),
+            "answer_type": question_dict.get("answer_type", "text"),
         }
-        for _widget_key, _question_dict, _state_dict, _is_gap_flag in all_questions
-        if _question_dict.get("category", "").strip().lower() == _category_lower and _state_dict.get(_widget_key, "").strip()
+        for widget_key, question_dict, answer_state, is_gap_flag in all_questions
+        if question_dict.get("category", "").strip().lower() == category_name_lower
+        and answer_state.get(widget_key, "").strip()
     ]
 
 
 def prog_sections_ordered() -> list:
     """Return (category, text) pairs in document order for all generated sections."""
     return [
-        (cat, st.session_state.prog_sections[cat])
-        for cat in _ordered_categories
-        if cat in st.session_state.prog_sections
+        (category_name, st.session_state.prog_sections[category_name])
+        for category_name in ordered_categories
+        if category_name in st.session_state.prog_sections
     ]
 
 
@@ -634,14 +636,14 @@ PAGE_SIZE = 5
 total_questions = len(all_questions)
 total_pages = max(1, -(-total_questions // PAGE_SIZE))  # ceil division
 
-# Clamp page
+# Clamp page index within valid range
 if st.session_state.q_page >= total_pages:
     st.session_state.q_page = total_pages - 1
 if st.session_state.q_page < 0:
     st.session_state.q_page = 0
 
-page = st.session_state.q_page
-page_start = page * PAGE_SIZE
+current_page = st.session_state.q_page
+page_start = current_page * PAGE_SIZE
 page_end = min(page_start + PAGE_SIZE, total_questions)
 page_questions = all_questions[page_start:page_end]
 
@@ -654,21 +656,21 @@ def get_sec_idx_for_page(page_idx: int, sections: list) -> tuple:
     Schema sections are ordered the same way. So we do a straightforward
     proportional mapping: spread pages evenly across sections.
 
-    e.g. 27 questions / 5 per page = 6 pages, 6 sections → page N → section N
-         27 questions / 5 per page = 6 pages, 3 sections → pages 0-1→sec 0, 2-3→sec 1, 4-5→sec 2
+    e.g. 27 questions / 5 per page = 6 pages, 6 sections -> page N -> section N
+         27 questions / 5 per page = 6 pages, 3 sections -> pages 0-1->sec 0, 2-3->sec 1, 4-5->sec 2
     """
     if not sections:
         return 0, None
-    sec_idx = min(
+    section_index = min(
         int(page_idx / max(total_pages, 1) * len(sections)),
         len(sections) - 1,
     )
-    return sec_idx, sections[sec_idx]
+    return section_index, sections[section_index]
 
 
-def get_section_qa_for_sec_idx(sec_idx: int, sections: list) -> list:
+def get_section_qa_for_sec_idx(section_idx: int, sections: list) -> list:
     """
-    Return ALL answered Q&A for sections[sec_idx].
+    Return ALL answered Q&A for sections[section_idx].
 
     Since question categories match subsection titles (not top-level section
     titles), we match against the subsection titles of the target section.
@@ -678,78 +680,105 @@ def get_section_qa_for_sec_idx(sec_idx: int, sections: list) -> list:
     If NO questions match by category (e.g. categories aren't set), we fall
     back to the proportional page range so the user always gets output.
     """
-    if not sections or sec_idx >= len(sections):
+    if not sections or section_idx >= len(sections):
         return []
 
-    sec = sections[sec_idx]
-    sec_title = sec.get("title", "").lower().strip()
-    # subsection titles are what question categories typically match
-    sub_titles = {_subsection.get("title", "").lower().strip()
-                  for _subsection in sec.get("subsections", [])}
+    target_section = sections[section_idx]
+    section_title_lower = target_section.get("title", "").lower().strip()
+    subsection_title_set = {
+        subsection.get("title", "").lower().strip()
+        for subsection in target_section.get("subsections", [])
+    }
 
-    matched = []
-    for _widget_key, _question_dict, _state_dict, _is_gap_flag in all_questions:
-        cat = _question_dict.get("category", "").lower().strip()
-        answer = _state_dict.get(_widget_key, "")
-        if not answer.strip():
+    matched_qa = []
+    for widget_key, question_dict, answer_state, is_gap_flag in all_questions:
+        question_category_lower = question_dict.get("category", "").lower().strip()
+        answer_text = answer_state.get(widget_key, "")
+        if not answer_text.strip():
             continue
-        if cat in sub_titles or cat == sec_title or sec_title in cat:
-            matched.append({
-                "question": _question_dict.get("question", ""),
-                "answer": answer,
-                "category": _question_dict.get("category", ""),
-                "answer_type": _question_dict.get("answer_type", "text"),
+        if (
+            question_category_lower in subsection_title_set
+            or question_category_lower == section_title_lower
+            or section_title_lower in question_category_lower
+        ):
+            matched_qa.append({
+                "question": question_dict.get("question", ""),
+                "answer": answer_text,
+                "category": question_dict.get("category", ""),
+                "answer_type": question_dict.get("answer_type", "text"),
             })
 
     # Fallback: if category matching found nothing, use proportional page slice
-    if not matched:
-        pages_per_sec = max(1, total_pages // len(sections))
-        p_start = sec_idx * pages_per_sec * PAGE_SIZE
-        p_end = min(p_start + pages_per_sec * PAGE_SIZE, total_questions)
-        for _widget_key, _question_dict, _state_dict, _is_gap_flag in all_questions[p_start:p_end]:
-            answer = _state_dict.get(_widget_key, "")
-            if answer.strip():
-                matched.append({
-                    "question": _question_dict.get("question", ""),
-                    "answer": answer,
-                    "category": _question_dict.get("category", ""),
-                    "answer_type": _question_dict.get("answer_type", "text"),
+    if not matched_qa:
+        pages_per_section = max(1, total_pages // len(sections))
+        fallback_start = section_idx * pages_per_section * PAGE_SIZE
+        fallback_end = min(fallback_start + pages_per_section * PAGE_SIZE, total_questions)
+        for widget_key, question_dict, answer_state, is_gap_flag in all_questions[fallback_start:fallback_end]:
+            answer_text = answer_state.get(widget_key, "")
+            if answer_text.strip():
+                matched_qa.append({
+                    "question": question_dict.get("question", ""),
+                    "answer": answer_text,
+                    "category": question_dict.get("category", ""),
+                    "answer_type": question_dict.get("answer_type", "text"),
                 })
 
-    return matched
+    return matched_qa
 
 
 def collect_all_answered_qa():
     """Gather ALL answered Q&A from every question (core + gap)."""
     qa_list = []
-    for _widget_key, _question_dict, _state_dict, _is_gap_flag in all_questions:
-        answer = _state_dict.get(_widget_key, "")
-        if answer.strip():
+    for widget_key, question_dict, answer_state, is_gap_flag in all_questions:
+        answer_text = answer_state.get(widget_key, "")
+        if answer_text.strip():
             qa_list.append({
-                "question": _question_dict.get("question", ""),
-                "answer": answer,
-                "category": _question_dict.get("category", ""),
-                "answer_type": _question_dict.get("answer_type", "text"),
+                "question": question_dict.get("question", ""),
+                "answer": answer_text,
+                "category": question_dict.get("category", ""),
+                "answer_type": question_dict.get("answer_type", "text"),
             })
     return qa_list
 
 
 def collect_page_answered_qa(page_idx: int):
     """Gather answered Q&A for the 5 questions visible on page_idx."""
-    p_start = page_idx * PAGE_SIZE
-    p_end = min(p_start + PAGE_SIZE, total_questions)
-    page_qs = all_questions[p_start:p_end]
+    page_range_start = page_idx * PAGE_SIZE
+    page_range_end = min(page_range_start + PAGE_SIZE, total_questions)
+    current_page_questions = all_questions[page_range_start:page_range_end]
     qa_list = []
-    for _widget_key, _question_dict, _state_dict, _is_gap_flag in page_qs:
-        answer = _state_dict.get(_widget_key, "")
-        if answer.strip():
+    for widget_key, question_dict, answer_state, is_gap_flag in current_page_questions:
+        answer_text = answer_state.get(widget_key, "")
+        if answer_text.strip():
             qa_list.append({
-                "question": _question_dict.get("question", ""),
-                "answer": answer,
-                "category": _question_dict.get("category", ""),
-                "answer_type": _question_dict.get("answer_type", "text"),
+                "question": question_dict.get("question", ""),
+                "answer": answer_text,
+                "category": question_dict.get("category", ""),
+                "answer_type": question_dict.get("answer_type", "text"),
             })
     return qa_list
+
+
+# ═══════════════════════════════════════════════════════════════
+#  Helper: check if a question has been answered.
+#  Reads the live Streamlit widget key first (reflects the current
+#  run's input), then falls back to answer_state for off-page
+#  questions that are not rendered this run.
+# ═══════════════════════════════════════════════════════════════
+
+def question_has_answer(widget_key: str, answer_state: dict) -> bool:
+    """
+    Returns True if the question identified by widget_key has a non-empty answer.
+    Checks st.session_state widget key first (live value from this run),
+    then answer_state (persisted value from a previous run).
+    """
+    streamlit_widget_key = f"widget_{widget_key}"
+    if streamlit_widget_key in st.session_state:
+        live_value = st.session_state[streamlit_widget_key]
+        if isinstance(live_value, list):        # multi_select returns a list
+            return len(live_value) > 0
+        return str(live_value).strip() != ""
+    return str(answer_state.get(widget_key, "")).strip() != ""
 
 
 # -------------------------------
@@ -764,50 +793,50 @@ with col_questions:
     else:
         # ── Section header ──
         if st.session_state.prog_mode and schema_sections:
-            sec_idx, current_sec = get_sec_idx_for_page(page, schema_sections)
-            if current_sec:
-                section_label = current_sec.get("title", f"Page {page + 1}")
-            else:
-                section_label = f"Page {page + 1}"
-            st.header(f"Page {page + 1} of {total_pages}")
+            section_idx, current_section = get_sec_idx_for_page(current_page, schema_sections)
+            section_label = (
+                current_section.get("title", f"Page {current_page + 1}")
+                if current_section else f"Page {current_page + 1}"
+            )
+            st.header(f"Page {current_page + 1} of {total_pages}")
             st.subheader(f"📌 {section_label}")
-            if current_sec:
-                subsections = current_sec.get("subsections", [])
-                if subsections:
-                    sub_titles = [s.get("title", "") for s in subsections]
-                    st.caption("Covers: " + ", ".join(sub_titles))
+            if current_section:
+                section_subsections = current_section.get("subsections", [])
+                if section_subsections:
+                    subsection_title_list = [subsection.get("title", "") for subsection in section_subsections]
+                    st.caption("Covers: " + ", ".join(subsection_title_list))
         else:
             st.header("Questions")
-            st.caption(f"Page {page + 1} of {total_pages}")
+            st.caption(f"Page {current_page + 1} of {total_pages}")
 
-        # ── Progress bar (counts all questions) ──
+        # ── Render the 5 questions for this page ──
+        for widget_key, question_data, answer_state, is_gap_flag in page_questions:
+            render_question_widget(
+                question=question_data,
+                widget_key=widget_key,
+                answer_state=answer_state,
+                is_gap=is_gap_flag,
+            )
+
+        # ── Progress bar — computed AFTER widgets so live widget values are available ──
         answered_count = sum(
-            1 for _widget_key, _question_dict, _state_dict, _is_gap_flag in all_questions
-            if _state_dict.get(_widget_key, "").strip()
+            1 for widget_key, question_dict, answer_state, is_gap_flag in all_questions
+            if question_has_answer(widget_key, answer_state)
         )
         st.progress(
             answered_count / max(total_questions, 1),
             text=f"{answered_count} of {total_questions} answered"
         )
 
-        # ── Render the 5 questions for this page ──
-        for widget_key, question_data, state_dict, is_gap_flag in page_questions:
-            render_question_widget(
-                ques=question_data,
-                widget_key=widget_key,
-                state_dict=state_dict,
-                is_gap=is_gap_flag,
-            )
-
-        # ── Analyse gaps button + Save button (always visible at bottom) ──
-        mongo_gap_questions = [q for q in questions if q.get("is_gap_question")]
+        # ── Gap questions controls ──
+        mongo_gap_questions = [question for question in questions if question.get("is_gap_question")]
         session_gap_questions = st.session_state.gap_questions
-        has_any_gap = bool(mongo_gap_questions or session_gap_questions)
+        has_any_gap_questions = bool(mongo_gap_questions or session_gap_questions)
 
         # Save button for freshly generated session gap questions
         if session_gap_questions and st.session_state.gap_source == "generated":
             st.markdown("")
-            save_col, info_col = st.columns([1, 2])
+            save_col, save_info_col = st.columns([1, 2])
             with save_col:
                 save_clicked = st.button(
                     "💾 Save gap questions",
@@ -815,17 +844,17 @@ with col_questions:
                     help="Saves these questions + your answers to the database.",
                     use_container_width=True,
                 )
-            with info_col:
+            with save_info_col:
                 st.caption("Save to make these questions permanent.")
 
             if save_clicked:
                 st.session_state.is_saving = True
                 gap_qa_to_save = []
-                for _idx, gap_question in enumerate(session_gap_questions):
-                    key = f"gap_answer_{_idx}"
+                for gap_idx, gap_question in enumerate(session_gap_questions):
+                    gap_answer_key = f"gap_answer_{gap_idx}"
                     gap_qa_to_save.append({
                         **gap_question,
-                        "answer": st.session_state.gap_answers.get(key, ""),
+                        "answer": st.session_state.gap_answers.get(gap_answer_key, ""),
                     })
                 dept_obj = department_obj_lookup.get(selected_department, {"name": selected_department})
                 doc_name = document_name_lookup.get(selected_document, selected_document)
@@ -838,17 +867,17 @@ with col_questions:
                     )
                 st.session_state.is_saving = False
                 if save_result:
-                    saved = save_result.get("saved", 0)
-                    updated = save_result.get("updated", 0)
-                    st.success(f"✅ Saved {saved} new, updated {updated}.")
+                    saved_count = save_result.get("saved", 0)
+                    updated_count = save_result.get("updated", 0)
+                    st.success(f"✅ Saved {saved_count} new, updated {updated_count}.")
                     get_questions_from_fastapi.clear()
                 else:
                     st.error("❌ Save failed — check API logs.")
 
-        # Analyse gaps button (shown when no gap questions yet)
-        if not has_any_gap and questions:
+        # Analyse gaps button (shown when no gap questions exist yet)
+        if not has_any_gap_questions and questions:
             st.divider()
-            analyse_col, info_col2 = st.columns([1, 2])
+            analyse_col, analyse_info_col = st.columns([1, 2])
             with analyse_col:
                 analyse_clicked = st.button(
                     "🔍 Analyse schema gaps",
@@ -856,19 +885,19 @@ with col_questions:
                     help="Uses AI to identify which document sections aren't covered.",
                     use_container_width=True,
                 )
-            with info_col2:
+            with analyse_info_col:
                 st.caption("Optional: detect and fill schema coverage gaps.")
 
-            if analyse_clicked and valid_document:
+            if analyse_clicked and is_valid_document:
                 st.session_state.is_analyzing = True
-                current_qa = []
-                for i, question_item in enumerate(questions):
+                current_qa_for_gap_analysis = []
+                for question_idx, question_item in enumerate(questions):
                     if question_item.get("is_gap_question"):
                         continue
-                    key = f"answer_{i}"
-                    current_qa.append({
+                    answer_key = f"answer_{question_idx}"
+                    current_qa_for_gap_analysis.append({
                         "question": question_item.get("question", ""),
-                        "answer": st.session_state.answers.get(key, ""),
+                        "answer": st.session_state.answers.get(answer_key, ""),
                         "category": question_item.get("category", ""),
                         "answer_type": question_item.get("answer_type", "text"),
                     })
@@ -878,7 +907,7 @@ with col_questions:
                         department=selected_department,
                         document_type=selected_document,
                         document_name=doc_name,
-                        questions_and_answers=current_qa,
+                        questions_and_answers=current_qa_for_gap_analysis,
                     )
                 st.session_state.is_analyzing = False
                 if gap_analysis_result:
@@ -887,10 +916,10 @@ with col_questions:
                         st.session_state.gap_questions = gap_questions_from_api
                         st.session_state.gap_source = gap_analysis_result.get("source", "generated")
                         st.session_state.gap_doc_type = selected_document
-                        for i, gap_question in enumerate(gap_questions_from_api):
-                            key = f"gap_answer_{i}"
-                            if key not in st.session_state.gap_answers:
-                                st.session_state.gap_answers[key] = ""
+                        for gap_idx, gap_question in enumerate(gap_questions_from_api):
+                            gap_answer_key = f"gap_answer_{gap_idx}"
+                            if gap_answer_key not in st.session_state.gap_answers:
+                                st.session_state.gap_answers[gap_answer_key] = ""
                         st.rerun()
                     else:
                         st.success("✅ All schema sections are fully covered — no gaps found!")
@@ -900,85 +929,95 @@ with col_questions:
         st.divider()
 
         # ── Navigation: Back / Action / Next ──
-        nav_col1, nav_col2, nav_col3 = st.columns([1, 2, 1])
+        nav_back_col, nav_action_col, nav_next_col = st.columns([1, 2, 1])
 
-        with nav_col1:
-            if page > 0:
+        with nav_back_col:
+            if current_page > 0:
                 if st.button("← Back", use_container_width=True):
                     st.session_state.q_page -= 1
                     st.rerun()
 
-        with nav_col3:
-            if page < total_pages - 1:
+        with nav_next_col:
+            if current_page < total_pages - 1:
                 if st.button("Next →", use_container_width=True):
                     st.session_state.q_page += 1
                     st.rerun()
 
-
-        with nav_col2:
+        with nav_action_col:
             if not st.session_state.prog_mode:
-                # ── Single-shot: generate button ──
+                # ── Single-shot: generate button — enabled only when all questions are answered ──
+                single_shot_remaining = total_questions - answered_count
+                single_shot_all_answered = answered_count == total_questions and total_questions > 0
                 generate_button_clicked = st.button(
-                    "⚡ Generate Document",
-                    disabled=st.session_state.is_generating,
+                    "⚡ Generate Document" if single_shot_all_answered
+                    else f"🔒 Answer all questions first ({single_shot_remaining} remaining)",
+                    disabled=st.session_state.is_generating or not single_shot_all_answered,
                     use_container_width=True,
                     type="primary",
                 )
             else:
                 # ── Progressive mode: generate per-category ──
                 generate_button_clicked = False
-                _all_answered = (answered_count == total_questions and total_questions > 0)
-                _remaining = total_questions - answered_count
-                _page_cats = get_page_categories(page)
-                _page_done = bool(_page_cats) and all(c in st.session_state.prog_sections for c in _page_cats)
-                _page_label = ", ".join(_page_cats) if _page_cats else f"Page {page + 1}"
+                progressive_all_answered = answered_count == total_questions and total_questions > 0
+                progressive_remaining = total_questions - answered_count
+                current_page_categories = get_page_categories(current_page)
+                current_page_categories_done = (
+                    bool(current_page_categories)
+                    and all(cat in st.session_state.prog_sections for cat in current_page_categories)
+                )
+                current_page_category_label = (
+                    ", ".join(current_page_categories) if current_page_categories else f"Page {current_page + 1}"
+                )
 
-                if not _all_answered:
-                    _btn_label = f"🔒 Answer all questions first ({_remaining} remaining)"
-                elif _page_done:
-                    _btn_label = f"✅ Regenerate: {_page_label}"
+                if not progressive_all_answered:
+                    progressive_btn_label = f"🔒 Answer all questions first ({progressive_remaining} remaining)"
+                elif current_page_categories_done:
+                    progressive_btn_label = f"✅ Regenerate: {current_page_category_label}"
                 else:
-                    _btn_label = f"⚡ Generate: {_page_label}"
+                    progressive_btn_label = f"⚡ Generate: {current_page_category_label}"
 
-                gen_sec_btn = st.button(
-                    _btn_label,
-                    disabled=(not _all_answered) or st.session_state.prog_generating,
+                generate_section_clicked = st.button(
+                    progressive_btn_label,
+                    disabled=(not progressive_all_answered) or st.session_state.prog_generating,
                     use_container_width=True,
                     type="primary",
                 )
-                if gen_sec_btn and _all_answered:
-                    for category_name in _page_cats:
-                        category_lower = category_name.strip().lower()
-                        subsection_data = _cat_to_subsection.get(category_lower, {"title": category_name, "type": "text"})
+                if generate_section_clicked and progressive_all_answered:
+                    for category_name in current_page_categories:
+                        category_name_lower = category_name.strip().lower()
+                        subsection_data = category_to_subsection.get(
+                            category_name_lower, {"title": category_name, "type": "text"}
+                        )
                         category_qa_list = get_subsection_qa(category_name)
                         if not category_qa_list:
                             continue
                         section_for_api_call = {
-                            "title": raw_schema_section.get("title", "Document Overview") if raw_schema_section else "Document Overview",
+                            "title": raw_schema_section.get("title", "Document Overview") if raw_schema_section else "",
                             "subsections": [subsection_data],
                         }
-                        document_memory = "\n\n".join(
-                            st.session_state.prog_sections[k]
-                            for k in _ordered_categories
-                            if k in st.session_state.prog_sections and k != category_name
+                        previously_generated_text = "\n\n".join(
+                            st.session_state.prog_sections[cat]
+                            for cat in ordered_categories
+                            if cat in st.session_state.prog_sections and cat != category_name
                         )
                         with st.spinner(f"⚡ Generating '{category_name}'..."):
-                            section_generation_result = call_generate_section(
+                            section_result = call_generate_section(
                                 department=selected_department,
                                 document_type=selected_document,
                                 section=section_for_api_call,
                                 questions_and_answers=category_qa_list,
-                                doc_memory=document_memory,
+                                doc_memory=previously_generated_text,
                             )
-                        if section_generation_result and section_generation_result.get("section_text"):
-                            st.session_state.prog_sections[category_name] = section_generation_result["section_text"]
+                        if section_result and section_result.get("section_text"):
+                            st.session_state.prog_sections[category_name] = section_result["section_text"]
                     st.rerun()
 
                 # On last page also show Finalize
-                if page == total_pages - 1:
+                if current_page == total_pages - 1:
                     generate_button_clicked = st.button(
-                        "📄 Finalize Document" if _all_answered else f"🔒 Finalize ({_remaining} questions remaining)",
-                        disabled=not _all_answered,
+                        "📄 Finalize Document" if progressive_all_answered
+                        else f"🔒 Finalize ({progressive_remaining} questions remaining)",
+                        disabled=not progressive_all_answered,
                         use_container_width=True,
                     )
 
@@ -988,38 +1027,42 @@ with col_questions:
         # ══════════════════════════════════════════════════════
         if generate_button_clicked and questions:
             if not st.session_state.prog_mode:
-                # ═══ SINGLE-SHOT GENERATION (unchanged) ═══
+                # ═══ SINGLE-SHOT GENERATION ═══
                 st.session_state.is_generating = True
 
                 questions_and_answers = []
-                for i, question_item in enumerate(questions):
+
+                # Core (non-gap) questions
+                for question_idx, question_item in enumerate(questions):
                     if question_item.get("is_gap_question"):
                         continue
-                    key = f"answer_{i}"
+                    answer_key = f"answer_{question_idx}"
                     questions_and_answers.append({
                         "question": question_item.get("question", ""),
-                        "answer": st.session_state.answers.get(key, ""),
+                        "answer": st.session_state.answers.get(answer_key, ""),
                         "category": question_item.get("category", ""),
                         "answer_type": question_item.get("answer_type", "text"),
                     })
 
-                for i, question_item in enumerate(questions):
+                # MongoDB-persisted gap questions
+                for question_idx, question_item in enumerate(questions):
                     if not question_item.get("is_gap_question"):
                         continue
-                    key = f"answer_{i}"
+                    answer_key = f"answer_{question_idx}"
                     questions_and_answers.append({
                         "question": question_item.get("question", ""),
-                        "answer": st.session_state.answers.get(key, ""),
+                        "answer": st.session_state.answers.get(answer_key, ""),
                         "category": question_item.get("category", "Additional Information"),
                         "answer_type": question_item.get("answer_type", "text"),
                         "is_gap_question": True,
                     })
 
-                for i, gap_question in enumerate(st.session_state.gap_questions):
-                    key = f"gap_answer_{i}"
+                # Session gap questions
+                for gap_idx, gap_question in enumerate(st.session_state.gap_questions):
+                    gap_answer_key = f"gap_answer_{gap_idx}"
                     questions_and_answers.append({
                         "question": gap_question.get("question", ""),
-                        "answer": st.session_state.gap_answers.get(key, ""),
+                        "answer": st.session_state.gap_answers.get(gap_answer_key, ""),
                         "category": gap_question.get("category", "Additional Information"),
                         "answer_type": gap_question.get("answer_type", "text"),
                         "is_gap_question": True,
@@ -1044,16 +1087,16 @@ with col_questions:
                     quality_scores = generation_result.get("quality_scores", {})
                     retry_count = generation_result.get("retry_count", 0)
 
-                    new_gap_qs = generation_result.get("gap_questions", [])
-                    if new_gap_qs and not st.session_state.gap_questions:
-                        st.session_state.gap_questions = new_gap_qs
+                    new_gap_questions = generation_result.get("gap_questions", [])
+                    if new_gap_questions and not st.session_state.gap_questions:
+                        st.session_state.gap_questions = new_gap_questions
                         st.session_state.gap_source = generation_result.get("source", "generated")
                         st.session_state.gap_doc_type = selected_document
-                        for i, gap_question in enumerate(new_gap_qs):
-                            k = f"gap_answer_{i}"
-                            if k not in st.session_state.gap_answers:
-                                st.session_state.gap_answers[k] = ""
-                        st.info(f"💡 {len(new_gap_qs)} gap question(s) detected. Answer them and regenerate.")
+                        for gap_idx, gap_question in enumerate(new_gap_questions):
+                            gap_answer_key = f"gap_answer_{gap_idx}"
+                            if gap_answer_key not in st.session_state.gap_answers:
+                                st.session_state.gap_answers[gap_answer_key] = ""
+                        st.info(f"💡 {len(new_gap_questions)} gap question(s) detected. Answer them and regenerate.")
 
                     if generation_status == "passed":
                         st.success(f"✅ Document generated! (retries: {retry_count})")
@@ -1063,19 +1106,21 @@ with col_questions:
                     if quality_scores:
                         with st.expander("📊 Quality Scores", expanded=(generation_status == "passed")):
                             score_cols = st.columns(len(quality_scores))
-                            for col, (criterion, score) in zip(score_cols, quality_scores.items()):
-                                col.metric(criterion.replace("_", " ").title(), f"{score}/5")
+                            for score_col, (criterion, score) in zip(score_cols, quality_scores.items()):
+                                score_col.metric(criterion.replace("_", " ").title(), f"{score}/5")
                 else:
                     st.error("❌ Generation failed. Check the API logs for details.")
 
             else:
                 # ═══ PROGRESSIVE FINALIZE ═══
                 # Generate any category not yet done, then stitch in order
-                for category_name in _ordered_categories:
+                for category_name in ordered_categories:
                     if category_name in st.session_state.prog_sections:
                         continue
-                    category_lower = category_name.strip().lower()
-                    subsection_data = _cat_to_subsection.get(category_lower, {"title": category_name, "type": "text"})
+                    category_name_lower = category_name.strip().lower()
+                    subsection_data = category_to_subsection.get(
+                        category_name_lower, {"title": category_name, "type": "text"}
+                    )
                     category_qa_list = get_subsection_qa(category_name)
                     if not category_qa_list:
                         continue
@@ -1083,27 +1128,27 @@ with col_questions:
                         "title": raw_schema_section.get("title", "Document Overview") if raw_schema_section else "Document Overview",
                         "subsections": [subsection_data],
                     }
-                    document_memory = "\n\n".join(
-                        st.session_state.prog_sections[k]
-                        for k in _ordered_categories
-                        if k in st.session_state.prog_sections and k != category_name
+                    previously_generated_text = "\n\n".join(
+                        st.session_state.prog_sections[cat]
+                        for cat in ordered_categories
+                        if cat in st.session_state.prog_sections and cat != category_name
                     )
                     with st.spinner(f"⚡ Generating '{category_name}'..."):
-                        section_generation_result = call_generate_section(
+                        section_result = call_generate_section(
                             department=selected_department,
                             document_type=selected_document,
                             section=section_for_api_call,
                             questions_and_answers=category_qa_list,
-                            doc_memory=document_memory,
+                            doc_memory=previously_generated_text,
                         )
-                    if section_generation_result and section_generation_result.get("section_text"):
-                        st.session_state.prog_sections[category_name] = section_generation_result["section_text"]
+                    if section_result and section_result.get("section_text"):
+                        st.session_state.prog_sections[category_name] = section_result["section_text"]
 
-                # Stitch in document order
+                # Stitch all generated sections in document order
                 full_doc = "\n\n".join(
-                    st.session_state.prog_sections[k]
-                    for k in _ordered_categories
-                    if k in st.session_state.prog_sections
+                    st.session_state.prog_sections[cat]
+                    for cat in ordered_categories
+                    if cat in st.session_state.prog_sections
                 )
                 st.session_state.markdown_doc = full_doc
                 st.success("🎉 Document finalized! View it in the preview panel →")
@@ -1119,17 +1164,17 @@ with col_questions:
 with col_editor:
     st.markdown('<div class="separator-left">', unsafe_allow_html=True)
 
-    header_col, publish_col = st.columns([4, 1])
+    editor_header_col, publish_col = st.columns([4, 1])
 
-    with header_col:
+    with editor_header_col:
         if st.session_state.prog_mode:
             st.header("Preview")
         else:
             st.header("Markdown View")
 
     with publish_col:
-        submit_publish = st.button("Publish")
-        if submit_publish:
+        publish_clicked = st.button("Publish")
+        if publish_clicked:
             if st.session_state.markdown_doc:
                 st.balloons()
                 st.success("Published! 🎉")
@@ -1141,19 +1186,22 @@ with col_editor:
 
     if st.session_state.prog_mode and st.session_state.prog_sections:
         # Show each generated section with status
-        for sec_idx in [k for k in _ordered_categories if k in st.session_state.prog_sections]:
-            sec_text = st.session_state.prog_sections[sec_idx]
+        for generated_category in [cat for cat in ordered_categories if cat in st.session_state.prog_sections]:
+            section_text = st.session_state.prog_sections[generated_category]
             # Extract title from the generated markdown (first ## heading)
-            first_line = sec_text.strip().split("\n")[0] if sec_text else ""
-            sec_title = first_line.lstrip("# ").strip() if first_line.startswith("#") else f"Section {sec_idx + 1}"
-            st.markdown(f"✅ **{sec_title}**")
-            with st.expander(f"📖 {sec_title}", expanded=False):
-                st.markdown(sec_text)
+            first_line = section_text.strip().split("\n")[0] if section_text else ""
+            section_display_title = (
+                first_line.lstrip("# ").strip() if first_line.startswith("#") else f"Section: {generated_category}"
+            )
+            st.markdown(f"✅ **{section_display_title}**")
+            with st.expander(f"📖 {section_display_title}", expanded=False):
+                st.markdown(section_text)
 
-        # Show a combined preview
+        # Show a combined editable preview
         full_preview = "\n\n".join(
-            st.session_state.prog_sections[k]
-            for k in _ordered_categories if k in st.session_state.prog_sections
+            st.session_state.prog_sections[cat]
+            for cat in ordered_categories
+            if cat in st.session_state.prog_sections
         )
         st.session_state.markdown_doc = st.text_area(
             "Combined Preview",

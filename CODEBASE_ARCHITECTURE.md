@@ -111,7 +111,8 @@ python-dotenv ≥ 1.0.0        # Environment configuration
 │  │ GET  /required-section         → Schema lookup by dept+name        │  │
 │  │ POST /gap-questions      ★ NEW → Cache-first gap analysis         │  │
 │  │ POST /save-questions     ★ NEW → Upsert gap Qs to MongoDB          │  │
-│  │ POST /generate                 → Trigger agent for doc gen         │  │
+│  │ POST /generate                 → Trigger agent for full doc        │  │
+│  │ POST /generate-section   ★ NEW → Progressive single section gen    │  │
 │  │ GET  /get_all_urls             → Notion page URLs for history      │  │
 │  └────────────────────────────────────────────────────────────────────┘  │
 │                              │                                           │
@@ -501,7 +502,7 @@ app = FastAPI(lifespan=lifespan)
 ---
 
 ### Layer 4: FastAPI Backend Orchestration
-**File**: `api/main.py` (~410 lines)
+**File**: `api/main.py` (~443 lines)
 
 **Purpose**: REST API gateway connecting Streamlit UI to MongoDB and LangGraph agent
 
@@ -511,11 +512,12 @@ app = FastAPI(lifespan=lifespan)
 |----------|--------|--------|---------|---------|
 | `/departments` | GET | - | `{departments: [{code, name, slug}]}` | List all departments |
 | `/document-types` | GET | `department: str` | `{document_types: [{document_type, document_name}]}` | Docs for dept |
-| `/questions` | GET | `document_type: str` | `{questions: [...]}` | All Q&As (sorted by category) |
+| `/questions` | GET | `document_type: str` | `{questions: [...]}` | All Q&As (sorted by category) with pagination support |
 | `/required-section` | GET | `department: str, document_name: str` | `{required_section: {sections: [...]}}` | Document schema |
 | `/gap-questions` | POST | `GapQuestionsRequest` | `{gap_questions: [...], source: "cache\|generated"}` | ★ NEW Gap analysis |
 | `/save-questions` | POST | `SaveQuestionsRequest` | `{saved_count: int}` | ★ NEW Save gaps to DB |
-| `/generate` | POST | `GenerateDocumentRequest` | `{generated_document, quality_scores, ...}` | Generate document |
+| `/generate` | POST | `GenerateDocumentRequest` | `{generated_document, gap_questions, quality_scores, ...}` | Generate complete document |
+| `/generate-section` | POST | `GenerateSectionRequest` | `{section_text: str}` | ★ NEW Generate single section with context memory |
 | `/get_all_urls` | GET | - | `{pages: [{notion_url, title}]}` | Page history |
 
 #### 4.2 Novel Endpoints: Gap Analysis & Persistence
@@ -664,6 +666,64 @@ app.add_middleware(
 # Restricts API to local Streamlit frontend only
 # Prevents unauthorized cross-origin requests
 ```
+
+#### 4.4 Progressive Generation Endpoint ★ NEW
+
+**`POST /generate-section` — Generate Single Section with Memory**
+
+```python
+@app.post("/generate-section")
+async def generate_section_endpoint(request: GenerateSectionRequest):
+    """
+    Generate ONE document section with context memory of previous sections.
+    
+    Used in progressive generation mode where sections are built incrementally
+    instead of generating the entire document at once.
+    
+    Request body:
+        {
+            "department": str,
+            "document_type": str,
+            "section": {...},  # single section from required_section.sections
+            "questions_and_answers": [...],  # all user Q&As
+            "doc_memory": str  # rendered markdown of previous sections
+        }
+    
+    Response:
+        {"section_text": str}  # rendered markdown for this section only
+    """
+    
+    section_text = await generate_single_section(
+        department=request.department,
+        document_type=request.document_type,
+        section=request.section,
+        questions_and_answers=request.questions_and_answers,
+        doc_memory=request.doc_memory
+    )
+    
+    return {"section_text": section_text}
+```
+
+**Progressive Generation Flow**:
+1. User clicks "Progressive Mode" toggle in UI
+2. UI breaks required schema into individual sections
+3. For each section:
+   - Call `POST /generate-section` with that section + cumulative document memory
+   - Receive rendered markdown for that section
+   - Append to document buffer
+   - Stream updates to UI in real-time
+4. User can pause, edit intermediate sections, or regenerate problematic sections
+5. Better for long documents (Product Roadmap, etc.) where full generation might timeout
+
+**Advantages**:
+- Real-time feedback (sections appear as they're generated)
+- Recoverable from mid-generation failures (restart from failed section)
+- Context memory ensures consistency between sections
+- Reduces risk of full-document timeout on long generation
+- Users can edit and resubmit without full regeneration
+
+---
+
 **File**: `agent/agent_graph.py`
 
 **Purpose**: Transforms user answers into professional, schema-compliant documents
@@ -1122,14 +1182,15 @@ DocForgeHub/
 │   └── __init__.py
 │
 ├── api/                            # FastAPI REST endpoints
-│   ├── main.py                     # 8 endpoints + CORS configuration
+│   ├── main.py                     # 9 endpoints + CORS configuration
 │   │                                 • GET /departments
 │   │                                 • GET /document-types
 │   │                                 • GET /questions
 │   │                                 • GET /required-section
 │   │                                 • POST /gap-questions (cache-first)
 │   │                                 • POST /save-questions (upsert)
-│   │                                 • POST /generate
+│   │                                 • POST /generate (full document)
+│   │                                 • POST /generate-section ★ NEW (progressive)
 │   │                                 • GET /get_all_urls
 │   ├── db.py                       # Async MongoDB connection (singleton)
 │   │                                 • AsyncIOMotorClient
@@ -1285,31 +1346,40 @@ User Fills in Core Answers
 
 User Clicks "⚡ Generate Document"
 
-  ├─ Merge all answers: st.session_state.answers + gap_answers
-  ├─ POST /generate with:
-  │  • department, document_type, questions_and_answers, required_section
+  ├─ (Option 1) Standard Mode:
+  │  ├─ POST /generate with:
+  │  │  • department, document_type, questions_and_answers, required_section
+  │  │
+  │  ├─ Backend invokes agent (5-node LangGraph):
+  │  │  ├─ NODE 1: analyze_schema_gaps
+  │  │  │  └─ Lightweight LLM identifies any additional gaps
+  │  │  ├─ NODE 2: build_prompt
+  │  │  │  └─ Format Q&As, schema, supplementary notes
+  │  │  ├─ NODE 3: generate_document
+  │  │  │  └─ Primary LLM (Kimi-k2) generates markdown
+  │  │  ├─ NODE 4: quality_gate
+  │  │  │  ├─ Table-only: Validate markdown table columns
+  │  │  │  └─ Mixed: LLM review for completeness & tone
+  │  │  └─ NODE 5: fix_document (if needed)
+  │  │     └─ Re-prompt with issues, retry up to 2x
+  │  │
+  │  └─ Return: full markdown + quality scores + issues
   │
-  ├─ Backend invokes agent (5-node LangGraph):
-  │  ├─ NODE 1: analyze_schema_gaps
-  │  │  └─ Lightweight LLM identifies any additional gaps
-  │  ├─ NODE 2: build_prompt
-  │  │  └─ Format Q&As, schema, supplementary notes
-  │  ├─ NODE 3: generate_document
-  │  │  └─ Primary LLM (Kimi-k2) generates markdown
-  │  ├─ NODE 4: quality_gate
-  │  │  ├─ Table-only: Validate markdown table columns
-  │  │  └─ Mixed: LLM review for completeness & tone
-  │  └─ NODE 5: fix_document (if needed)
-  │     └─ Re-prompt with issues, retry up to 2x
-  │
-  ├─ Return: markdown + quality scores + issues
-  │
-  └─ UI receives document
-     ├─ Display in markdown editor (right column)
-     ├─ Show quality scores (completeness, professionalism, clarity)
-     ├─ Show any issues/suggestions
-     ├─ Allow user edits
-     └─ Add to generation history
+  └─ (Option 2) Progressive Mode ★ NEW:
+     ├─ Split schema into individual sections
+     ├─ For each section:
+     │  ├─ POST /generate-section with section + doc_memory
+     │  ├─ Stream section_text back to UI
+     │  ├─ Append to document buffer
+     │  └─ User can pause, edit, or regenerate
+     └─ Advantages: real-time feedback, pauseable, recoverable
+
+  ├─ UI receives document (either mode)
+  ├─ Display in markdown editor (right column)
+  ├─ Show quality scores (completeness, professionalism, clarity)
+  ├─ Show any issues/suggestions
+  ├─ Allow user edits
+  └─ Add to generation history
 
 User Clicks "📤 Publish to Notion"
 
@@ -1370,12 +1440,14 @@ NOTION_API_KEY="secret_..."
 | **GET /questions** (500+) | <50ms | Sorting by category_order |
 | **POST /gap-questions** (cache hit) | <100ms | MongoDB lookup |
 | **POST /gap-questions** (fresh) | ~10-15s | Llama-3.3-70b LLM call |
-| **POST /generate** | ~30-60s | Kimi-k2 LLM generation + quality review |
+| **POST /generate** (full document) | ~30-60s | Kimi-k2 LLM generation + quality review |
+| **POST /generate-section** (per section) | ~5-15s | Single section LLM generation with memory |
 | **Full document gen + quality + fix** | ~90-120s | Multi-node retry loops |
+| **Progressive mode (all sections)** | ~30-120s | Cumulative per-section time (parallelizable) |
 | **POST /save-questions** | <50ms | MongoDB bulk_write |
 | **Streamlit page load** | ~200ms | Data fetching + rendering |
 
 ---
 
-**Last Updated**: February 20, 2026  
-**Architecture Version**: 2.0 (Comprehensive Redesign with Extended Specifications)**
+**Last Updated**: February 24, 2026  
+**Architecture Version**: 2.1 (Added Progressive Generation Endpoint)**

@@ -301,7 +301,7 @@ def call_generate_section(
 
 pages = get_notionpage_urls_from_fastapi()
 departments = get_departments_from_fastapi()
-department_names = [d["name"] for d in departments]
+department_names = [_dept_dict["name"] for _dept_dict in departments]
 
 
 # -------------------------------------------------
@@ -373,16 +373,16 @@ with st.sidebar:
     st.subheader("Document")
     valid_dept = selected_department and selected_department != "(no departments found)"
     doc_types = get_document_types_from_fastapi(selected_department) if valid_dept else []
-    document_names = [d["document_type"] for d in doc_types] # here document_type is the fastapi endpoint parameter
+    document_names = [_doc_dict["document_type"] for _doc_dict in doc_types] # here document_type is the fastapi endpoint parameter
 
     # Build a lookup from document_type → document_name (needed for /generate)
     document_name_lookup = {
-        dt["document_type"]: dt.get("document_name", dt["document_type"])
-        for dt in doc_types
+        _doc_dict["document_type"]: _doc_dict.get("document_name", _doc_dict["document_type"])
+        for _doc_dict in doc_types
     }
 
     # Full department object needed for save-questions
-    department_obj_lookup = {d["name"]: d for d in departments}
+    department_obj_lookup = {_dept_dict["name"]: _dept_dict for _dept_dict in departments}
 
     selected_document = st.selectbox(
         "Document",
@@ -411,8 +411,8 @@ with st.sidebar:
 
     history_container = st.container(height=270)
     with history_container:
-        for h in st.session_state.history:
-            st.markdown(f"<a href='{h.get('url','#')}' style='text-decoration: none; color: beige;'>{h.get('title','Untitled')}</a>", unsafe_allow_html=True)
+        for _history_item in st.session_state.history:
+            st.markdown(f"<a href='{_history_item.get('url','#')}' style='text-decoration: none; color: beige;'>{_history_item.get('title','Untitled')}</a>", unsafe_allow_html=True)
 
 
 # =================================================
@@ -428,16 +428,16 @@ col_questions, col_editor = st.columns([2, 3])
 valid_document = selected_document and selected_document != "(select a department first)"
 questions = get_questions_from_fastapi(selected_document) if valid_document else []
 
-for i, _question in enumerate(questions): # the _question variable is used for internal purpose
-    key = f"answer_{i}"
+for _idx, _question_data in enumerate(questions): # the _question_data variable is used for internal purpose
+    key = f"answer_{_idx}"
     if key not in st.session_state.answers:
-        st.session_state.answers[key] = _question.get("answer", "") or ""
+        st.session_state.answers[key] = _question_data.get("answer", "") or ""
 
 # Seed answer slots for gap questions (if any already loaded)
-for i, gq in enumerate(st.session_state.gap_questions):
-    key = f"gap_answer_{i}"
+for _idx, _gap_question in enumerate(st.session_state.gap_questions):
+    key = f"gap_answer_{_idx}"
     if key not in st.session_state.gap_answers:
-        st.session_state.gap_answers[key] = gq.get("answer", "") or ""
+        st.session_state.gap_answers[key] = _gap_question.get("answer", "") or ""
 
 
 # ═══════════════════════════════════════════════════════════════
@@ -523,14 +523,14 @@ schema_sections = []   # compat alias
 if valid_document and st.session_state.prog_mode:
     document_name_for_schema = document_name_lookup.get(selected_document, selected_document)
     try:
-        rs_resp = requests.get(
+        required_section_response = requests.get(
             f"{FASTAPI_URL}/required-section",
             params={"department": selected_department, "document_name": document_name_for_schema},
             timeout=15,
         )
-        rs_resp.raise_for_status()
-        rs_data = rs_resp.json()
-        required_section_data = rs_data.get("required_section", rs_data)
+        required_section_response.raise_for_status()
+        required_section_data = required_section_response.json()
+        required_section_data = required_section_data.get("required_section", required_section_data)
         _all_schema_sections = required_section_data.get("sections", [])
         if _all_schema_sections:
             raw_schema_section = _all_schema_sections[0]
@@ -548,83 +548,20 @@ if valid_document and st.session_state.prog_mode:
 all_questions = []
 
 # Core questions (non-gap from MongoDB)
-for i, q in enumerate(questions):
+for _idx, q in enumerate(questions):
     if q.get("is_gap_question"):
         continue
-    all_questions.append((f"answer_{i}", q, st.session_state.answers, False))
+    all_questions.append((f"answer_{_idx}", q, st.session_state.answers, False))
 
 # MongoDB-persisted gap questions (is_gap_question=True in main list)
-for i, q in enumerate(questions):
+for _idx, q in enumerate(questions):
     if not q.get("is_gap_question"):
         continue
-    all_questions.append((f"answer_{i}", q, st.session_state.answers, True))
+    all_questions.append((f"answer_{_idx}", q, st.session_state.answers, True))
 
 # Session gap questions (freshly generated, stored in gap_answers)
 for i, gq in enumerate(st.session_state.gap_questions):
     all_questions.append((f"gap_answer_{i}", gq, st.session_state.gap_answers, True))
-
-# ─────────────────────────────────────────────────────────────────────────────
-# Build category helpers — always defined regardless of prog_mode or schema
-# _ordered_categories : unique categories in question order
-# _cat_to_subsection  : category_lower → subsection dict (empty if no schema)
-# ─────────────────────────────────────────────────────────────────────────────
-_ordered_categories: list = []
-_cat_to_subsection: dict = {}
-_seen_cats: set = set()
-_sub_title_lower_map = {
-    sub.get("title", "").strip().lower(): sub
-    for sub in prog_subsections
-} if prog_subsections else {}
-
-for _, _q, _, _ in all_questions:
-    _cat = _q.get("category", "").strip()
-    _cat_lower = _cat.lower()
-    if _cat and _cat_lower not in _seen_cats:
-        _seen_cats.add(_cat_lower)
-        _ordered_categories.append(_cat)
-    if _cat_lower in _sub_title_lower_map:
-        _cat_to_subsection[_cat_lower] = _sub_title_lower_map[_cat_lower]
-
-del _seen_cats, _sub_title_lower_map  # cleanup temps
-
-
-def get_page_categories(page_idx: int) -> list:
-    """Unique categories for the 5 questions on page_idx, in order."""
-    _ps = 5  # PAGE_SIZE defined below; same value
-    p_start = page_idx * _ps
-    p_end = min(p_start + _ps, len(all_questions))
-    seen, cats = set(), []
-    for _, q, _, _ in all_questions[p_start:p_end]:
-        cat = q.get("category", "").strip()
-        if cat and cat not in seen:
-            seen.add(cat)
-            cats.append(cat)
-    return cats
-
-
-def get_subsection_qa(category: str) -> list:
-    """All answered Q&A for a specific category."""
-    cat_lower = category.strip().lower()
-    return [
-        {
-            "question": q.get("question", ""),
-            "answer": sd.get(wk, ""),
-            "category": q.get("category", ""),
-            "answer_type": q.get("answer_type", "text"),
-        }
-        for wk, q, sd, ig in all_questions
-        if q.get("category", "").strip().lower() == cat_lower and sd.get(wk, "").strip()
-    ]
-
-
-def prog_sections_ordered() -> list:
-    """Return (category, text) pairs in document order for all generated sections."""
-    return [
-        (cat, st.session_state.prog_sections[cat])
-        for cat in _ordered_categories
-        if cat in st.session_state.prog_sections
-    ]
-
 
 # ═══════════════════════════════════════════════════════════════
 #  Pagination — always 5 questions per page
@@ -684,21 +621,21 @@ def get_section_qa_for_sec_idx(sec_idx: int, sections: list) -> list:
     sec = sections[sec_idx]
     sec_title = sec.get("title", "").lower().strip()
     # subsection titles are what question categories typically match
-    sub_titles = {sub.get("title", "").lower().strip()
-                  for sub in sec.get("subsections", [])}
+    sub_titles = {_subsection.get("title", "").lower().strip()
+                  for _subsection in sec.get("subsections", [])}
 
     matched = []
-    for wk, q, sd, ig in all_questions:
-        cat = q.get("category", "").lower().strip()
-        answer = sd.get(wk, "")
+    for _widget_key, _question_dict, _state_dict, _is_gap_flag in all_questions:
+        cat = _question_dict.get("category", "").lower().strip()
+        answer = _state_dict.get(_widget_key, "")
         if not answer.strip():
             continue
         if cat in sub_titles or cat == sec_title or sec_title in cat:
             matched.append({
-                "question": q.get("question", ""),
+                "question": _question_dict.get("question", ""),
                 "answer": answer,
-                "category": q.get("category", ""),
-                "answer_type": q.get("answer_type", "text"),
+                "category": _question_dict.get("category", ""),
+                "answer_type": _question_dict.get("answer_type", "text"),
             })
 
     # Fallback: if category matching found nothing, use proportional page slice
@@ -706,14 +643,14 @@ def get_section_qa_for_sec_idx(sec_idx: int, sections: list) -> list:
         pages_per_sec = max(1, total_pages // len(sections))
         p_start = sec_idx * pages_per_sec * PAGE_SIZE
         p_end = min(p_start + pages_per_sec * PAGE_SIZE, total_questions)
-        for wk, q, sd, ig in all_questions[p_start:p_end]:
-            answer = sd.get(wk, "")
+        for _widget_key, _question_dict, _state_dict, _is_gap_flag in all_questions[p_start:p_end]:
+            answer = _state_dict.get(_widget_key, "")
             if answer.strip():
                 matched.append({
-                    "question": q.get("question", ""),
+                    "question": _question_dict.get("question", ""),
                     "answer": answer,
-                    "category": q.get("category", ""),
-                    "answer_type": q.get("answer_type", "text"),
+                    "category": _question_dict.get("category", ""),
+                    "answer_type": _question_dict.get("answer_type", "text"),
                 })
 
     return matched
@@ -722,14 +659,14 @@ def get_section_qa_for_sec_idx(sec_idx: int, sections: list) -> list:
 def collect_all_answered_qa():
     """Gather ALL answered Q&A from every question (core + gap)."""
     qa_list = []
-    for wk, q, sd, ig in all_questions:
-        answer = sd.get(wk, "")
+    for _widget_key, _question_dict, _state_dict, _is_gap_flag in all_questions:
+        answer = _state_dict.get(_widget_key, "")
         if answer.strip():
             qa_list.append({
-                "question": q.get("question", ""),
+                "question": _question_dict.get("question", ""),
                 "answer": answer,
-                "category": q.get("category", ""),
-                "answer_type": q.get("answer_type", "text"),
+                "category": _question_dict.get("category", ""),
+                "answer_type": _question_dict.get("answer_type", "text"),
             })
     return qa_list
 
@@ -740,14 +677,14 @@ def collect_page_answered_qa(page_idx: int):
     p_end = min(p_start + PAGE_SIZE, total_questions)
     page_qs = all_questions[p_start:p_end]
     qa_list = []
-    for wk, q, sd, ig in page_qs:
-        answer = sd.get(wk, "")
+    for _widget_key, _question_dict, _state_dict, _is_gap_flag in page_qs:
+        answer = _state_dict.get(_widget_key, "")
         if answer.strip():
             qa_list.append({
-                "question": q.get("question", ""),
+                "question": _question_dict.get("question", ""),
                 "answer": answer,
-                "category": q.get("category", ""),
-                "answer_type": q.get("answer_type", "text"),
+                "category": _question_dict.get("category", ""),
+                "answer_type": _question_dict.get("answer_type", "text"),
             })
     return qa_list
 
@@ -782,8 +719,8 @@ with col_questions:
 
         # ── Progress bar (counts all questions) ──
         answered_count = sum(
-            1 for wk, q, sd, ig in all_questions
-            if sd.get(wk, "").strip()
+            1 for _widget_key, _question_dict, _state_dict, _is_gap_flag in all_questions
+            if _state_dict.get(_widget_key, "").strip()
         )
         st.progress(
             answered_count / max(total_questions, 1),
@@ -791,12 +728,12 @@ with col_questions:
         )
 
         # ── Render the 5 questions for this page ──
-        for widget_key, ques, state_dict, is_gap in page_questions:
+        for widget_key, question_data, state_dict, is_gap_flag in page_questions:
             render_question_widget(
-                ques=ques,
+                ques=question_data,
                 widget_key=widget_key,
                 state_dict=state_dict,
-                is_gap=is_gap,
+                is_gap=is_gap_flag,
             )
 
         # ── Analyse gaps button + Save button (always visible at bottom) ──
@@ -821,10 +758,10 @@ with col_questions:
             if save_clicked:
                 st.session_state.is_saving = True
                 gap_qa_to_save = []
-                for i, gq in enumerate(session_gap_questions):
-                    key = f"gap_answer_{i}"
+                for _idx, gap_question in enumerate(session_gap_questions):
+                    key = f"gap_answer_{_idx}"
                     gap_qa_to_save.append({
-                        **gq,
+                        **gap_question,
                         "answer": st.session_state.gap_answers.get(key, ""),
                     })
                 dept_obj = department_obj_lookup.get(selected_department, {"name": selected_department})
@@ -862,32 +799,32 @@ with col_questions:
             if analyse_clicked and valid_document:
                 st.session_state.is_analyzing = True
                 current_qa = []
-                for i, ques in enumerate(questions):
-                    if ques.get("is_gap_question"):
+                for i, question_item in enumerate(questions):
+                    if question_item.get("is_gap_question"):
                         continue
                     key = f"answer_{i}"
                     current_qa.append({
-                        "question": ques.get("question", ""),
+                        "question": question_item.get("question", ""),
                         "answer": st.session_state.answers.get(key, ""),
-                        "category": ques.get("category", ""),
-                        "answer_type": ques.get("answer_type", "text"),
+                        "category": question_item.get("category", ""),
+                        "answer_type": question_item.get("answer_type", "text"),
                     })
                 doc_name = document_name_lookup.get(selected_document, selected_document)
                 with st.spinner("🤖 Analysing schema coverage... this takes ~10 seconds."):
-                    gap_result = call_gap_questions_endpoint(
+                    gap_analysis_result = call_gap_questions_endpoint(
                         department=selected_department,
                         document_type=selected_document,
                         document_name=doc_name,
                         questions_and_answers=current_qa,
                     )
                 st.session_state.is_analyzing = False
-                if gap_result:
-                    gqs = gap_result.get("gap_questions", [])
-                    if gqs:
-                        st.session_state.gap_questions = gqs
-                        st.session_state.gap_source = gap_result.get("source", "generated")
+                if gap_analysis_result:
+                    gap_questions_from_api = gap_analysis_result.get("gap_questions", [])
+                    if gap_questions_from_api:
+                        st.session_state.gap_questions = gap_questions_from_api
+                        st.session_state.gap_source = gap_analysis_result.get("source", "generated")
                         st.session_state.gap_doc_type = selected_document
-                        for i, gq in enumerate(gqs):
+                        for i, gap_question in enumerate(gap_questions_from_api):
                             key = f"gap_answer_{i}"
                             if key not in st.session_state.gap_answers:
                                 st.session_state.gap_answers[key] = ""
@@ -947,31 +884,31 @@ with col_questions:
                     type="primary",
                 )
                 if gen_sec_btn and _all_answered:
-                    for _cat in _page_cats:
-                        _cat_lower = _cat.strip().lower()
-                        _subsec = _cat_to_subsection.get(_cat_lower, {"title": _cat, "type": "text"})
-                        _cat_qa = get_subsection_qa(_cat)
-                        if not _cat_qa:
+                    for category_name in _page_cats:
+                        category_lower = category_name.strip().lower()
+                        subsection_data = _cat_to_subsection.get(category_lower, {"title": category_name, "type": "text"})
+                        category_qa_list = get_subsection_qa(category_name)
+                        if not category_qa_list:
                             continue
-                        _section_for_api = {
+                        section_for_api_call = {
                             "title": raw_schema_section.get("title", "Document Overview") if raw_schema_section else "Document Overview",
-                            "subsections": [_subsec],
+                            "subsections": [subsection_data],
                         }
-                        _doc_memory = "\n\n".join(
+                        document_memory = "\n\n".join(
                             st.session_state.prog_sections[k]
                             for k in _ordered_categories
-                            if k in st.session_state.prog_sections and k != _cat
+                            if k in st.session_state.prog_sections and k != category_name
                         )
-                        with st.spinner(f"⚡ Generating '{_cat}'..."):
-                            _result = call_generate_section(
+                        with st.spinner(f"⚡ Generating '{category_name}'..."):
+                            section_generation_result = call_generate_section(
                                 department=selected_department,
                                 document_type=selected_document,
-                                section=_section_for_api,
-                                questions_and_answers=_cat_qa,
-                                doc_memory=_doc_memory,
+                                section=section_for_api_call,
+                                questions_and_answers=category_qa_list,
+                                doc_memory=document_memory,
                             )
-                        if _result and _result.get("section_text"):
-                            st.session_state.prog_sections[_cat] = _result["section_text"]
+                        if section_generation_result and section_generation_result.get("section_text"):
+                            st.session_state.prog_sections[category_name] = section_generation_result["section_text"]
                     st.rerun()
 
                 # On last page also show Finalize
@@ -992,36 +929,36 @@ with col_questions:
                 st.session_state.is_generating = True
 
                 questions_and_answers = []
-                for i, ques in enumerate(questions):
-                    if ques.get("is_gap_question"):
+                for i, question_item in enumerate(questions):
+                    if question_item.get("is_gap_question"):
                         continue
                     key = f"answer_{i}"
                     questions_and_answers.append({
-                        "question": ques.get("question", ""),
+                        "question": question_item.get("question", ""),
                         "answer": st.session_state.answers.get(key, ""),
-                        "category": ques.get("category", ""),
-                        "answer_type": ques.get("answer_type", "text"),
+                        "category": question_item.get("category", ""),
+                        "answer_type": question_item.get("answer_type", "text"),
                     })
 
-                for i, ques in enumerate(questions):
-                    if not ques.get("is_gap_question"):
+                for i, question_item in enumerate(questions):
+                    if not question_item.get("is_gap_question"):
                         continue
                     key = f"answer_{i}"
                     questions_and_answers.append({
-                        "question": ques.get("question", ""),
+                        "question": question_item.get("question", ""),
                         "answer": st.session_state.answers.get(key, ""),
-                        "category": ques.get("category", "Additional Information"),
-                        "answer_type": ques.get("answer_type", "text"),
+                        "category": question_item.get("category", "Additional Information"),
+                        "answer_type": question_item.get("answer_type", "text"),
                         "is_gap_question": True,
                     })
 
-                for i, gq in enumerate(st.session_state.gap_questions):
+                for i, gap_question in enumerate(st.session_state.gap_questions):
                     key = f"gap_answer_{i}"
                     questions_and_answers.append({
-                        "question": gq.get("question", ""),
+                        "question": gap_question.get("question", ""),
                         "answer": st.session_state.gap_answers.get(key, ""),
-                        "category": gq.get("category", "Additional Information"),
-                        "answer_type": gq.get("answer_type", "text"),
+                        "category": gap_question.get("category", "Additional Information"),
+                        "answer_type": gap_question.get("answer_type", "text"),
                         "is_gap_question": True,
                     })
 
@@ -1029,7 +966,7 @@ with col_questions:
                 document_name_for_request = document_name_lookup.get(selected_document, selected_document)
 
                 with st.spinner("Agent is generating your document... This may take 30-60 seconds."):
-                    result = call_generate_endpoint(
+                    generation_result = call_generate_endpoint(
                         department=selected_department,
                         document_type=selected_document,
                         document_name=document_name_for_request,
@@ -1038,18 +975,18 @@ with col_questions:
 
                 st.session_state.is_generating = False
 
-                if result:
-                    st.session_state.markdown_doc = result.get("generated_document", "")
-                    generation_status = result.get("status", "unknown")
-                    quality_scores = result.get("quality_scores", {})
-                    retry_count = result.get("retry_count", 0)
+                if generation_result:
+                    st.session_state.markdown_doc = generation_result.get("generated_document", "")
+                    generation_status = generation_result.get("status", "unknown")
+                    quality_scores = generation_result.get("quality_scores", {})
+                    retry_count = generation_result.get("retry_count", 0)
 
-                    new_gap_qs = result.get("gap_questions", [])
+                    new_gap_qs = generation_result.get("gap_questions", [])
                     if new_gap_qs and not st.session_state.gap_questions:
                         st.session_state.gap_questions = new_gap_qs
-                        st.session_state.gap_source = "generated"
+                        st.session_state.gap_source = generation_result.get("source", "generated")
                         st.session_state.gap_doc_type = selected_document
-                        for i, gq in enumerate(new_gap_qs):
+                        for i, gap_question in enumerate(new_gap_qs):
                             k = f"gap_answer_{i}"
                             if k not in st.session_state.gap_answers:
                                 st.session_state.gap_answers[k] = ""
@@ -1071,33 +1008,33 @@ with col_questions:
             else:
                 # ═══ PROGRESSIVE FINALIZE ═══
                 # Generate any category not yet done, then stitch in order
-                for _cat in _ordered_categories:
-                    if _cat in st.session_state.prog_sections:
+                for category_name in _ordered_categories:
+                    if category_name in st.session_state.prog_sections:
                         continue
-                    _cat_lower = _cat.strip().lower()
-                    _subsec = _cat_to_subsection.get(_cat_lower, {"title": _cat, "type": "text"})
-                    _cat_qa = get_subsection_qa(_cat)
-                    if not _cat_qa:
+                    category_lower = category_name.strip().lower()
+                    subsection_data = _cat_to_subsection.get(category_lower, {"title": category_name, "type": "text"})
+                    category_qa_list = get_subsection_qa(category_name)
+                    if not category_qa_list:
                         continue
-                    _section_for_api = {
+                    section_for_api_call = {
                         "title": raw_schema_section.get("title", "Document Overview") if raw_schema_section else "Document Overview",
-                        "subsections": [_subsec],
+                        "subsections": [subsection_data],
                     }
-                    _doc_memory = "\n\n".join(
+                    document_memory = "\n\n".join(
                         st.session_state.prog_sections[k]
                         for k in _ordered_categories
-                        if k in st.session_state.prog_sections and k != _cat
+                        if k in st.session_state.prog_sections and k != category_name
                     )
-                    with st.spinner(f"⚡ Generating '{_cat}'..."):
-                        result = call_generate_section(
+                    with st.spinner(f"⚡ Generating '{category_name}'..."):
+                        section_generation_result = call_generate_section(
                             department=selected_department,
                             document_type=selected_document,
-                            section=_section_for_api,
-                            questions_and_answers=_cat_qa,
-                            doc_memory=_doc_memory,
+                            section=section_for_api_call,
+                            questions_and_answers=category_qa_list,
+                            doc_memory=document_memory,
                         )
-                    if result and result.get("section_text"):
-                        st.session_state.prog_sections[_cat] = result["section_text"]
+                    if section_generation_result and section_generation_result.get("section_text"):
+                        st.session_state.prog_sections[category_name] = section_generation_result["section_text"]
 
                 # Stitch in document order
                 full_doc = "\n\n".join(

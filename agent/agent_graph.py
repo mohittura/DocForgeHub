@@ -173,15 +173,15 @@ def is_table_only_schema(required_section: dict) -> bool:
         return False
     try:
         debug_info = [
-            f"type={s.get('type')}, subs={bool(s.get('subsections'))}"
-            for s in sections
+            f"type={schema_section.get('type')}, subs={bool(schema_section.get('subsections'))}"
+            for schema_section in sections
         ]
         logger.info("   🔍 Checking is_table_only_schema: %s", debug_info)
     except Exception:
         pass
     return all(
-        s.get("type") == "table" and not s.get("subsections")
-        for s in sections
+        schema_section.get("type") == "table" and not schema_section.get("subsections")
+        for schema_section in sections
     )
 
 
@@ -328,11 +328,11 @@ Identify uncovered sections and generate gap questions now.
         # that touch the gap areas — gives the document LLM something to
         # work with even if the user hasn't answered the gap questions yet.
         supplementary_lines = []
-        for gq in gap_questions:
-            section = gq.get("section_covered", "")
+        for gap_question in gap_questions:
+            section = gap_question.get("section_covered", "")
             supplementary_lines.append(
                 f"**{section}**: This section requires additional information. "
-                f"Gap question pending user answer: \"{gq['question']}\""
+                f"Gap question pending user answer: \"{gap_question['question']}\""
             )
 
         supplementary_content = "\n".join(supplementary_lines) if supplementary_lines else ""
@@ -342,8 +342,8 @@ Identify uncovered sections and generate gap questions now.
             "supplementary_content": supplementary_content,
         }
 
-    except (json.JSONDecodeError, Exception) as err:
-        logger.warning("   ⚠️  analyze_schema_gaps failed (non-critical): %s", err)
+    except (json.JSONDecodeError, Exception) as error_msg:
+        logger.warning("   ⚠️  analyze_schema_gaps failed (non-critical): %s", error_msg)
         return {"gap_questions": [], "supplementary_content": ""}
 
 
@@ -391,9 +391,9 @@ def build_prompt(state: AgentState) -> dict:
         # and inject it into the prompt so the LLM knows exactly what to generate.
         # The LLM must use ONLY these headings — no additions, renames, or omissions.
         required_headings = []
-        for section in state["required_section"].get("sections", []):
-            for sub in sorted(section.get("subsections", []), key=lambda s: s.get("order", 0)):
-                title = sub.get("title", "").strip()
+        for schema_section in state["required_section"].get("sections", []):
+            for subsection_item in sorted(schema_section.get("subsections", []), key=lambda s: s.get("order", 0)):
+                title = subsection_item.get("title", "").strip()
                 if title:
                     required_headings.append(title)
 
@@ -517,26 +517,26 @@ def validate_document_structure(document_text: str, required_section: dict) -> l
     # For Pattern B, all required headings live in subsections[], sorted by order.
     # The parent section title is informational only and NOT a required heading.
     expected_sections = []
-    for section in required_section.get("sections", []):
-        subsections = section.get("subsections", [])
+    for schema_section in required_section.get("sections", []):
+        subsections = schema_section.get("subsections", [])
         if subsections:
             # Pattern B: every subsection title = a required document heading
-            for sub in sorted(subsections, key=lambda s: s.get("order", 0)):
-                title = sub.get("title", "").strip()
+            for subsection_item in sorted(subsections, key=lambda s: s.get("order", 0)):
+                title = subsection_item.get("title", "").strip()
                 if title:
                     expected_sections.append({
                         "title": title,
-                        "type": sub.get("type", "text"),
-                        "columns": sub.get("columns", []),
+                        "type": subsection_item.get("type", "text"),
+                        "columns": subsection_item.get("columns", []),
                     })
         else:
             # Fallback for future schema patterns where section itself is titled
-            title = section.get("title", "").strip()
+            title = schema_section.get("title", "").strip()
             if title:
                 expected_sections.append({
                     "title": title,
-                    "type": section.get("type", "text"),
-                    "columns": section.get("columns", []),
+                    "type": schema_section.get("type", "text"),
+                    "columns": schema_section.get("columns", []),
                 })
 
     if not expected_sections:
@@ -559,8 +559,8 @@ def validate_document_structure(document_text: str, required_section: dict) -> l
     # Normalised allowlist: normalised_title → schema entry
     # This is the single source of truth for what headings are permitted.
     allowlist: dict[str, dict] = {
-        _normalise_heading(s["title"]): s
-        for s in expected_sections
+        _normalise_heading(schema_section["title"]): schema_section
+        for schema_section in expected_sections
     }
 
     # ── CHECK 1: Missing sections ────────────────────────────────────────────
@@ -620,10 +620,10 @@ def validate_document_structure(document_text: str, required_section: dict) -> l
 
         # Verify the column headers match the schema exactly
         if expected_cols:
-            table_lines = [l.strip() for l in block_lines if l.strip().startswith("|")]
+            table_lines = [line.strip() for line in block_lines if line.strip().startswith("|")]
             if table_lines:
-                actual_cols = [c.strip() for c in table_lines[0].split("|") if c.strip()]
-                if [c.lower() for c in expected_cols] != [c.lower() for c in actual_cols]:
+                actual_cols = [col.strip() for col in table_lines[0].split("|") if col.strip()]
+                if [col.lower() for col in expected_cols] != [col.lower() for col in actual_cols]:
                     errors.append(
                         f"Section '{schema_entry['title']}' has wrong table columns. "
                         f"Expected: {expected_cols}. Got: {actual_cols}"
@@ -687,9 +687,9 @@ def quality_gate(state: AgentState) -> dict:
             }
 
         header_line = table_lines[0]
-        actual_columns = [c.strip() for c in header_line.split("|") if c.strip()]
-        expected_normalized = [c.lower().strip() for c in expected_columns]
-        actual_normalized = [c.lower().strip() for c in actual_columns]
+        actual_columns = [col.strip() for col in header_line.split("|") if col.strip()]
+        expected_normalized = [col.lower().strip() for col in expected_columns]
+        actual_normalized = [col.lower().strip() for col in actual_columns]
 
         if expected_normalized != actual_normalized:
             logger.warning("   ❌ Column mismatch")
@@ -726,9 +726,9 @@ def quality_gate(state: AgentState) -> dict:
         logger.warning("   ❌ Structural validation failed with %d errors", len(structure_errors))
 
         # Split errors by type so fix_document gets targeted instructions
-        missing = [e for e in structure_errors if e.startswith("Missing")]
-        extra   = [e for e in structure_errors if e.startswith("Extra")]
-        table   = [e for e in structure_errors if e.startswith("Section")]
+        missing = [error_msg for error_msg in structure_errors if error_msg.startswith("Missing")]
+        extra   = [error_msg for error_msg in structure_errors if error_msg.startswith("Extra")]
+        table   = [error_msg for error_msg in structure_errors if error_msg.startswith("Section")]
 
         suggestions = []
         if missing:
@@ -1057,99 +1057,111 @@ async def generate_single_section(
     doc_memory: str = "",
 ) -> str:
     """
-    Generate ONE section of a document using the existing LLM.
+    Generate ONE section of a document.
 
-    Args:
-        department:             e.g. "Product Management"
-        document_type:          e.g. "Employee Handbook"
-        section:                schema section dict {title, subsections, type, columns}
-        questions_and_answers:  Q&A relevant to this section
-        doc_memory:             text of previously generated sections (for consistency)
-
-    Returns:
-        Generated Markdown text for this single section.
+    IMPORTANT: `questions_and_answers` must contain ONLY the answered Q&A
+    for this section (filtered by the caller). The section schema is trimmed
+    here to only include subsections whose titles match the answered Q&A
+    categories — so the LLM physically cannot see subsections it has no data for.
     """
     logger.info(
-        "📝 generate_single_section — section=%s",
+        "📝 generate_single_section — section=%s, qa_count=%d",
         section.get("title", "Untitled"),
+        len(questions_and_answers),
     )
 
-    qa_text = format_questions_and_answers_for_prompt(questions_and_answers)
-
     section_title = section.get("title", "Untitled Section")
-    section_lines = [f"## {section_title}"]
 
-    subsections = section.get("subsections", [])
-    if subsections:
-        for sub in subsections:
-            sub_title = sub.get("title", "")
-            sub_type = sub.get("type", "text")
-            columns = sub.get("columns", [])
+    # ── Trim subsections to only those covered by answered Q&A ──────────────
+    # question `category` in MongoDB == subsection `title` in schema.
+    answered_categories = {
+        qa_item.get("category", "").strip().lower()
+        for qa_item in questions_and_answers
+        if qa_item.get("answer", "").strip()
+    }
+
+    all_subsections = section.get("subsections", [])
+    if all_subsections and answered_categories:
+        covered_subsections = [
+            subsection_item for subsection_item in all_subsections
+            if subsection_item.get("title", "").strip().lower() in answered_categories
+        ]
+        # If exact matching found nothing, keep all subsections (table-only or
+        # schema where categories don't align with subsection titles exactly)
+        subsections_to_render = covered_subsections if covered_subsections else all_subsections
+    else:
+        subsections_to_render = all_subsections
+
+    # ── Build section structure string from trimmed subsections ─────────────
+    section_lines = [f"## {section_title}"]
+    if subsections_to_render:
+        for subsection_item in subsections_to_render:
+            sub_title = subsection_item.get("title", "")
+            sub_type = subsection_item.get("type", "text")
+            columns = subsection_item.get("columns", [])
             if sub_type == "table" and columns:
                 section_lines.append(
                     f"  - {sub_title} ⚠️ TABLE — columns: | {' | '.join(columns)} |"
                 )
                 section_lines.append(
-                    f"    (Output a real Markdown table with these columns and realistic rows)"
+                    "    (Output a real Markdown table with these columns and data rows)"
                 )
             else:
                 section_lines.append(f"  - {sub_title} (type: {sub_type})")
     elif section.get("type") == "table":
         columns = section.get("columns", [])
         if columns:
-            section_lines.append(
-                f"⚠️ TABLE FORMAT — columns: | {' | '.join(columns)} |"
-            )
+            section_lines.append(f"⚠️ TABLE FORMAT — columns: | {' | '.join(columns)} |")
 
     section_structure = "\n".join(section_lines)
+
+    logger.info(
+        "   📐 Trimmed to %d/%d subsections for section '%s'",
+        len(subsections_to_render), len(all_subsections), section_title,
+    )
+
+    # ── Only pass Q&A that have actual answers ───────────────────────────────
+    answered_qa = [qa_item for qa_item in questions_and_answers if qa_item.get("answer", "").strip()]
+    qa_text = format_questions_and_answers_for_prompt(answered_qa)
 
     memory_block = ""
     if doc_memory:
         memory_block = (
-            "\n\n## PREVIOUSLY GENERATED SECTIONS (for consistency — do NOT repeat this content)\n"
-            "Use the same terminology, tone, numbers, and decisions established below.\n\n"
+            "\n\n## PREVIOUSLY GENERATED SECTIONS (for consistency — do NOT repeat)\n"
+            "Use the same terminology, tone, and decisions from below.\n\n"
             f"{doc_memory}\n\n"
             "─────────────────────────────────────────────\n"
         )
 
     system_prompt = f"""\
-You are a **senior SaaS document specialist** writing ONE section of a {document_type} \
+You are a **senior SaaS document specialist** writing one section of a {document_type} \
 for the {department} department.
 
 ## YOUR TASK
-Generate ONLY the content for this ONE section. Do not generate any other section.
+Write ONLY the subsections listed below. Do not add any subsection not in this list.
 
-## SECTION STRUCTURE
+## SUBSECTIONS TO WRITE
 {section_structure}
 
 ## WRITING RULES
 - Write professional, industry-grade prose — not a template fill-in.
 - DO NOT copy answers verbatim — elevate them into polished content.
-- Expand brief answers with relevant context, best practices, and implementation details.
-- Be THOROUGH and DETAILED — each section should be comprehensive and production-ready.
-- For type "text": write 3-6 substantial paragraphs of professional prose. Be detailed.
-- For type "table": output a real Markdown table with the exact columns specified and at least 5-8 realistic data rows.
-- ❌ Do NOT generate content for subsections that have no answer provided. Skip them entirely.
-- ✅ Use ONLY the Q&A answers below to generate content. Do not invent information beyond what is provided.
+- For type "text": write 3-6 detailed paragraphs per subsection.
+- For type "table": output a real Markdown table with the exact columns and at least 5 data rows.
 - ❌ No placeholders like [Company Name], [TBD], [Insert here]
-- ❌ No filler like "This section covers..."
-- Start with the section heading: ## {section_title}
+- ❌ Do NOT add subsections beyond the list above
+- Start with: ## {section_title}
 {memory_block}
-## QUESTIONS & ANSWERS FOR THIS SECTION
+## Q&A (source of truth — use these answers to write the subsections above)
 {qa_text}
 """
-
-    # Count answered questions to reinforce scope in human message
-    answered_count = sum(1 for qa in questions_and_answers if qa.get("answer", "").strip())
 
     messages = [
         SystemMessage(content=system_prompt),
         HumanMessage(content=(
-            f"Generate the '{section_title}' section now. "
-            f"You have {answered_count} answered question(s). "
-            f"Write ONLY the subsections covered by those answers. "
-            f"Do NOT generate content for any unanswered subsections. "
-            f"Output ONLY the heading and the answered content — nothing else."
+            f"Write the '{section_title}' section now, covering only these subsections: "
+            f"{', '.join(sub.get('title','') for sub in subsections_to_render)}. "
+            f"Output ONLY the heading and content for this section."
         )),
     ]
 
@@ -1157,7 +1169,7 @@ Generate ONLY the content for this ONE section. Do not generate any other sectio
     section_text = response.content
 
     logger.info(
-        "   ✅ Section '%s' generated — %d characters",
+        "   ✅ Section '%s' generated — %d chars",
         section_title, len(section_text),
     )
     return section_text

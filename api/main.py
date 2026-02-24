@@ -37,8 +37,8 @@ async def get_departments():
     ]
     results = await db["document_qas"].aggregate(pipeline).to_list(length=100) #will store the departments from the document_qas collection in the mongodb which will be aggregated by the pipeline defined as of group and sort
     departments = []
-    for r in results: #will store the departments by looping on the results by code, name and slug defined in the mongo client
-        dept = r["_id"]
+    for result_item in results: #will store the departments by looping on the results by code, name and slug defined in the mongo client
+        dept = result_item["_id"]
         if dept and isinstance(dept, dict):
             departments.append({
                 "code": dept.get("code", ""),
@@ -61,12 +61,12 @@ async def get_document_types(department: str = Query(..., description="Departmen
     ]
     results = await db["document_qas"].aggregate(pipeline).to_list(length=100)
     doc_types = []
-    for r in results:
+    for result_item in results:
         doc_types.append({
-            "document_type": r["_id"]["document_type"],
-            "document_name": r["_id"]["document_name"],
+            "document_type": result_item["_id"]["document_type"],
+            "document_name": result_item["_id"]["document_name"],
         })
-    doc_types.sort(key=lambda d: d["document_type"]) #sorted by document type
+    doc_types.sort(key=lambda document_item: document_item["document_type"]) #sorted by document type
     return {"document_types": doc_types}
 
 
@@ -116,10 +116,10 @@ def retrieve_all_child_pages_recursive(block_id: str, all_pages: List[Dict] = No
                 start_cursor=next_cursor,
                 page_size=100
             )
-            for block in response['results']:
-                if block['type'] == 'child_page':
-                    page_id = block['id']
-                    page_title = block['child_page']['title']
+            for block_item in response['results']:
+                if block_item['type'] == 'child_page':
+                    page_id = block_item['id']
+                    page_title = block_item['child_page']['title']
                     page_url = get_page_url_from_id(page_id)
                     all_pages.append({
                         "id": page_id,
@@ -242,18 +242,22 @@ async def get_gap_questions(request: GapQuestionsRequest):
             required_section = {"sections": []}
 
     # ── Step 3: Run lightweight gap analysis ───────────────────────────────────
-    gap_questions = await analyze_gaps_only(
-        department=request.department,
-        document_type=request.document_type,
-        questions_and_answers=request.questions_and_answers,
-        required_section=required_section,
-    )
+    try:
+        gap_questions = await analyze_gaps_only(
+            department=request.department,
+            document_type=request.document_type,
+            questions_and_answers=request.questions_and_answers,
+            required_section=required_section,
+        )
 
-    return {
-        "gap_questions": gap_questions,
-        "source": "generated",
-        "count": len(gap_questions),
-    }
+        return {
+            "gap_questions": gap_questions,
+            "source": "generated",
+            "count": len(gap_questions),
+        }
+    except Exception as error_message:
+        print(f"Error in /gap-questions: {error_message}")
+        raise HTTPException(status_code=500, detail=str(error_message))
 
 
 class SaveQuestionsRequest(BaseModel):
@@ -298,24 +302,24 @@ async def save_gap_questions(request: SaveQuestionsRequest):
     saved_count = 0
     updated_count = 0
 
-    for idx, gq in enumerate(request.gap_questions):
-        question_text = gq.get("question", "").strip()
+    for gap_question_item in request.gap_questions:
+        question_text = gap_question_item.get("question", "").strip()
         if not question_text:
             continue
 
-        doc = {
+        document_to_save = {
             "department": request.department,
             "document_type": request.document_type,
             "document_name": request.document_name,
             "question": question_text,
-            "answer": gq.get("answer", ""),
-            "category": gq.get("category", "Additional Information"),
+            "answer": gap_question_item.get("answer", ""),
+            "category": gap_question_item.get("category", "Additional Information"),
             "category_order": 999,          # always sorts after core categories
-            "question_order": base_order + 1000 + idx,
-            "answer_type": gq.get("answer_type", "text"),
-            "options": gq.get("options", []),
+            "question_order": base_order + 1000 + request.gap_questions.index(gap_question_item),
+            "answer_type": gap_question_item.get("answer_type", "text"),
+            "options": gap_question_item.get("options", []),
             "is_gap_question": True,
-            "section_covered": gq.get("section_covered", ""),
+            "section_covered": gap_question_item.get("section_covered", ""),
             "answered_at": datetime.utcnow().isoformat(),
         }
 
@@ -326,7 +330,7 @@ async def save_gap_questions(request: SaveQuestionsRequest):
                 "question": question_text,
                 "is_gap_question": True,
             },
-            {"$set": doc},
+            {"$set": document_to_save},
             upsert=True,
         )
 

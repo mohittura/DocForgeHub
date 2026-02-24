@@ -173,15 +173,15 @@ def is_table_only_schema(required_section: dict) -> bool:
         return False
     try:
         debug_info = [
-            f"type={s.get('type')}, subs={bool(s.get('subsections'))}"
-            for s in sections
+            f"type={schema_section.get('type')}, subs={bool(schema_section.get('subsections'))}"
+            for schema_section in sections
         ]
         logger.info("   🔍 Checking is_table_only_schema: %s", debug_info)
     except Exception:
         pass
     return all(
-        s.get("type") == "table" and not s.get("subsections")
-        for s in sections
+        schema_section.get("type") == "table" and not schema_section.get("subsections")
+        for schema_section in sections
     )
 
 
@@ -328,11 +328,11 @@ Identify uncovered sections and generate gap questions now.
         # that touch the gap areas — gives the document LLM something to
         # work with even if the user hasn't answered the gap questions yet.
         supplementary_lines = []
-        for gq in gap_questions:
-            section = gq.get("section_covered", "")
+        for gap_question in gap_questions:
+            section = gap_question.get("section_covered", "")
             supplementary_lines.append(
                 f"**{section}**: This section requires additional information. "
-                f"Gap question pending user answer: \"{gq['question']}\""
+                f"Gap question pending user answer: \"{gap_question['question']}\""
             )
 
         supplementary_content = "\n".join(supplementary_lines) if supplementary_lines else ""
@@ -342,8 +342,8 @@ Identify uncovered sections and generate gap questions now.
             "supplementary_content": supplementary_content,
         }
 
-    except (json.JSONDecodeError, Exception) as err:
-        logger.warning("   ⚠️  analyze_schema_gaps failed (non-critical): %s", err)
+    except (json.JSONDecodeError, Exception) as error_msg:
+        logger.warning("   ⚠️  analyze_schema_gaps failed (non-critical): %s", error_msg)
         return {"gap_questions": [], "supplementary_content": ""}
 
 
@@ -391,9 +391,9 @@ def build_prompt(state: AgentState) -> dict:
         # and inject it into the prompt so the LLM knows exactly what to generate.
         # The LLM must use ONLY these headings — no additions, renames, or omissions.
         required_headings = []
-        for section in state["required_section"].get("sections", []):
-            for sub in sorted(section.get("subsections", []), key=lambda s: s.get("order", 0)):
-                title = sub.get("title", "").strip()
+        for schema_section in state["required_section"].get("sections", []):
+            for subsection_item in sorted(schema_section.get("subsections", []), key=lambda s: s.get("order", 0)):
+                title = subsection_item.get("title", "").strip()
                 if title:
                     required_headings.append(title)
 
@@ -517,26 +517,26 @@ def validate_document_structure(document_text: str, required_section: dict) -> l
     # For Pattern B, all required headings live in subsections[], sorted by order.
     # The parent section title is informational only and NOT a required heading.
     expected_sections = []
-    for section in required_section.get("sections", []):
-        subsections = section.get("subsections", [])
+    for schema_section in required_section.get("sections", []):
+        subsections = schema_section.get("subsections", [])
         if subsections:
             # Pattern B: every subsection title = a required document heading
-            for sub in sorted(subsections, key=lambda s: s.get("order", 0)):
-                title = sub.get("title", "").strip()
+            for subsection_item in sorted(subsections, key=lambda s: s.get("order", 0)):
+                title = subsection_item.get("title", "").strip()
                 if title:
                     expected_sections.append({
                         "title": title,
-                        "type": sub.get("type", "text"),
-                        "columns": sub.get("columns", []),
+                        "type": subsection_item.get("type", "text"),
+                        "columns": subsection_item.get("columns", []),
                     })
         else:
             # Fallback for future schema patterns where section itself is titled
-            title = section.get("title", "").strip()
+            title = schema_section.get("title", "").strip()
             if title:
                 expected_sections.append({
                     "title": title,
-                    "type": section.get("type", "text"),
-                    "columns": section.get("columns", []),
+                    "type": schema_section.get("type", "text"),
+                    "columns": schema_section.get("columns", []),
                 })
 
     if not expected_sections:
@@ -559,8 +559,8 @@ def validate_document_structure(document_text: str, required_section: dict) -> l
     # Normalised allowlist: normalised_title → schema entry
     # This is the single source of truth for what headings are permitted.
     allowlist: dict[str, dict] = {
-        _normalise_heading(s["title"]): s
-        for s in expected_sections
+        _normalise_heading(schema_section["title"]): schema_section
+        for schema_section in expected_sections
     }
 
     # ── CHECK 1: Missing sections ────────────────────────────────────────────
@@ -620,10 +620,10 @@ def validate_document_structure(document_text: str, required_section: dict) -> l
 
         # Verify the column headers match the schema exactly
         if expected_cols:
-            table_lines = [l.strip() for l in block_lines if l.strip().startswith("|")]
+            table_lines = [line.strip() for line in block_lines if line.strip().startswith("|")]
             if table_lines:
-                actual_cols = [c.strip() for c in table_lines[0].split("|") if c.strip()]
-                if [c.lower() for c in expected_cols] != [c.lower() for c in actual_cols]:
+                actual_cols = [col.strip() for col in table_lines[0].split("|") if col.strip()]
+                if [col.lower() for col in expected_cols] != [col.lower() for col in actual_cols]:
                     errors.append(
                         f"Section '{schema_entry['title']}' has wrong table columns. "
                         f"Expected: {expected_cols}. Got: {actual_cols}"
@@ -687,9 +687,9 @@ def quality_gate(state: AgentState) -> dict:
             }
 
         header_line = table_lines[0]
-        actual_columns = [c.strip() for c in header_line.split("|") if c.strip()]
-        expected_normalized = [c.lower().strip() for c in expected_columns]
-        actual_normalized = [c.lower().strip() for c in actual_columns]
+        actual_columns = [col.strip() for col in header_line.split("|") if col.strip()]
+        expected_normalized = [col.lower().strip() for col in expected_columns]
+        actual_normalized = [col.lower().strip() for col in actual_columns]
 
         if expected_normalized != actual_normalized:
             logger.warning("   ❌ Column mismatch")
@@ -726,9 +726,9 @@ def quality_gate(state: AgentState) -> dict:
         logger.warning("   ❌ Structural validation failed with %d errors", len(structure_errors))
 
         # Split errors by type so fix_document gets targeted instructions
-        missing = [e for e in structure_errors if e.startswith("Missing")]
-        extra   = [e for e in structure_errors if e.startswith("Extra")]
-        table   = [e for e in structure_errors if e.startswith("Section")]
+        missing = [error_msg for error_msg in structure_errors if error_msg.startswith("Missing")]
+        extra   = [error_msg for error_msg in structure_errors if error_msg.startswith("Extra")]
+        table   = [error_msg for error_msg in structure_errors if error_msg.startswith("Section")]
 
         suggestions = []
         if missing:
@@ -1057,6 +1057,12 @@ async def generate_single_section(
     doc_memory: str = "",
 ) -> str:
     """
+    Generate ONE section of a document.
+
+    IMPORTANT: `questions_and_answers` must contain ONLY the answered Q&A
+    for this section (filtered by the caller). The section schema is trimmed
+    here to only include subsections whose titles match the answered Q&A
+    categories — so the LLM physically cannot see subsections it has no data for.
     Generate ONE section of a document.
 
     IMPORTANT: `questions_and_answers` must contain ONLY the answered Q&A

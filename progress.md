@@ -44,3 +44,5 @@ added some things in the prompts.py : feat(agent)-notFinal: made some prompts to
 
 
 added progressive generation in the app, made relavant endpoints (generate-section), made ui changes and added pagination to display the questions, as well as added progessive generation toggle button, made changes in the agent schema to handle the same.
+some bug fixes
+refactor: renamed cryptic variables to meaningful ones, added helper function _is_answered to resolve the last answer button lock issue

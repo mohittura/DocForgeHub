@@ -573,12 +573,36 @@ def validate_document_structure(document_text: str, required_section: dict) -> l
     # ── CHECK 2: Extra sections ──────────────────────────────────────────────
     # Every heading in the document must match something in the allowlist.
     # Headings the LLM invented beyond the schema are flagged.
+    #
+    # Skip-list: headings that are legitimately present even though they are
+    # not subsection titles in the schema:
+    #   • The document name (document_name / document_type at the top level)
+    #   • Parent section titles (sections[].title) — these wrap subsections
+    skip_headings: set[str] = set()
+    doc_name = _normalise_heading(required_section.get("document_name", ""))
+    doc_type = _normalise_heading(required_section.get("document_type", ""))
+    if doc_name:
+        skip_headings.add(doc_name)
+    if doc_type:
+        skip_headings.add(doc_type)
+    for schema_section in required_section.get("sections", []):
+        parent_title = _normalise_heading(schema_section.get("title", ""))
+        if parent_title:
+            skip_headings.add(parent_title)
+
     for (_, raw_heading), (_, norm_heading) in zip(doc_headings, doc_headings_norm):
+        # Allow if it matches the allowlist (subsection titles)
         in_allowlist = any(
             allowed in norm_heading or norm_heading in allowed
             for allowed in allowlist
         )
-        if not in_allowlist:
+        # Allow if it matches the document name or a parent section title
+        in_skip = any(
+            skip in norm_heading or norm_heading in skip
+            for skip in skip_headings
+            if skip
+        )
+        if not in_allowlist and not in_skip:
             errors.append(
                 f"Extra section not in schema: '{raw_heading}' — "
                 f"remove it, the document must only contain schema-defined sections."

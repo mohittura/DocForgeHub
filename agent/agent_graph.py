@@ -1057,119 +1057,103 @@ async def generate_single_section(
     doc_memory: str = "",
 ) -> str:
     """
-    Generate ONE section of a document.
+    Generate ONE section of a document using the FULL LangGraph agent pipeline.
 
-    IMPORTANT: `questions_and_answers` must contain ONLY the answered Q&A
-    for this section (filtered by the caller). The section schema is trimmed
-    here to only include subsections whose titles match the answered Q&A
-    categories — so the LLM physically cannot see subsections it has no data for.
+    This runs the same graph as run_agent (build_prompt → generate_document →
+    quality_gate → fix_document) but scoped to a single section's subsections
+    and Q&A. This gives progressive generation the same quality guarantees —
+    strict heading rules, quality gate, and up to 2 fix retries — as single-shot.
+
+    Args:
+        department:            e.g. "Product Management"
+        document_type:         e.g. "Feature Prioritization Framework"
+        section:               dict with keys "title" and "subsections" — the
+                               subsection slice from required_section for this
+                               category. The subsections list may contain one or
+                               more entries; all are passed to the agent together.
+        questions_and_answers: answered Q&A for this section only (pre-filtered
+                               by the caller to the relevant categories).
+        doc_memory:            markdown text of previously generated sections,
+                               injected as context so the LLM stays consistent.
     """
     logger.info(
-        "📝 generate_single_section — section=%s, qa_count=%d",
+        "📝 generate_single_section — section=%s, subsections=%d, qa_count=%d",
         section.get("title", "Untitled"),
+        len(section.get("subsections", [])),
         len(questions_and_answers),
     )
 
-    section_title = section.get("title", "Untitled Section")
-
-    # ── Trim subsections to only those covered by answered Q&A ──────────────
-    # question `category` in MongoDB == subsection `title` in schema.
+    # ── Build a scoped required_section that the main agent understands ──────
+    # The agent expects: { "sections": [ { "title": ..., "subsections": [...] } ] }
+    # We scope it to ONLY the subsections for this section, filtered to those
+    # whose titles match the answered Q&A categories so the LLM can't hallucinate
+    # headings it has no data for.
     answered_categories = {
-        qa_item.get("category", "").strip().lower()
-        for qa_item in questions_and_answers
-        if qa_item.get("answer", "").strip()
+        qa.get("category", "").strip().lower()
+        for qa in questions_and_answers
+        if qa.get("answer", "").strip()
     }
 
     all_subsections = section.get("subsections", [])
     if all_subsections and answered_categories:
-        covered_subsections = [
-            subsection_item for subsection_item in all_subsections
-            if subsection_item.get("title", "").strip().lower() in answered_categories
+        covered = [
+            sub for sub in all_subsections
+            if sub.get("title", "").strip().lower() in answered_categories
         ]
-        # If exact matching found nothing, keep all subsections (table-only or
-        # schema where categories don't align with subsection titles exactly)
-        subsections_to_render = covered_subsections if covered_subsections else all_subsections
+        subsections_to_use = covered if covered else all_subsections
     else:
-        subsections_to_render = all_subsections
+        subsections_to_use = all_subsections
 
-    # ── Build section structure string from trimmed subsections ─────────────
-    section_lines = [f"## {section_title}"]
-    if subsections_to_render:
-        for subsection_item in subsections_to_render:
-            sub_title = subsection_item.get("title", "")
-            sub_type = subsection_item.get("type", "text")
-            columns = subsection_item.get("columns", [])
-            if sub_type == "table" and columns:
-                section_lines.append(
-                    f"  - {sub_title} ⚠️ TABLE — columns: | {' | '.join(columns)} |"
-                )
-                section_lines.append(
-                    "    (Output a real Markdown table with these columns and data rows)"
-                )
-            else:
-                section_lines.append(f"  - {sub_title} (type: {sub_type})")
-    elif section.get("type") == "table":
-        columns = section.get("columns", [])
-        if columns:
-            section_lines.append(f"⚠️ TABLE FORMAT — columns: | {' | '.join(columns)} |")
+    scoped_required_section = {
+        "sections": [
+            {
+                "title": section.get("title", ""),
+                "subsections": subsections_to_use,
+            }
+        ]
+    }
 
-    section_structure = "\n".join(section_lines)
+    # ── If doc_memory exists, prepend it to the Q&A as context ───────────────
+    # We inject memory as a synthetic Q&A entry so the prompt builder picks it up
+    # without needing changes to build_prompt.
+    enriched_qa = list(questions_and_answers)
+    if doc_memory.strip():
+        enriched_qa = [
+            {
+                "question": "Previously generated sections (for consistency — do NOT repeat these, use same terminology and decisions)",
+                "answer": doc_memory,
+                "category": "_memory",
+                "answer_type": "text",
+            }
+        ] + enriched_qa
 
-    logger.info(
-        "   📐 Trimmed to %d/%d subsections for section '%s'",
-        len(subsections_to_render), len(all_subsections), section_title,
+    # ── Run the full agent graph scoped to this section ───────────────────────
+    initial_state: AgentState = {
+        "department": department,
+        "document_type": document_type,
+        "questions_and_answers": enriched_qa,
+        "required_section": scoped_required_section,
+        "gap_questions": [],
+        "supplementary_content": "",
+        "system_prompt": "",
+        "generated_document": "",
+        "quality_scores": {},
+        "quality_issues": [],
+        "quality_suggestions": [],
+        "retry_count": 0,
+        "status": "generating",
+    }
+
+    final_state = await asyncio.to_thread(
+        document_generation_agent.invoke, initial_state
     )
 
-    # ── Only pass Q&A that have actual answers ───────────────────────────────
-    answered_qa = [qa_item for qa_item in questions_and_answers if qa_item.get("answer", "").strip()]
-    qa_text = format_questions_and_answers_for_prompt(answered_qa)
-
-    memory_block = ""
-    if doc_memory:
-        memory_block = (
-            "\n\n## PREVIOUSLY GENERATED SECTIONS (for consistency — do NOT repeat)\n"
-            "Use the same terminology, tone, and decisions from below.\n\n"
-            f"{doc_memory}\n\n"
-            "─────────────────────────────────────────────\n"
-        )
-
-    system_prompt = f"""\
-You are a **senior SaaS document specialist** writing one section of a {document_type} \
-for the {department} department.
-
-## YOUR TASK
-Write ONLY the subsections listed below. Do not add any subsection not in this list.
-
-## SUBSECTIONS TO WRITE
-{section_structure}
-
-## WRITING RULES
-- Write professional, industry-grade prose — not a template fill-in.
-- DO NOT copy answers verbatim — elevate them into polished content.
-- For type "text": write 3-6 detailed paragraphs per subsection.
-- For type "table": output a real Markdown table with the exact columns and at least 5 data rows.
-- ❌ No placeholders like [Company Name], [TBD], [Insert here]
-- ❌ Do NOT add subsections beyond the list above
-- Start with: ## {section_title}
-{memory_block}
-## Q&A (source of truth — use these answers to write the subsections above)
-{qa_text}
-"""
-
-    messages = [
-        SystemMessage(content=system_prompt),
-        HumanMessage(content=(
-            f"Write the '{section_title}' section now, covering only these subsections: "
-            f"{', '.join(sub.get('title','') for sub in subsections_to_render)}. "
-            f"Output ONLY the heading and content for this section."
-        )),
-    ]
-
-    response = await asyncio.to_thread(llm.invoke, messages)
-    section_text = response.content
+    section_text = final_state.get("generated_document", "")
+    status = final_state.get("status", "unknown")
+    retries = final_state.get("retry_count", 0)
 
     logger.info(
-        "   ✅ Section '%s' generated — %d chars",
-        section_title, len(section_text),
+        "   ✅ Section '%s' generated — status=%s, retries=%d, %d chars",
+        section.get("title", "Untitled"), status, retries, len(section_text),
     )
     return section_text

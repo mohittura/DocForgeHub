@@ -1,6 +1,16 @@
 import streamlit as st
 import requests
 import logging
+import re
+import io
+from reportlab.lib.pagesizes import A4
+from reportlab.lib import colors
+from reportlab.lib.units import cm
+from reportlab.lib.styles import ParagraphStyle
+from reportlab.lib.enums import TA_CENTER
+from reportlab.platypus import (
+    SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, HRFlowable,
+)
 
 logging.basicConfig(
     level=logging.INFO,
@@ -508,6 +518,179 @@ def render_question_widget(
             value=answer_state.get(widget_key, ""),
             key=streamlit_widget_key,
         )
+
+
+# ═══════════════════════════════════════════════════════════════
+#  PDF generation — ReportLab Platypus
+# ═══════════════════════════════════════════════════════════════
+
+_PDF_BRAND  = colors.HexColor("#1E3A5F")
+_PDF_ACCENT = colors.HexColor("#2E86AB")
+_PDF_MID    = colors.HexColor("#8C9BAB")
+_PDF_DARK   = colors.HexColor("#1A1A2E")
+_PDF_TH_BG  = colors.HexColor("#2E86AB")
+_PDF_ROW_A  = colors.HexColor("#F0F5FA")
+_PDF_BORDER = colors.HexColor("#CBD5E1")
+
+
+def _pdf_styles():
+    kw = dict(fontName="Helvetica", textColor=_PDF_DARK, leading=14)
+    return {
+        "doc_title": ParagraphStyle("DocTitle", fontName="Helvetica-Bold", fontSize=24,
+            textColor=_PDF_BRAND, leading=30, spaceAfter=4, alignment=TA_CENTER),
+        "doc_sub":   ParagraphStyle("DocSub", fontName="Helvetica", fontSize=10,
+            textColor=_PDF_MID, leading=15, spaceAfter=18, alignment=TA_CENTER),
+        "h1": ParagraphStyle("H1", fontName="Helvetica-Bold", fontSize=16,
+            textColor=_PDF_BRAND, leading=20, spaceBefore=20, spaceAfter=6),
+        "h2": ParagraphStyle("H2", fontName="Helvetica-Bold", fontSize=13,
+            textColor=_PDF_ACCENT, leading=17, spaceBefore=14, spaceAfter=4),
+        "h3": ParagraphStyle("H3", fontName="Helvetica-BoldOblique", fontSize=11,
+            textColor=_PDF_ACCENT, leading=15, spaceBefore=10, spaceAfter=3),
+        "body":   ParagraphStyle("Body",   **kw, fontSize=10, spaceAfter=5),
+        "bullet": ParagraphStyle("Bullet", **kw, fontSize=10, leftIndent=14, spaceAfter=3),
+    }
+
+
+def _pdf_clean(text: str) -> str:
+    if not isinstance(text, str):
+        text = str(text)
+    for k, v in {
+        # Dashes & quotes
+        "\u2014": "-", "\u2013": "-",
+        "\u2019": "'", "\u2018": "'",
+        "\u201c": '"', "\u201d": '"',
+        "\u2022": "-", "\u2026": "...", "\u00a0": " ",
+        # Math / comparison symbols
+        "\u2265": ">=", "\u2264": "<=",
+        "\u2260": "!=", "\u2248": "~=",
+        "\u00d7": "x",  "\u00f7": "/",
+        "\u00b1": "+/-", "\u2212": "-",
+        "\u221e": "inf", "\u2205": "{}",
+        "\u03b1": "alpha", "\u03b2": "beta", "\u03b3": "gamma",
+        "\u03b4": "delta", "\u03bb": "lambda", "\u03bc": "mu",
+        "\u03c3": "sigma", "\u03c0": "pi",
+        # Arrows
+        "\u2192": "->", "\u2190": "<-",
+        "\u2194": "<->", "\u21d2": "=>",
+        # Misc
+        "\u00ae": "(R)", "\u00a9": "(C)", "\u2122": "(TM)",
+        "\u2713": "ok", "\u2717": "x",
+        "\u00b0": "deg", "\u00b2": "^2", "\u00b3": "^3",
+        "\u20b9": "INR", "\u20ac": "EUR", "\u00a3": "GBP",
+    }.items():
+        text = text.replace(k, v)
+    # Drop anything still outside latin-1 rather than showing black boxes
+    return text.encode("latin-1", "replace").decode("latin-1")
+
+
+def _pdf_para(text: str, style) -> Paragraph:
+    text = _pdf_clean(text)
+    text = re.sub(r"\*\*(.+?)\*\*", r"<b>\1</b>", text)
+    text = re.sub(r"\*(.+?)\*",     r"<i>\1</i>", text)
+    text = re.sub(r"`(.+?)`",       r"<font name='Courier'>\1</font>", text)
+    return Paragraph(text, style)
+
+
+def _parse_md_table(lines: list) -> list:
+    rows = []
+    for ln in lines:
+        ln = ln.strip()
+        if re.match(r"^\|[\s\-\|:]+\|$", ln):
+            continue
+        cells = [c.strip() for c in ln.split("|") if c.strip()]
+        if cells:
+            rows.append(cells)
+    return rows
+
+
+def _build_rl_table(rows: list, S: dict):
+    if not rows:
+        return None
+    n = max(len(r) for r in rows)
+    rows = [r + [""] * (n - len(r)) for r in rows]
+    header = [Paragraph(f"<b>{_pdf_clean(c)}</b>", S["body"]) for c in rows[0]]
+    body   = [[Paragraph(_pdf_clean(c), S["body"]) for c in row] for row in rows[1:]]
+    col_w  = (A4[0] - 5 * cm) / n
+    tbl = Table([header] + body, colWidths=[col_w] * n, repeatRows=1)
+    tbl.setStyle(TableStyle([
+        ("BACKGROUND",    (0, 0), (-1, 0),  _PDF_TH_BG),
+        ("TEXTCOLOR",     (0, 0), (-1, 0),  colors.white),
+        ("FONTNAME",      (0, 0), (-1, 0),  "Helvetica-Bold"),
+        ("FONTSIZE",      (0, 0), (-1, -1), 9),
+        ("LEADING",       (0, 0), (-1, -1), 13),
+        ("ROWBACKGROUNDS",(0, 1), (-1, -1), [_PDF_ROW_A, colors.white]),
+        ("GRID",          (0, 0), (-1, -1), 0.4, _PDF_BORDER),
+        ("VALIGN",        (0, 0), (-1, -1), "TOP"),
+        ("LEFTPADDING",   (0, 0), (-1, -1), 7),
+        ("RIGHTPADDING",  (0, 0), (-1, -1), 7),
+        ("TOPPADDING",    (0, 0), (-1, -1), 5),
+        ("BOTTOMPADDING", (0, 0), (-1, -1), 5),
+    ]))
+    return tbl
+
+
+def generate_pdf_from_markdown(markdown_text: str, document_title: str = "") -> bytes:
+    """Render markdown to a professional A4 PDF. Returns raw PDF bytes."""
+    buf = io.BytesIO()
+    doc = SimpleDocTemplate(
+        buf, pagesize=A4,
+        leftMargin=2.5*cm, rightMargin=2.5*cm,
+        topMargin=2.5*cm,  bottomMargin=2.5*cm,
+        title=document_title or "Document",
+        author="DocForgeHub",
+    )
+    S = _pdf_styles()
+    story = []
+
+    if document_title:
+        story += [
+            Spacer(1, 0.8*cm),
+            Paragraph(_pdf_clean(document_title), S["doc_title"]),
+            HRFlowable(width="100%", thickness=2, color=_PDF_ACCENT, spaceBefore=4, spaceAfter=4),
+            Paragraph("Generated by DocForgeHub", S["doc_sub"]),
+            Spacer(1, 0.8*cm),
+        ]
+
+    lines = markdown_text.split("\n")
+    i = 0
+    while i < len(lines):
+        s = lines[i].strip()
+        if not s:
+            story.append(Spacer(1, 4))
+            i += 1
+            continue
+        if s.startswith("|"):
+            tbl_lines = []
+            while i < len(lines) and lines[i].strip().startswith("|"):
+                tbl_lines.append(lines[i])
+                i += 1
+            tbl = _build_rl_table(_parse_md_table(tbl_lines), S)
+            if tbl:
+                story += [Spacer(1, 6), tbl, Spacer(1, 10)]
+            continue
+        if s.startswith("# "):
+            story.append(_pdf_para(s[2:].strip(), S["h1"]))
+            story.append(HRFlowable(width="100%", thickness=1, color=_PDF_BRAND, spaceAfter=4))
+        elif s.startswith("## "):
+            story.append(_pdf_para(s[3:].strip(), S["h2"]))
+        elif s.startswith("### "):
+            story.append(_pdf_para(s[4:].strip(), S["h3"]))
+        elif re.match(r"^[\*\-\+]\s+", s):
+            story.append(_pdf_para("• " + re.sub(r"^[\*\-\+]\s+", "", s), S["bullet"]))
+        elif re.match(r"^\d+\.\s+", s):
+            story.append(_pdf_para(s, S["bullet"]))
+        else:
+            story.append(_pdf_para(s, S["body"]))
+        i += 1
+
+    doc.build(story)
+    return buf.getvalue()
+
+
+def _safe_pdf_filename(title: str) -> str:
+    safe = re.sub(r"[^\w\s\-]", "", title).strip()
+    safe = re.sub(r"\s+", "_", safe)
+    return (safe or "document") + ".pdf"
 
 
 # ═══════════════════════════════════════════════════════════════
@@ -1221,6 +1404,22 @@ with col_editor:
     if st.session_state.markdown_doc:
         with st.expander("📖 Preview rendered document", expanded=False):
             st.markdown(st.session_state.markdown_doc)
+
+        st.divider()
+        try:
+            pdf_bytes = generate_pdf_from_markdown(
+                st.session_state.markdown_doc,
+                document_title=selected_document,
+            )
+            st.download_button(
+                label="⬇ Download PDF",
+                data=pdf_bytes,
+                file_name=_safe_pdf_filename(selected_document),
+                mime="application/pdf",
+                use_container_width=True,
+            )
+        except Exception as _pdf_err:
+            st.warning(f"⚠️ Could not generate PDF: {_pdf_err}")
 
     # Progressive mode: reset button
     if st.session_state.prog_mode and st.session_state.prog_sections:

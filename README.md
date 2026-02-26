@@ -521,19 +521,6 @@ For questions, issues, or feature requests:
 
 ---
 
-## 🚀 What's Next?
-
-### Planned Enhancements
-
-- [ ] Web dashboard for document history & analytics
-- [ ] Multi-language support
-- [ ] Custom document type builder (no-code schema creation)
-- [ ] Batch document generation (generate 100+ at once)
-- [ ] Integration with Google Docs & Microsoft Word
-- [ ] Advanced quality metrics & audit trails
-- [ ] Team collaboration features (comments, approvals)
-- [ ] A/B testing for LLM prompts
-
 ### Known Limitations
 
 - Currently supports single-user local deployment (Streamlit limitation)

@@ -2,33 +2,34 @@
 
 > **AI-Powered Intelligent Document Generation & Management System**
 
-An enterprise-grade SaaS platform that transforms business documents from Notion into schema-compliant, professionally-written documents. Using multi-LLM orchestration, intelligent gap analysis, and user-in-the-loop feedback, DocForgeHub ensures every generated document is complete, accurate, and publication-ready.
+An enterprise-grade platform that transforms user-supplied answers into schema-compliant, professionally-written business documents. Using a dual-LLM architecture, a 5-node LangGraph agent, intelligent gap analysis, and user-in-the-loop feedback, DocForgeHub ensures every generated document is complete, accurate, and publication-ready.
 
 [![Python 3.12+](https://img.shields.io/badge/Python-3.12+-blue.svg)](https://www.python.org/downloads/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.104+-green.svg)](https://fastapi.tiangolo.com/)
 [![Streamlit](https://img.shields.io/badge/Streamlit-1.32+-red.svg)](https://streamlit.io/)
 [![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-green.svg)](https://www.mongodb.com/cloud/atlas)
+[![LangGraph](https://img.shields.io/badge/LangGraph-0.1+-orange.svg)](https://langchain-ai.github.io/langgraph/)
 
 ---
 
 ## 🎯 What is DocForgeHub?
 
-DocForgeHub is an intelligent document generation platform designed for organizations that need to create professional business documents at scale. Instead of manually writing documents or using static templates, DocForgeHub:
+DocForgeHub is an intelligent document generation platform designed for SaaS organizations that need to produce professional business documents at scale. The system:
 
-1. **Extracts** business documents from Notion with hierarchical structure preservation
-2. **Generates** comprehensive Q&A pairs from document content using LangGraph workflows
-3. **Stores** all Q&As and schemas in MongoDB, organized by department and document type
-4. **Identifies** gaps in document coverage and generates targeted questions for users
-5. **Generates** professional, schema-compliant documents from user answers using AI
-6. **Validates** generated documents against required structure with deterministic and LLM-based checks
-7. **Publishes** final documents back to Notion for team collaboration
+1. **Stores** comprehensive Q&A pairs and document schemas in MongoDB, organized by department and document type
+2. **Surfaces** the right questions to users via a Streamlit UI with paginated, categorized widgets
+3. **Identifies** schema coverage gaps with a lightweight LLM and generates targeted follow-up questions
+4. **Persists** answered gap questions to MongoDB so future users benefit without repeating the analysis
+5. **Generates** professional, schema-compliant documents via a 5-node LangGraph agent
+6. **Validates** generated documents deterministically (table schemas) and semantically (LLM-based review)
+7. **Publishes** final documents back to Notion and exports them to PDF
 
 ### Key Innovation: User-in-the-Loop Gap Filling
 
-Unlike traditional document generation systems that hallucinate missing content, DocForgeHub:
-- Uses a lightweight LLM to identify which document sections lack coverage
-- Generates targeted questions asking users for missing information
-- Persists answered questions to MongoDB for immediate reuse by other users
+Instead of hallucinating missing content, DocForgeHub:
+- Uses Llama-3.3-70b to identify which schema sections lack Q&A coverage
+- Generates targeted questions that ask users only for what is actually missing
+- Persists answered gap questions to MongoDB for reuse across all future users
 - Results in higher-quality documents with **zero hallucination risk**
 
 ---
@@ -36,25 +37,36 @@ Unlike traditional document generation systems that hallucinate missing content,
 ## 🏗️ Architecture Overview
 
 ```
-Notion Documents → Q&A Generation → MongoDB Storage → FastAPI Backend → LangGraph Agent → Streamlit UI
-                                                              ↓
-                                                     Gap Analysis & Caching
+Streamlit UI (Port 8501)
+    │
+    │  REST (HTTP)
+    ▼
+FastAPI Backend (Port 8000)
+    ├── MongoDB Atlas  ←→  document_qas + required_section collections
+    ├── Notion API         (page URL history)
+    └── LangGraph Agent
+            ├── Node 1: analyze_gaps
+            ├── Node 2: build_prompt
+            ├── Node 3: generate_document   ← kimi-k2-instruct (primary LLM)
+            ├── Node 4: quality_gate        ← kimi-k2-instruct (review)
+            └── Node 5: fix_document        ← kimi-k2-instruct (retry, up to 2x)
 ```
 
-**For a comprehensive architectural deep-dive**, see [CODEBASE_ARCHITECTURE.md](CODEBASE_ARCHITECTURE.md)
+**For a full architectural deep-dive**, see [CODEBASE_ARCHITECTURE.md](CODEBASE_ARCHITECTURE.md)
 
 ### Tech Stack
 
 | Component | Technology | Purpose |
 |-----------|-----------|---------|
-| **Document Extraction** | Notion API | Pull business documents from Notion |
-| **LLM Orchestration** | LangGraph | Multi-step workflows for Q&A generation & document assembly |
-| **Primary LLM** | Groq + Kimi-k2 | High-quality long-form document generation |
-| **Analysis LLM** | Groq + Llama-3.3-70b | Fast, cost-effective schema gap analysis |
-| **Backend API** | FastAPI | Async REST endpoints for all operations |
-| **Database** | MongoDB Atlas | Flexible schema storage with fast aggregation |
+| **Primary LLM** | Groq + `kimi-k2-instruct-0905` | Document generation, quality review, fix attempts |
+| **Analysis LLM** | Groq + `llama-3.3-70b-versatile` | Schema gap analysis, structured JSON output |
+| **Orchestration** | LangGraph | 5-node state machine for document generation |
+| **Backend API** | FastAPI | Async REST gateway (9 endpoints) |
+| **Database** | MongoDB Atlas | Q&As, schemas, gap question cache |
 | **Async Driver** | Motor | Non-blocking MongoDB operations |
-| **Frontend** | Streamlit | Interactive Q&A interface & document editor |
+| **Frontend** | Streamlit | Interactive Q&A UI and document editor |
+| **Content Source** | Notion API | Page URL history, recursive hierarchy retrieval |
+| **PDF Export** | ReportLab | Markdown → professional A4 PDF |
 
 ---
 
@@ -64,88 +76,68 @@ Notion Documents → Q&A Generation → MongoDB Storage → FastAPI Backend → 
 
 - Python 3.12+
 - MongoDB Atlas account (free tier sufficient)
-- Groq API keys (free tier includes ~200K free tokens/month)
-- Notion workspace & API key
+- Groq API key (free tier: ~200K tokens/month)
+- Notion workspace & integration key
 
-### 1. Clone Repository
+### 1. Clone & Set Up Environment
 
 ```bash
 git clone <repository-url>
 cd DocForgeHub
-```
 
-### 2. Set Up Python Environment
-
-```bash
 python -m venv .venv
-source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+source .venv/bin/activate        # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-### 3. Configure Environment Variables
+### 2. Configure Environment Variables
 
-Create a `.env` file in the project root:
+Create a `.env` file in the **project root**:
 
-```bash
-# Groq API Keys (primary + fallback)
+```env
+# Groq API Keys (primary + optional fallbacks)
 GROQ_API_KEY="gsk_your_primary_key"
 GROQ_API_KEY_2="gsk_fallback_key_1"
-GROQ_API_KEY_3="gsk_fallback_key_2"
 # ... up to GROQ_API_KEY_7
 
 # MongoDB Atlas
-MONGODB_CONNECTION_STRING="mongodb+srv://username:password@cluster.mongodb.net/"
-MONGODB_DATABASE="document_automation"
+MONGODB_CONNECTION_STRING="mongodb+srv://user:password@cluster.mongodb.net/"
 
 # Notion
-NOTION_API_KEY="secret_your_notion_api_key"
+NOTION_API_KEY="secret_your_notion_integration_key"
 ```
 
-> ⚠️ **Never commit `.env` to version control!** Add it to `.gitignore`
+> ⚠️ **Never commit `.env` to version control.** It is already listed in `.gitignore`.
 
-### 4. Initialize MongoDB Collections
+### 3. Seed MongoDB (One-Time Admin Step)
 
 ```bash
-# From the automations directory
+# Upload Q&A pairs for all departments/document types
 cd automations
-
-# 4a. Upload Q&As (if you have extracted documents)
 python mongo_auto.py
 
-# 4b. Upload schemas/requirements
+# Upload document schemas (required_section collection)
 python required_sections_automation.py
 ```
 
-### 5. Start Backend Server
+### 4. Start the Backend
 
 ```bash
 # From project root
 python -m uvicorn api.main:app --reload --port 8000
 ```
 
-Expected output:
-```
-INFO:     Uvicorn running on http://127.0.0.1:8000
-INFO:     Application startup complete
-```
+Visit `http://localhost:8000/docs` to confirm the API is running.
 
-### 6. Start Streamlit Frontend
+### 5. Start the Frontend
 
 ```bash
-# From project root (new terminal)
+# From the ui/ directory (new terminal)
 cd ui
 streamlit run streamlit_uidemo.py
 ```
 
-Expected output:
-```
-  You can now view your Streamlit app in your browser.
-  Local URL: http://localhost:8501
-```
-
-### 7. Open in Browser
-
-Navigate to `http://localhost:8501` and start generating documents!
+Navigate to `http://localhost:8501` — the app is ready.
 
 ---
 
@@ -153,216 +145,153 @@ Navigate to `http://localhost:8501` and start generating documents!
 
 ```
 DocForgeHub/
-├── agent/                          # LangGraph 5-node document generation agent
-│   ├── agent_graph.py              # State machine orchestration
-│   ├── prompts.py                  # System prompts for LLM
-│   └── __init__.py
+│
+├── agent/                          # LangGraph document generation agent
+│   ├── __init__.py
+│   ├── agent_graph.py              # 5-node state machine + AgentState TypedDict
+│   ├── prompts.py                  # System prompt builders (mixed + table-only)
+│   ├── schema_helpers.py           # Schema parsing, Q&A → prompt formatting
+│   └── validation_helpers.py       # Structure & table column validation
 │
 ├── api/                            # FastAPI REST backend
-│   ├── main.py                     # 8 endpoints (departments, documents, generation)
-│   ├── db.py                       # Async MongoDB connection
-│   └── __init__.py
-│
-├── automations/                    # Data pipeline & batch operations
-│   ├── ques_automation.py          # Notion → Q&A generation
-│   ├── mongo_auto.py               # Q&A → MongoDB upload
-│   ├── required_sections_automation.py  # Schema → MongoDB upload
-│   └── ...
+│   ├── __init__.py
+│   ├── main.py                     # 9 endpoints (departments → generate)
+│   ├── db.py                       # Async Motor/MongoDB singleton connection
+│   └── helpers.py                  # Notion API: recursive page traversal
 │
 ├── ui/                             # Streamlit interactive frontend
-│   └── streamlit_uidemo.py         # Complete user interface
+│   ├── streamlit_uidemo.py         # Main app (sidebar, Q&A panels, doc editor)
+│   ├── api_helpers.py              # HTTP wrappers for all FastAPI endpoints
+│   ├── question_helpers.py         # Unified question list, category helpers, widget renderer
+│   └── pdf_generator.py            # ReportLab Markdown → A4 PDF export
 │
-├── document_and_questions/         # Data repository
-│   ├── final_filtered_QAs/         # Q&A files (by department)
-│   └── notion_documents/           # Extracted Notion content
+├── automations/                    # Batch data pipeline (admin / one-time)
+│   ├── mongo_auto.py               # Upload Q&A JSON files → MongoDB
+│   └── required_sections_automation.py  # Upload schema JSON files → MongoDB
 │
-├── CODEBASE_ARCHITECTURE.md        # 📘 Detailed architecture documentation
-├── README.md                        # This file
-├── requirements.txt                # Python dependencies
-├── .env.example                    # Environment variable template
-└── .gitignore                      # Git ignore rules
-
+├── document_and_questions/         # Local data repository
+│   ├── final_filtered_QAs/         # Q&A JSON files, organized by department
+│   └── notion_documents/           # Schema JSON files extracted from Notion
+│
+├── .env                            # Environment variables (never commit)
+├── .gitignore
+├── requirements.txt
+├── CODEBASE_ARCHITECTURE.md        # Deep architectural reference
+├── progress.md                     # Development changelog
+└── README.md                       # This file
 ```
-
-**For detailed file-by-file explanations**, see [CODEBASE_ARCHITECTURE.md - File Structure](CODEBASE_ARCHITECTURE.md#-complete-file-structure--purposes)
 
 ---
 
-## 💡 How It Works: Complete User Journey
+## 💡 How It Works
 
-### Phase 1: Setup (Admin - One-time)
-
-```
-Admin extracts Notion documents
-    ↓
-LangGraph generates Q&A pairs
-    ↓
-Add answer fields & organize
-    ↓
-Batch upload to MongoDB (100 documents, 1000+ Q&As)
-    ↓
-Ready for users!
-```
-
-### Phase 2: User Session (Interactive)
+### User Session Flow
 
 ```
-User selects Department + Document
-    ↓
-Fetch Q&As from MongoDB (core + cached gap questions)
-    ↓
-User fills in answers
-    ↓
-(Optional) User clicks "🔍 Analyse Schema Gaps"
-    → Lightweight LLM identifies missing sections
-    → Generate targeted questions
-    → User provides real answers
-    → Save for next user (cache-first design)
-    ↓
-User clicks "⚡ Generate Document"
-    → 5-node LangGraph workflow:
-        1. Analyse remaining gaps
-        2. Build formatted prompt
-        3. Generate document (Kimi-k2 LLM)
-        4. Quality gate validation
-        5. Fix & retry if needed (up to 2 retries)
-    ↓
-Display markdown + quality scores
-    ↓
-(Optional) Edit and publish to Notion
+1. Select Department + Document Type (sidebar)
+        ↓
+2. Fetch Q&As from MongoDB (core + previously saved gap questions)
+        ↓
+3. Fill answers across paginated, categorized question panels
+        ↓
+4. [Optional] Click "🔍 Analyse Schema Gaps"
+   → Llama-3.3-70b checks which schema sections lack coverage
+   → Returns targeted gap questions (from cache or freshly generated)
+   → User answers gap questions
+   → Click "💾 Save" → upserted to MongoDB for future users
+        ↓
+5. Click "⚡ Generate Document"
+   → POST /generate → 5-node LangGraph agent:
+        Node 1: analyze_gaps      – identify any remaining uncovered sections
+        Node 2: build_prompt      – assemble full system prompt from schema + Q&As
+        Node 3: generate_document – kimi-k2 generates complete Markdown document
+        Node 4: quality_gate      – deterministic checks + LLM review + scoring
+        Node 5: fix_document      – rewrite if quality fails (up to 2 retries)
+        ↓
+6. Review output: Markdown editor + quality scores + issue list
+        ↓
+7. [Optional] Export to PDF  |  Publish to Notion
+```
+
+---
+
+## 🔌 API Reference
+
+All endpoints are served at `http://localhost:8000`. Interactive docs at `/docs`.
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `GET` | `/departments` | All departments, sorted by code |
+| `GET` | `/document-types?department=` | Document types for a department |
+| `GET` | `/questions?document_type=` | All Q&As (core + saved gaps), sorted |
+| `GET` | `/required-section?department=&document_name=` | Document schema |
+| `POST` | `/gap-questions` | Cache-first gap analysis → gap questions |
+| `POST` | `/save-questions` | Upsert answered gap questions to MongoDB |
+| `POST` | `/generate` | Full 5-node agent → complete document |
+| `POST` | `/generate-section` | Generate one section with doc memory |
+| `GET` | `/get_all_urls` | Notion page URL history |
+
+### Example: Generate a Document
+
+```bash
+curl -X POST http://localhost:8000/generate \
+  -H "Content-Type: application/json" \
+  -d '{
+    "department": "Product Management",
+    "document_type": "Feature Prioritization Framework",
+    "document_name": "Feature prioritization framework",
+    "questions_and_answers": [
+      {"question": "What is the primary objective?", "answer": "Increase retention", "category": "Overview"}
+    ]
+  }'
 ```
 
 ---
 
 ## 🔑 Key Features
 
-✨ **Intelligent Gap Analysis**
-- Automatically identifies which document sections lack Q&A coverage
-- Generates targeted questions asking users for missing information
-- Persists gap questions to MongoDB for reuse across users
-- **Zero hallucination** — no synthetic content
-
-🧠 **Dual-LLM Architecture**
-- **Kimi-k2**: Premium model for high-quality document prose
-- **Llama-3.3-70b**: Efficient model for structured gap analysis
-- Intelligent routing → cost optimization + quality
-
-🔄 **Multi-Node Orchestration**
-- LangGraph state machines for deterministic workflows
-- Automatic retry logic with progressive fixes
-- Clear visibility into each generation step
-
-📊 **Schema-Driven Validation**
-- Every document validated against required structure
-- Two validation modes:
-  - **Deterministic**: For table-only documents (exact column validation)
-  - **LLM-based**: For mixed documents (semantic completeness check)
-- Auto-fix mechanism with quality scoring
-
-🎨 **Professional Output**
-- Content elevation rules (transforms raw answers into polished prose)
-- Consistent formatting and tone
-- Quality metrics (completeness, professionalism, clarity)
-
-⚡ **Performance & Caching**
-- Streamlit session caching (5-10 min TTL)
-- MongoDB gap question cache (O(1) LLM calls per document type)
-- Async I/O throughout (FastAPI + Motor)
-- Typically generates documents in 30-60 seconds
-
-🔐 **Enterprise-Ready**
-- CORS security (local Streamlit frontend only)
-- Environment-based configuration
-- API key fallback mechanism (up to 7 Groq keys)
-- Comprehensive error handling & logging
+| Feature | Detail |
+|---------|--------|
+| **Dual-LLM routing** | kimi-k2 for prose quality; llama-3.3-70b for cheap structured analysis |
+| **5-node LangGraph agent** | Deterministic state machine with automatic retry (up to 2x) |
+| **Cache-first gap analysis** | O(1) LLM calls per document type after first user; reuses MongoDB cache |
+| **Two validation modes** | Deterministic (table column checks) + LLM-based (semantic structure review) |
+| **Schema-driven generation** | Every output validated against MongoDB required_section schema |
+| **PDF export** | ReportLab renders Markdown → styled A4 PDF (tables, headings, bullets) |
+| **Groq key fallback** | Up to 7 API keys rotated automatically on rate-limit |
+| **Async throughout** | FastAPI + Motor → non-blocking, concurrent-session capable |
+| **Streamlit caching** | `st.cache_data` with 5–10 min TTL for departments, doc types, questions |
 
 ---
 
-## 📊 Supported Document Types
+## 📊 Supported Scope
 
-DocForgeHub supports **10 departments** with **10 document types each** (100 total):
+DocForgeHub ships with data for **10 departments × 10 document types = 100 document types**:
 
 | Department | Sample Documents |
 |-----------|-----------------|
-| **Product Management** | PRD, Feature Prioritization, Roadmap, User Story Backlog |
-| **Engineering** | API Documentation, Deployment Runbook, Coding Standards |
-| **Quality Assurance** | Test Plans, Bug Reports, QA Checklists |
-| **Security** | Security Policies, Incident Reports, Risk Assessment |
-| **Compliance** | Regulatory Checklists, Audit Reports, Policy Documents |
-| **Sales** | Proposals, Case Studies, Pricing Sheets |
-| **Marketing** | Campaign Plans, Content Calendars, Brand Guidelines |
-| **Support** | Knowledge Base, Support Processes, FAQs |
-| **HR** | Onboarding Guides, Policies, Team Handbooks |
-| **Finance** | Budget Documents, Financial Reports, Expense Policies |
+| Product Management | PRD, Feature Prioritization, Roadmap, User Story Backlog |
+| Engineering | API Documentation, Deployment Runbook, Coding Standards |
+| Quality Assurance | Test Plans, Bug Reports, QA Checklists |
+| Security | Security Policies, Incident Reports, Risk Assessment |
+| Compliance | Regulatory Checklists, Audit Reports, Policy Documents |
+| Sales | Proposals, Case Studies, Pricing Sheets |
+| Marketing | Campaign Plans, Content Calendars, Brand Guidelines |
+| Support | Knowledge Base, Support Processes, FAQs |
+| HR | Onboarding Guides, Policies, Team Handbooks |
+| Finance | Budget Documents, Financial Reports, Expense Policies |
 
 ---
 
-## 🔌 API Reference
+## 📈 Performance Characteristics
 
-### Core Endpoints
-
-```bash
-# Get all departments
-GET /departments
-→ {departments: [{code, name, slug}, ...]}
-
-# Get documents for a department
-GET /document-types?department=Product%20Management
-→ {document_types: [{document_type, document_name}, ...]}
-
-# Get Q&As for a document
-GET /questions?document_type=Feature%20Prioritization%20Framework
-→ {questions: [{question, answer_type, options, is_gap_question}, ...]}
-
-# Get document schema
-GET /required-section?department=...&document_name=...
-→ {required_section: {sections: [...]}}
-
-# Analyse schema gaps (cache-first)
-POST /gap-questions
-Body: {department, document_type, document_name, questions_and_answers}
-→ {gap_questions: [...], source: "cache|generated"}
-
-# Save gap questions for future users
-POST /save-questions
-Body: {department, document_type, document_name, gap_questions}
-→ {saved_count: 5}
-
-# Generate document from answers
-POST /generate
-Body: {department, document_type, document_name, questions_and_answers}
-→ {generated_document, quality_scores, quality_issues, status}
-
-# Get Notion page URLs (for history)
-GET /get_all_urls
-→ {pages: [{notion_url, title}, ...]}
-```
-
-**For full API documentation**, run the backend and visit `http://localhost:8000/docs`
-
----
-
-## 🧪 Testing & Validation
-
-### Manual Testing Checklist
-
-- [ ] Backend starts without errors (`http://localhost:8000/docs` accessible)
-- [ ] Streamlit UI loads (`http://localhost:8501`)
-- [ ] Can select department & document
-- [ ] Core Q&As load and render correctly
-- [ ] Can fill in answers with different widget types (text, select, etc.)
-- [ ] "🔍 Analyse Schema Gaps" returns gap questions within 15 seconds
-- [ ] Can save gap questions without errors
-- [ ] "⚡ Generate Document" produces markdown output in 30-60 seconds
-- [ ] Generated document displays quality scores
-- [ ] Can edit and re-submit documents
-
-### Running Tests
-
-```bash
-# (If pytest tests are available)
-pytest tests/
-```
+| Operation | Typical Time | Notes |
+|-----------|-------------|-------|
+| `GET /questions` | < 50 ms | Streamlit cache hit (5 min TTL) |
+| `POST /gap-questions` (cache hit) | < 100 ms | Direct MongoDB lookup |
+| `POST /gap-questions` (fresh) | 10–15 s | llama-3.3-70b LLM call |
+| `POST /generate` | 30–60 s | Full 5-node workflow, kimi-k2 |
+| PDF export | < 2 s | Pure ReportLab, no LLM |
 
 ---
 
@@ -370,180 +299,89 @@ pytest tests/
 
 ### Adding a New Document Type
 
-1. **Create Q&A file**: `document_and_questions/final_filtered_QAs/{department}/{document_name}_questions.json`
-2. **Create schema file**: `document_and_questions/notion_documents/{department}/{document_name}.json` (with `sections` field)
-3. **Upload to MongoDB**:
+1. Create a Q&A JSON file: `document_and_questions/final_filtered_QAs/{department}/{doc_name}.json`
+2. Create a schema JSON file: `document_and_questions/notion_documents/{department}/{doc_name}.json` (must include a `sections` array)
+3. Upload to MongoDB:
    ```bash
    cd automations
    python mongo_auto.py
    python required_sections_automation.py
    ```
-4. **Refresh Streamlit** (cache will clear automatically)
+4. Streamlit cache clears automatically on next page reload.
 
 ### Modifying LLM Prompts
 
 Edit `agent/prompts.py`:
-- `SYSTEM_PROMPT_TEMPLATE` — for mixed documents
+- `SYSTEM_PROMPT_TEMPLATE` — for mixed (text + table) documents
 - `TABLE_PROMPT_TEMPLATE` — for table-only documents
-- `QUALITY_REVIEW_PROMPT` — for validation
+- `build_quality_review_prompt()` — for the quality gate node
+- `build_gap_filler_prompt()` — for the gap analysis LLM call
 
-### Extending the Agent Workflow
+### Extending the Agent
 
 Edit `agent/agent_graph.py`:
-1. Define new node function
-2. Add to graph builder
-3. Update routing logic if needed
-4. Update AgentState TypedDict if new fields are needed
+1. Add a new node function
+2. Register it on the `StateGraph` builder
+3. Update `AgentState` TypedDict if new fields are needed
+4. Wire routing edges (conditional or direct)
 
 ---
 
-## 📈 Performance Characteristics
+## 🔐 Security
 
-| Operation | Time | Notes |
-|-----------|------|-------|
-| GET /questions | <50ms | Cached in Streamlit (5 min TTL) |
-| POST /gap-questions (cache hit) | <100ms | Direct MongoDB lookup |
-| POST /gap-questions (fresh) | ~10-15s | Llama-3.3-70b LLM call |
-| POST /generate | ~30-60s | Full 5-node workflow with Kimi-k2 |
-| Streamlit page load | ~200ms | Data fetching + rendering |
-
----
-
-## 🔐 Security & Privacy
-
-### Best Practices
-
-1. **Never commit `.env`** to version control
-2. **Use IP whitelist** on MongoDB Atlas for production
-3. **Rotate API keys** regularly
-4. **Review gap questions** before saving (may contain sensitive info)
-5. **Audit logging**: Track who generates which documents and when
-6. **Data retention**: Consider TTL indexes for old session data
-
-### CORS Configuration
-
-Currently allows only:
-- `http://localhost:8501`
-- `http://127.0.0.1:8501`
-
-For production, update `api/main.py`:
-```python
-allow_origins=["https://yourdomain.com"]
-```
+- **Never commit `.env`** — all secrets live there
+- CORS is locked to `localhost:8501` and `127.0.0.1:8501` — update `api/main.py` for production
+- Use MongoDB Atlas IP allowlist in production
+- Rotate Groq API keys regularly; configure fallbacks via `GROQ_API_KEY_2` … `GROQ_API_KEY_7`
 
 ---
 
 ## 🐛 Troubleshooting
 
-### Backend Won't Start
-
+**Backend won't start**
 ```bash
-# Check port 8000 is not in use
+# Check port conflict
 lsof -i :8000
 
-# Verify MongoDB connection
-python -c "from pymongo import MongoClient; MongoClient('your_uri').list_database_names()"
-
-# Check Groq API key
-curl -H "Authorization: Bearer $GROQ_API_KEY" https://api.groq.com/...
+# Verify MongoDB reachability
+python -c "from pymongo import MongoClient; print(MongoClient('YOUR_URI').list_database_names())"
 ```
 
-### Streamlit Won't Load
-
+**Streamlit blank / errors**
 ```bash
-# Clear Streamlit cache
-streamlit cache clear
-
-# Check FastAPI is running (should see docs at localhost:8000/docs)
+# Confirm backend is running
 curl http://localhost:8000/docs
 
-# Check port 8501 is available
-lsof -i :8501
+# Clear Streamlit cache
+streamlit cache clear
 ```
 
-### Gap Questions Not Saving
+**Gap questions not saving** — Check that `document_type` matches exactly what is stored in MongoDB. Monitor logs for `POST /save-questions` errors.
 
-- Verify MongoDB connection string is correct
-- Check that `document_type` field exists in request
-- Monitor logs for `POST /save-questions` errors
-
-### Documents Generating Slowly (>60s)
-
-- Check Groq API response times (LLM may be busy)
-- Verify network latency to MongoDB Atlas
-- Try smaller document (fewer Q&As)
+**Generation > 60 s** — Check Groq API latency. Try reducing the number of Q&As passed (fewer answered questions = shorter prompt).
 
 ---
 
 ## 📚 Documentation
 
-| Document | Purpose |
-|----------|---------|
-| [CODEBASE_ARCHITECTURE.md](CODEBASE_ARCHITECTURE.md) | 📘 Deep architectural dive (2100+ lines) |
-| [progress.md](progress.md) | 📝 Development changelog |
-| This README | 🚀 Quick start & overview |
-
----
-
-## 🤝 Contributing
-
-### Workflow
-
-1. Create feature branch: `git checkout -b feature/your-feature`
-2. Make changes (see Development Guide above)
-3. Test locally: `pytest` (if available) + manual testing
-4. Commit with clear message: `git commit -m "Add feature: description"`
-5. Push: `git push origin feature/your-feature`
-6. Open PR with description of changes
-
-### Code Style
-
-- Follow PEP 8
-- Use type hints throughout
-- Add docstrings for functions and classes
-- Keep functions focused and testable
+| File | Purpose |
+|------|---------|
+| [CODEBASE_ARCHITECTURE.md](CODEBASE_ARCHITECTURE.md) | Complete architectural reference (all files, data flows, design decisions) |
+| [progress.md](progress.md) | Development changelog |
+| README.md | This quick-start guide |
 
 ---
 
 ## 📜 License
 
-[Specify your license here - e.g., MIT, Apache 2.0, proprietary]
-
----
-
-## 📧 Support & Contact
-
-For questions, issues, or feature requests:
-
-- **Issues**: Open a GitHub issue
-- **Email**: [your-email@domain.com]
-- **Documentation**: See [CODEBASE_ARCHITECTURE.md](CODEBASE_ARCHITECTURE.md)
-
----
-
-### Known Limitations
-
-- Currently supports single-user local deployment (Streamlit limitation)
-- Table-only documents must have `type: "table"` in schema
-- Gap questions limited to 100 per document type (configurable)
-
----
-
-## 🙏 Acknowledgments
-
-Built with:
-- [LangChain](https://python.langchain.com/) & [LangGraph](https://langchain-ai.github.io/langgraph/)
-- [Groq](https://groq.com/) for fast LLM inference
-- [Streamlit](https://streamlit.io/) for rapid UI development
-- [FastAPI](https://fastapi.tiangolo.com/) for modern Python APIs
-- [MongoDB](https://www.mongodb.com/) for flexible data storage
+[Specify your license here]
 
 ---
 
 <div align="center">
 
-**Made with ❤️ for document-driven organizations**
+**Built for document-driven SaaS organizations**
 
-[⬆ Back to top](#-docforgdhub)
+[⬆ Back to top](#-docforgehub)
 
 </div>

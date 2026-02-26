@@ -87,56 +87,10 @@ async def get_questions(document_type: str = Query(..., description="Document ty
     return {"questions": questions}
 
 
-notion_api_key = os.environ.get("NOTION_API_KEY")
-if not notion_api_key:
-    raise ValueError("notion api key not defined")
+from api.helpers import (
+    retrieve_all_child_pages_recursive,
+)
 
-notion = Client(auth=notion_api_key)
-
-def get_page_url_from_id(page_id: str) -> str:
-    """Constructs the Notion web URL from a page ID."""
-    # Notion URLs are typically in the format: https://notion.so
-    # The API returns IDs with dashes, so they need to be removed for the URL.
-    simple_page_id = page_id.replace("-", "")
-    return f"https://notion.so/{simple_page_id}"
-
-def retrieve_all_child_pages_recursive(block_id: str, all_pages: List[Dict] = None) -> List[Dict]:
-    """Recursively retrieves all child pages under a given block ID."""
-    if all_pages is None:
-        all_pages = []
-
-    # The Retrieve block children endpoint is paginated, so we must handle pagination
-    has_more = True
-    next_cursor = None
-
-    while has_more:
-        try:
-            response = notion.blocks.children.list(
-                block_id=block_id,
-                start_cursor=next_cursor,
-                page_size=100
-            )
-            for block_item in response['results']:
-                if block_item['type'] == 'child_page':
-                    page_id = block_item['id']
-                    page_title = block_item['child_page']['title']
-                    page_url = get_page_url_from_id(page_id)
-                    all_pages.append({
-                        "id": page_id,
-                        "title": page_title,
-                        "url": page_url
-                    })
-                    # Recursively call for children of this child page
-                    retrieve_all_child_pages_recursive(page_id, all_pages)
-
-            next_cursor = response.get('next_cursor')
-            has_more = response.get('has_more')
-
-        except Exception as e:
-            print(f"Error retrieving children for block {block_id}: {e}")
-            break
-
-    return all_pages
 
 @app.get("/get_all_urls")
 def get_all_urls_endpoint():
@@ -150,6 +104,7 @@ def get_all_urls_endpoint():
 
     pages = retrieve_all_child_pages_recursive(formatted_root_page_id)
     return {"root_page_id": root_page_id, "page_count": len(pages), "pages": pages}
+
 
 
 @app.get("/required-section")
@@ -437,7 +392,7 @@ async def generate_section_endpoint(request: GenerateSectionRequest):
             questions_and_answers=request.questions_and_answers,
             doc_memory=request.doc_memory,
         )
-    except Exception as err:
-        raise HTTPException(status_code=500, detail=f"Section generation error: {err}")
+    except Exception as generation_err:
+        raise HTTPException(status_code=500, detail=f"Section generation error: {generation_err}")
 
     return {"section_text": section_text}

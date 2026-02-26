@@ -16,6 +16,16 @@ from agent.prompts import (
     build_gap_filler_prompt,
     build_quality_review_prompt,
 )
+from agent.schema_helpers import (
+    format_questions_and_answers_for_prompt,
+    format_required_section_for_prompt,
+    is_table_only_schema,
+    get_table_columns,
+    get_table_section_title,
+)
+from agent.validation_helpers import (
+    validate_document_structure,
+)
 
 logging.basicConfig(
     level=logging.INFO,
@@ -90,142 +100,9 @@ class AgentState(TypedDict):
 
 
 # ═══════════════════════════════════════════════════════════════
-#  Formatting helpers (unchanged)
+#  Formatting & schema helpers — imported from agent.schema_helpers
+#  Validation helpers         — imported from agent.validation_helpers
 # ═══════════════════════════════════════════════════════════════
-
-def format_questions_and_answers_for_prompt(qa_list: list[dict]) -> str:
-    lines = []
-    current_category = ""
-
-    for qa_item in qa_list:
-        category = qa_item.get("category", "General")
-        if category != current_category:
-            current_category = category
-            lines.append(f"\n### {category}")
-
-        question_text = qa_item.get("question", "")
-        answer_value = qa_item.get("answer", "")
-
-        if qa_item.get("answer_type") == "structured_list" and qa_item.get("answers"):
-            answer_value = json.dumps(qa_item["answers"], indent=2)
-        elif isinstance(answer_value, list):
-            answer_value = ", ".join(str(item) for item in answer_value)
-
-        lines.append(f"**Q:** {question_text}")
-        lines.append(f"**A:** {answer_value if answer_value else '(not provided)'}")
-        lines.append("")
-
-    return "\n".join(lines)
-
-
-def format_required_section_for_prompt(required_section: dict) -> str:
-    sections = required_section.get("sections", [])
-    document_name = required_section.get("document_name", "")
-
-    if not sections:
-        categories = required_section.get("question_categories", [])
-        if categories:
-            return "\n".join(
-                f"- {cat.get('category', 'Unknown')} (order: {cat.get('order', 0)})"
-                for cat in categories
-            )
-        return "No schema sections available"
-
-    lines = []
-    for section in sections:
-        if section.get("type") == "table" and not section.get("subsections"):
-            # Table-only schema: section has type/columns/order but no title or subsections
-            table_title = section.get("title", "").strip() or document_name or "Data Table"
-            columns = section.get("columns", [])
-            lines.append(f"## {table_title}")
-            lines.append("")
-            lines.append("⚠️  TABLE FORMAT REQUIRED — This entire document is a Markdown table.")
-            lines.append(f"Column headers: | {' | '.join(columns)} |")
-            lines.append("You MUST output a real Markdown table with these exact columns")
-            lines.append("and at least 4-6 realistic data rows based on the user's answers.")
-            lines.append("Do NOT describe the table — OUTPUT THE TABLE ITSELF.")
-            lines.append("")
-            continue
-
-        # Mixed schema: section has a title + flat subsections array
-        section_title = section.get("title", "Untitled Section")
-        lines.append(f"## {section_title}")
-
-        for subsection in section.get("subsections", []):
-            sub_title = subsection.get("title", "")
-            sub_type = subsection.get("type", "text")
-            columns = subsection.get("columns", [])
-
-            if sub_type == "table" and columns:
-                lines.append(f"  - {sub_title} ⚠️ TABLE — columns: | {' | '.join(columns)} |")
-                lines.append(f"    (Output a real Markdown table with these columns and realistic rows)")
-            else:
-                lines.append(f"  - {sub_title} (type: {sub_type})")
-
-        lines.append("")
-
-    return "\n".join(lines)
-
-
-def is_table_only_schema(required_section: dict) -> bool:
-    sections = required_section.get("sections", [])
-    if not sections:
-        return False
-    try:
-        debug_info = [
-            f"type={schema_section.get('type')}, subs={bool(schema_section.get('subsections'))}"
-            for schema_section in sections
-        ]
-        logger.info("   🔍 Checking is_table_only_schema: %s", debug_info)
-    except Exception:
-        pass
-    return all(
-        schema_section.get("type") == "table" and not schema_section.get("subsections")
-        for schema_section in sections
-    )
-
-
-def get_table_columns(required_section: dict) -> list[str]:
-    for section in required_section.get("sections", []):
-        if section.get("type") == "table":
-            return section.get("columns", [])
-    return []
-
-
-# ═══════════════════════════════════════════════════════════════
-#  HELPER: get_table_section_title
-#  Handles schemas where the table section has no 'title' key
-#  (e.g. Change Request Log pattern: {type, columns, order} — no 'title').
-#  Falls back through: section.title → document_name → document_type → "Data Table"
-# ═══════════════════════════════════════════════════════════════
-
-def get_table_section_title(required_section: dict) -> str:
-    """
-    Return the display title for a table-only schema.
-
-    Handles schemas where the table section omits the 'title' key entirely,
-    falling back to 'document_name' at the top level of required_section,
-    then 'document_type', then a safe generic label.
-
-    This covers the Change Request Log pattern:
-        { "type": "table", "columns": [...], "order": 1 }  ← no 'title' key
-
-    Fallback chain:
-        section["title"]  →  required_section["document_name"]
-                          →  required_section["document_type"]
-                          →  "Data Table"
-    """
-    for section in required_section.get("sections", []):
-        if section.get("type") == "table":
-            title = section.get("title", "").strip()
-            if title:
-                return title
-    # Fall back to document-level name fields
-    return (
-        required_section.get("document_name", "").strip()
-        or required_section.get("document_type", "").strip()
-        or "Data Table"
-    )
 
 
 
@@ -839,7 +716,8 @@ def quality_gate(state: AgentState) -> dict:
         issues_found.append("Too few sections (expected at least 5 headings)")
 
     sections_split = document_text.split("\n## ")
-    thin = [s for s in sections_split[1:] if len(s.strip()) < 100]
+    # Get thin sections (excluding title part)
+    thin = [section_text for section_text in sections_split[1:] if len(section_text.strip()) < 100]
     if thin:
         issues_found.append(f"{len(thin)} sections are too thin — expand with detail")
 
@@ -868,8 +746,8 @@ def fix_document(state: AgentState) -> dict:
     current_retry = state["retry_count"] + 1
     logger.info("🔧 Node: fix_document — retry %d/2...", current_retry)
 
-    issues_text = "\n".join(f"- {i}" for i in state["quality_issues"])
-    suggestions_text = "\n".join(f"- {s}" for s in state.get("quality_suggestions", []))
+    issues_text = "\n".join(f"- {issue_msg}" for issue_msg in state["quality_issues"])
+    suggestions_text = "\n".join(f"- {suggestion_msg}" for suggestion_msg in state.get("quality_suggestions", []))
 
     fix_instruction = f"""The following document was generated but failed quality review:
 
@@ -1093,54 +971,64 @@ async def generate_single_section(
         document_type:         e.g. "Feature Prioritization Framework"
         section:               dict with keys "title" and "subsections" — the
                                subsection slice from required_section for this
-                               category. The subsections list may contain one or
-                               more entries; all are passed to the agent together.
-        questions_and_answers: answered Q&A for this section only (pre-filtered
-                               by the caller to the relevant categories).
+                               step. The subsections list typically contains one
+                               entry for progressive generation.
+        questions_and_answers: ALL answered Q&A (the agent uses all context;
+                               the schema scope constrains what gets generated).
         doc_memory:            markdown text of previously generated sections,
                                injected as context so the LLM stays consistent.
     """
+    # ── Strip internal keys (e.g. _parent_title) from subsection dicts ───────
+    raw_subsections = section.get("subsections", [])
+    clean_subsections = [
+        {k: v for k, v in sub.items() if not k.startswith("_")}
+        for sub in raw_subsections
+    ]
+    subsection_names = [s.get("title", "") for s in clean_subsections]
+
     logger.info(
-        "📝 generate_single_section — section=%s, subsections=%d, qa_count=%d",
+        "📝 generate_single_section — parent='%s', subsections=%s, qa_count=%d",
         section.get("title", "Untitled"),
-        len(section.get("subsections", [])),
+        subsection_names,
         len(questions_and_answers),
     )
 
     # ── Build a scoped required_section that the main agent understands ──────
-    # The agent expects: { "sections": [ { "title": ..., "subsections": [...] } ] }
-    # We scope it to ONLY the subsections for this section, filtered to those
-    # whose titles match the answered Q&A categories so the LLM can't hallucinate
-    # headings it has no data for.
-    answered_categories = {
-        qa.get("category", "").strip().lower()
-        for qa in questions_and_answers
-        if qa.get("answer", "").strip()
-    }
-
-    all_subsections = section.get("subsections", [])
-    if all_subsections and answered_categories:
-        covered = [
-            sub for sub in all_subsections
-            if sub.get("title", "").strip().lower() in answered_categories
-        ]
-        subsections_to_use = covered if covered else all_subsections
-    else:
-        subsections_to_use = all_subsections
-
+    # Use the SUBSECTION title as the section title — this prevents the LLM
+    # from generating the full document hierarchy (doc title → parent → subsection)
+    # for every single step. Each step generates ONLY its subsection content.
+    sub_title = clean_subsections[0]["title"] if clean_subsections else section.get("title", "")
     scoped_required_section = {
+        "document_type": document_type,
+        "document_name": document_type,
         "sections": [
             {
-                "title": section.get("title", ""),
-                "subsections": subsections_to_use,
+                "title": sub_title,
+                "subsections": clean_subsections,
             }
         ]
     }
 
-    # ── If doc_memory exists, prepend it to the Q&A as context ───────────────
-    # We inject memory as a synthetic Q&A entry so the prompt builder picks it up
-    # without needing changes to build_prompt.
+    # ── Inject scope constraint + memory into Q&A ────────────────────────────
     enriched_qa = list(questions_and_answers)
+
+    # Prepend a strong scope instruction so the LLM only generates the
+    # requested subsection(s) and doesn't expand into the full document.
+    scope_names = ", ".join(f'"{n}"' for n in subsection_names if n)
+    enriched_qa = [
+        {
+            "question": "SCOPE CONSTRAINT — what section(s) should this document contain?",
+            "answer": (
+                f"Generate ONLY the following subsection(s): {scope_names}. "
+                f"Do NOT generate any other sections, headings, or subsections. "
+                f"Output ONLY the content for the specified subsection(s). "
+                f"The previously generated sections are provided separately for context only — do NOT repeat them."
+            ),
+            "category": "_scope",
+            "answer_type": "text",
+        }
+    ] + enriched_qa
+
     if doc_memory.strip():
         enriched_qa = [
             {

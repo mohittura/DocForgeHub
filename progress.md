@@ -50,3 +50,5 @@ refactor: renamed cryptic variables to meaningful ones, added helper function _i
 added pdf download button and minor changes in progressive generation for section by section generation
 
 cleaned the code in backend-agent-schema, frontend-streamlit-ui, and fastapi-api-endpoints
+
+added notion publish feature

@@ -19,6 +19,7 @@ from api_helpers import (
     call_save_questions_endpoint,
     call_generate_endpoint,
     call_generate_section,
+    call_publish_to_notion_endpoint,
     FASTAPI_URL,
 )
 from pdf_generator import generate_pdf_from_markdown, build_safe_pdf_filename
@@ -155,6 +156,12 @@ if "is_analyzing" not in st.session_state:
 
 if "is_saving" not in st.session_state:
     st.session_state.is_saving = False
+
+if "is_publishing" not in st.session_state:
+    st.session_state.is_publishing = False
+
+if "last_published_url" not in st.session_state:
+    st.session_state.last_published_url = ""
 
 if "gap_source" not in st.session_state:
     st.session_state.gap_source = ""
@@ -747,14 +754,43 @@ with col_editor:
             st.header("Markdown View")
 
     with publish_col:
-        publish_clicked = st.button("Publish")
-        if publish_clicked:
-            if st.session_state.markdown_doc:
+        publish_clicked = st.button(
+            "🚀 Publish",
+            disabled=st.session_state.is_publishing or not st.session_state.markdown_doc,
+            help="Publish this document to Notion",
+        )
+
+    # ── Notion publish pipeline ──────────────────────────────────────────────
+    if publish_clicked:
+        if not st.session_state.markdown_doc:
+            st.warning("Nothing to publish yet — generate a document first.")
+        else:
+            st.session_state.is_publishing = True
+            publish_title = document_name_lookup.get(selected_document, selected_document) or "Untitled Document"
+            with st.spinner("📤 Publishing to Notion — converting Markdown and pushing blocks..."):
+                publish_result = call_publish_to_notion_endpoint(
+                    markdown_text=st.session_state.markdown_doc,
+                    document_title=publish_title,
+                )
+            st.session_state.is_publishing = False
+            if publish_result and publish_result.get("status") == "ok":
+                page_url = publish_result.get("page_url", "")
+                blocks_pushed = publish_result.get("blocks_pushed", 0)
+                st.session_state.last_published_url = page_url
+                # Refresh the history sidebar so the new page appears
+                get_notionpage_urls_from_fastapi.clear()
+                st.success(
+                    f"✅ Published to Notion — {blocks_pushed} blocks written!  "
+                    f"[Open page]({page_url})"
+                )
                 st.balloons()
-                st.success("Published! 🎉")
-                logger.info("Document published")
+                logger.info("Document published to Notion: %s (%d blocks)", page_url, blocks_pushed)
             else:
-                st.warning("Nothing to publish yet.")
+                st.error("❌ Notion publish failed — check the API logs for details.")
+
+    # Show link to last published page if available
+    if st.session_state.last_published_url:
+        st.caption(f"Last published → [{st.session_state.last_published_url}]({st.session_state.last_published_url})")
 
     st.markdown('<div class="scrollable">', unsafe_allow_html=True)
 
@@ -915,4 +951,3 @@ with col_editor:
 
     st.markdown("</div>", unsafe_allow_html=True)
     st.markdown("</div>", unsafe_allow_html=True)
-    

@@ -396,3 +396,75 @@ async def generate_section_endpoint(request: GenerateSectionRequest):
         raise HTTPException(status_code=500, detail=f"Section generation error: {generation_err}")
 
     return {"section_text": section_text}
+
+# ═══════════════════════════════════════════════════════════════
+#  Notion Publish endpoint
+# ═══════════════════════════════════════════════════════════════
+
+from notion_publisher import publish_markdown_to_notion
+from api.helpers import notion_client as _notion_client  # reuse the shared client
+
+# Root page under which all published documents are created.
+# Override via env-var NOTION_PUBLISH_ROOT_PAGE_ID if needed.
+_NOTION_ROOT_PAGE_ID = os.environ.get(
+    "NOTION_PUBLISH_ROOT_PAGE_ID",
+    "30589db15e5b80779819dc0d8c532954",  # same root used by /get_all_urls
+)
+
+
+class PublishToNotionRequest(BaseModel):
+    """Request body for POST /publish-to-notion."""
+    markdown_text: str
+    document_title: str
+    parent_page_id: Optional[str] = None   # defaults to _NOTION_ROOT_PAGE_ID
+
+
+@app.post("/publish-to-notion")
+async def publish_to_notion(request: PublishToNotionRequest):
+    """
+    Publish a Markdown document to Notion as a new child page.
+
+    Pipeline
+    ────────
+    1. Validate that markdown_text is non-empty.
+    2. Determine the parent page (request field or env-var default).
+    3. Call notion_publisher.publish_markdown_to_notion which:
+       a. Creates the page shell with the given title.
+       b. Converts Markdown to Notion blocks (headings, paragraphs,
+          bullet lists, numbered lists, tables, code blocks, quotes).
+       c. Pushes blocks in chunks of ≤100 with rate-limit back-off.
+    4. Return {page_id, page_url, blocks_pushed} on success.
+
+    Response (200):
+        {
+            "status": "ok",
+            "page_id": "<notion-page-id>",
+            "page_url": "https://notion.so/<id>",
+            "blocks_pushed": <int>
+        }
+    """
+    if not request.markdown_text or not request.markdown_text.strip():
+        raise HTTPException(status_code=400, detail="markdown_text must not be empty.")
+
+    parent_id = (request.parent_page_id or _NOTION_ROOT_PAGE_ID).strip().replace("-", "")
+    if not parent_id:
+        raise HTTPException(status_code=400, detail="No parent_page_id provided and NOTION_PUBLISH_ROOT_PAGE_ID is not set.")
+
+    try:
+        result = publish_markdown_to_notion(
+            markdown_text=request.markdown_text,
+            document_title=request.document_title,
+            parent_page_id=parent_id,
+            notion_client_instance=_notion_client,
+        )
+    except ValueError as value_err:
+        raise HTTPException(status_code=400, detail=str(value_err))
+    except Exception as publish_err:
+        raise HTTPException(status_code=500, detail=f"Notion publish failed: {publish_err}")
+
+    return {
+        "status": "ok",
+        "page_id": result["page_id"],
+        "page_url": result["page_url"],
+        "blocks_pushed": result["blocks_pushed"],
+    }

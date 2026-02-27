@@ -37,8 +37,8 @@ from typing import Any
 logger = logging.getLogger("docforge.notion_publisher")
 
 # ─── Notion API limits ────────────────────────────────────────────────────────
-MAX_BLOCKS_PER_REQUEST: int = 100       # Notion hard limit per append call
-RICH_TEXT_MAX_CHARS: int = 2000         # Notion hard limit per rich-text object
+MAX_BLOCKS_PER_REQUEST: int = 95       # Notion hard limit per append call
+RICH_TEXT_MAX_CHARS: int = 1950         # Notion hard limit per rich-text object
 REQUEST_INTERVAL_SEC: float = 0.4       # ~2.5 req/s — well under the 3 req/s cap
 MAX_RETRIES: int = 5                    # max back-off retries on 429
 BACKOFF_BASE_SEC: float = 1.5          # exponential back-off base

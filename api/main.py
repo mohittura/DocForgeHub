@@ -401,7 +401,7 @@ async def generate_section_endpoint(request: GenerateSectionRequest):
 #  Notion Publish endpoint
 # ═══════════════════════════════════════════════════════════════
 
-from notion_publisher import publish_markdown_to_notion
+from api.notion_publisher import publish_markdown_to_notion
 from api.helpers import notion_client as _notion_client  # reuse the shared client
 
 # Root page under which all published documents are created.

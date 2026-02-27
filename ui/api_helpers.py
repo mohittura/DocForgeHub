@@ -216,3 +216,37 @@ def call_generate_section(
     except Exception as error:
         logger.error("Section generation failed: %s", error)
         return None
+
+def call_publish_to_notion_endpoint(
+    markdown_text: str,
+    document_title: str,
+    parent_page_id: str | None = None,
+    base_url: str = FASTAPI_URL,
+) -> dict | None:
+    """POST /publish-to-notion — convert Markdown and create a Notion page."""
+    logger.info(
+        "Calling POST /publish-to-notion — title=%r, length=%d chars",
+        document_title,
+        len(markdown_text),
+    )
+    try:
+        response = requests.post(
+            f"{base_url}/publish-to-notion",
+            json={
+                "markdown_text": markdown_text,
+                "document_title": document_title,
+                "parent_page_id": parent_page_id,
+            },
+            timeout=120,   # large docs with many chunks can take a while
+        )
+        response.raise_for_status()
+        result = response.json()
+        logger.info(
+            "   -> published — page_id=%s, blocks=%d",
+            result.get("page_id"),
+            result.get("blocks_pushed", 0),
+        )
+        return result
+    except Exception as error:
+        logger.error("Notion publish failed: %s", error)
+        return None

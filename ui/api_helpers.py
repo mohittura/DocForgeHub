@@ -224,25 +224,9 @@ def call_publish_to_notion_endpoint(
     industry: str = "General",
     version: str = "1.0",
     tags: list | None = None,
-    created_by: str = "DocForgeHub",
     base_url: str = FASTAPI_URL,
 ) -> dict | None:
-    """
-    POST /publish-to-notion — create a row in the Notion database with
-    structured properties (Title, Type, Industry, Version, tags, Created by,
-    Created time) and the full Markdown as the page body.
-
-    Args:
-        markdown_text:   Full Markdown document text.
-        document_title:  Title shown in the Notion database row.
-        document_type:   Value for the Type select column.
-        industry:        Value for the Industry select column.
-        version:         Version label (e.g. "1.0").
-        tags:            List of tag strings for the tags multi_select column.
-        created_by:      Name / identifier for the Created by column.
-
-    Returns the API response dict on success, or None on any error.
-    """
+    """POST /publish-to-notion — store document as a row in the Notion database."""
     logger.info(
         "Calling POST /publish-to-notion — title=%r, type=%r, length=%d chars",
         document_title, document_type, len(markdown_text),
@@ -257,9 +241,8 @@ def call_publish_to_notion_endpoint(
                 "industry": industry,
                 "version": version,
                 "tags": tags or [],
-                "created_by": created_by,
             },
-            timeout=120,   # large docs with many chunks can take a while
+            timeout=120,
         )
         response.raise_for_status()
         result = response.json()

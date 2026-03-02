@@ -495,9 +495,7 @@ def publish_markdown_to_notion(
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
-#  Database publish — stores the document as a row in a Notion database
-#  with structured properties (Title, Type, Industry, Version, tags,
-#  Created by, Created time) and the full Markdown as the page body.
+#  Database publish
 # ═══════════════════════════════════════════════════════════════════════════════
 
 def publish_to_notion_database(
@@ -507,50 +505,22 @@ def publish_to_notion_database(
     industry: str,
     version: str,
     tags: list[str],
-    created_by: str,
     database_id: str,
     notion_client_instance,
 ) -> dict:
     """
-    Create a new row in a Notion database with structured metadata properties
-    and publish the full Markdown document as the page body (content blocks).
+    Create a new row in the Notion "Lib" database and push the Markdown
+    as the page body content.
 
-    The Notion database must have these columns (exact names):
-        Title        — title property  (built-in)
+    Column names (exactly as shown in Notion):
+        Title        — title        (the built-in title column)
         Type         — select
         Industry     — select
         Version      — rich_text
         tags         — multi_select
-        Created by   — rich_text
-        Created time — date  (set automatically to UTC now)
-
-    Parameters
-    ──────────
-    markdown_text         : raw Markdown from st.session_state.markdown_doc
-    document_title        : value for the Title property
-    document_type         : value for the Type select property
-    industry              : value for the Industry select property
-    version               : value for the Version text property
-    tags                  : list of tag strings for the tags multi_select
-    created_by            : name/identifier for the Created by property
-    database_id           : Notion database ID (dashes stripped automatically)
-    notion_client_instance: initialised notion_client.Client
-
-    Returns
-    ───────
-    {
-        "page_id":       str,   # Notion page ID of the new database row/page
-        "page_url":      str,   # browser URL
-        "blocks_pushed": int,   # total Notion content blocks written
-    }
-
-    Raises
-    ──────
-    ValueError  : if markdown_text or database_id is empty
-    Exception   : propagated from the Notion API on non-429 errors
+        Created by   — created_by   (Notion built-in, auto-set, NOT in payload)
+        Created time — created_time (Notion built-in, auto-set, NOT in payload)
     """
-    from datetime import datetime, timezone
-
     if not markdown_text or not markdown_text.strip():
         raise ValueError("markdown_text is empty — nothing to publish.")
     if not database_id or not database_id.strip():
@@ -558,61 +528,57 @@ def publish_to_notion_database(
 
     clean_db_id = database_id.strip().replace("-", "")
     clean_title = document_title.strip() or "Untitled Document"
-    now_iso = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S.000Z")
 
     logger.info(
-        "Publishing '%s' to Notion database %s (type=%s, industry=%s, v=%s)",
+        "Publishing '%s' to database %s (type=%s, industry=%s, v=%s)",
         clean_title, clean_db_id, document_type, industry, version,
     )
 
-    # ── Step 1: Create the database page with all property values ─────────────
-    # The page body is left empty here — we append blocks separately to avoid
-    # hitting Notion's request-size limits on large documents.
+    # Only the 5 writable columns — never send Created by / Created time
     properties: dict = {
         "Title": {
             "title": [{"type": "text", "text": {"content": clean_title[:2000]}}]
         },
         "Type": {
-            "select": {"name": document_type}
+            "rich_text": [{"type": "text", "text": {"content": (document_type or "")[:200]}}]
         },
         "Industry": {
-            "select": {"name": industry}
+            "select": {"name": industry} if industry else {"name": "General"}
         },
         "Version": {
-            "rich_text": [{"type": "text", "text": {"content": version[:200]}}]
+            "rich_text": [{"type": "text", "text": {"content": (version or "1.0")[:200]}}]
         },
         "tags": {
-            "multi_select": [{"name": t.strip()} for t in tags if t.strip()]
-        },
-        "Created by": {
-            "rich_text": [{"type": "text", "text": {"content": created_by[:200]}}]
-        },
-        "Created time": {
-            "date": {"start": now_iso}
+            "multi_select": [{"name": t.strip()} for t in (tags or []) if t.strip()]
         },
     }
 
-    new_page = notion_client_instance.pages.create(
-        parent={"database_id": clean_db_id},
-        properties=properties,
-        children=[],   # body blocks appended separately
-    )
+    # ── Step 1: Create the row ────────────────────────────────────────────────
+    try:
+        new_page = notion_client_instance.pages.create(
+            parent={"database_id": clean_db_id},
+            properties=properties,
+            children=[],
+        )
+    except Exception as err:
+        # Log the full Notion error body so we can see exactly what's wrong
+        logger.error("Notion pages.create failed: %s", err)
+        raise
 
     new_page_id: str = new_page["id"]
     raw_url: str = new_page.get(
         "url", f"https://notion.so/{new_page_id.replace('-', '')}"
     )
-    logger.info("Database page created — id=%s url=%s", new_page_id, raw_url)
-
+    logger.info("Row created — page_id=%s url=%s", new_page_id, raw_url)
     time.sleep(REQUEST_INTERVAL_SEC)
 
     # ── Step 2: Parse Markdown → Notion blocks ────────────────────────────────
     all_blocks = markdown_to_notion_blocks(markdown_text)
-    logger.info("Parsed %d Notion blocks from Markdown", len(all_blocks))
+    logger.info("Parsed %d blocks from Markdown", len(all_blocks))
 
     # ── Step 3: Push blocks in rate-limited chunks ────────────────────────────
     blocks_pushed = _push_blocks_in_chunks(notion_client_instance, new_page_id, all_blocks)
-    logger.info("Pushed %d blocks to database page %s", blocks_pushed, new_page_id)
+    logger.info("Pushed %d blocks to page %s", blocks_pushed, new_page_id)
 
     return {
         "page_id": new_page_id,

@@ -116,7 +116,7 @@ def get_document_types_from_fastapi(department_name):
 def get_questions_from_fastapi(document_type):
     return fetch_questions(document_type)
 
-@st.cache_data(ttl=600)
+@st.cache_data(ttl=60)
 def get_notionpage_urls_from_fastapi():
     return fetch_notion_page_urls()
 
@@ -134,7 +134,12 @@ department_names = [dept_dict["name"] for dept_dict in departments]
 # Session State
 # -------------------------------------------------
 if "history" not in st.session_state:
-    st.session_state.history = pages or []
+    st.session_state.history = []
+
+# Sync history on every rerun — cache (ttl=60) keeps it fast
+_latest_pages = get_notionpage_urls_from_fastapi()
+if _latest_pages:
+    st.session_state.history = _latest_pages
 
 if "answers" not in st.session_state:
     st.session_state.answers = {}
@@ -237,10 +242,20 @@ with st.sidebar:
     st.subheader("Generation History")
     history_container = st.container(height=270)
     with history_container:
+        if not st.session_state.history:
+            st.caption("No published documents yet.")
         for history_item in st.session_state.history:
+            title    = history_item.get("title", "Untitled")
+            url      = history_item.get("url", "#")
+            doc_type = history_item.get("type", "")
+            industry = history_item.get("industry", "")
+            subtitle = " · ".join(filter(None, [doc_type, industry]))
             st.markdown(
-                f"<a href='{history_item.get('url','#')}' style='text-decoration: none; color: beige;'>"
-                f"{history_item.get('title','Untitled')}</a>",
+                f"<a href='{url}' target='_blank' style='text-decoration:none;'>"
+                f"<div style='padding:5px 4px;margin-bottom:4px;border-radius:4px;'>"
+                f"<div style='font-size:0.83rem;font-weight:600;color:#e8e8e8;'>{title}</div>"
+                f"{'<div style=\"font-size:0.71rem;color:#999;margin-top:1px;\">' + subtitle + '</div>' if subtitle else ''}"
+                f"</div></a>",
                 unsafe_allow_html=True,
             )
 
@@ -767,25 +782,16 @@ with col_editor:
         else:
             st.session_state.is_publishing = True
             publish_title = document_name_lookup.get(selected_document, selected_document) or "Untitled Document"
-            publish_doc_type = selected_document if is_valid_document else ""
-            publish_dept = selected_department if is_valid_department else "General"
-
             with st.spinner("📤 Publishing to Notion — converting Markdown and pushing blocks..."):
                 publish_result = call_publish_to_notion_endpoint(
                     markdown_text=st.session_state.markdown_doc,
                     document_title=publish_title,
-                    document_type=publish_doc_type,
-                    industry=publish_dept,
-                    version="1.0",
-                    tags=[publish_doc_type] if publish_doc_type else [],
-                    created_by="DocForgeHub",
                 )
             st.session_state.is_publishing = False
             if publish_result and publish_result.get("status") == "ok":
                 page_url = publish_result.get("page_url", "")
                 blocks_pushed = publish_result.get("blocks_pushed", 0)
                 st.session_state.last_published_url = page_url
-                # Refresh the history sidebar so the new page appears
                 get_notionpage_urls_from_fastapi.clear()
                 st.success(
                     f"✅ Published to Notion — {blocks_pushed} blocks written!  "
@@ -793,6 +799,7 @@ with col_editor:
                 )
                 st.balloons()
                 logger.info("Document published to Notion: %s (%d blocks)", page_url, blocks_pushed)
+                st.rerun()
             else:
                 st.error("❌ Notion publish failed — check the API logs for details.")
 

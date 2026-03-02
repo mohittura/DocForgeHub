@@ -1,5 +1,4 @@
 import os
-import asyncio
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, Query, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -95,16 +94,91 @@ from api.helpers import (
 
 @app.get("/get_all_urls")
 def get_all_urls_endpoint():
-    root_page_id = "30589db15e5b80779819dc0d8c532954"
-    """FastAPI endpoint to retrieve all URLs under a root page ID."""
-    if not root_page_id:
-        raise HTTPException(status_code=400, detail="Root page ID must be provided")
+    """
+    Query the Notion database directly via requests — bypasses notion-client
+    version incompatibilities entirely.
+    """
+    import requests as _requests
 
-    # Ensure the root ID is in the correct format (remove dashes if necessary)
-    formatted_root_page_id = root_page_id.replace("-", "")
+    raw_db_id   = os.environ.get("NOTION_DATABASE_ID", "").replace("-", "")
+    raw_view_id = os.environ.get("NOTION_VIEW_ID", "").replace("-", "")
+    api_key     = os.environ.get("NOTION_API_KEY", "")
 
-    pages = retrieve_all_child_pages_recursive(formatted_root_page_id)
-    return {"root_page_id": root_page_id, "page_count": len(pages), "pages": pages}
+    if not raw_db_id or not api_key:
+        print("[get_all_urls] NOTION_DATABASE_ID or NOTION_API_KEY not set.")
+        return {"page_count": 0, "pages": []}
+
+    # Notion REST API requires dashed UUID format
+    def to_dashed(s: str) -> str:
+        s = s.replace("-", "")
+        return f"{s[0:8]}-{s[8:12]}-{s[12:16]}-{s[16:20]}-{s[20:32]}" if len(s) == 32 else s
+
+    headers = {
+        "Authorization": f"Bearer {api_key}",
+        "Notion-Version": "2022-06-28",
+        "Content-Type": "application/json",
+    }
+
+    pages       = []
+    has_more    = True
+    next_cursor = None
+
+    while has_more:
+        body: dict = {
+            "sorts": [{"property": "Created time", "direction": "descending"}],
+            "page_size": 100,
+        }
+        if next_cursor:
+            body["start_cursor"] = next_cursor
+
+        try:
+            resp = _requests.post(
+                f"https://api.notion.com/v1/databases/{to_dashed(raw_db_id)}/query",
+                headers=headers,
+                json=body,
+                timeout=30,
+            )
+            resp.raise_for_status()
+            data = resp.json()
+        except Exception as err:
+            print(f"[get_all_urls] ERROR: {err}")
+            import traceback; traceback.print_exc()
+            break
+
+        results = data.get("results", [])
+        print(f"[get_all_urls] Notion returned {len(results)} rows")
+
+        for page in results:
+            props       = page.get("properties", {})
+            page_id_raw = page["id"].replace("-", "")
+
+            title = "".join(
+                t.get("plain_text", "")
+                for t in props.get("Title", {}).get("title", [])
+            ).strip() or "Untitled"
+
+            doc_type = "".join(
+                t.get("plain_text", "")
+                for t in props.get("Type", {}).get("rich_text", [])
+            ).strip()
+
+            industry = (props.get("Industry", {}).get("select") or {}).get("name", "")
+
+            # Peek view URL — unique per page
+            url = (
+                f"https://www.notion.so/{raw_db_id}?v={raw_view_id}&p={page_id_raw}&pm=s"
+                if raw_view_id else
+                f"https://www.notion.so/{page_id_raw}"
+            )
+
+            pages.append({"id": page_id_raw, "title": title, "url": url,
+                           "type": doc_type, "industry": industry})
+
+        has_more    = data.get("has_more", False)
+        next_cursor = data.get("next_cursor")
+
+    print(f"[get_all_urls] Returning {len(pages)} pages")
+    return {"page_count": len(pages), "pages": pages}
 
 
 
@@ -402,12 +476,10 @@ async def generate_section_endpoint(request: GenerateSectionRequest):
 #  Notion Publish endpoint
 # ═══════════════════════════════════════════════════════════════
 
+import asyncio
 from api.notion_publisher import publish_to_notion_database
-from api.helpers import notion_client as _notion_client  # reuse the shared client
+from api.helpers import notion_client as _notion_client
 
-# Notion database ID where published documents are stored as rows.
-# The database must have columns: Title, Type, Industry, Version,
-# tags, Created by, Created time  (exact names).
 _NOTION_DATABASE_ID = os.environ.get("NOTION_DATABASE_ID", "")
 
 
@@ -419,39 +491,14 @@ class PublishToNotionRequest(BaseModel):
     industry: str = "General"
     version: str = "1.0"
     tags: List[str] = []
-    created_by: str = "DocForgeHub"
 
 
 @app.post("/publish-to-notion")
 async def publish_to_notion(request: PublishToNotionRequest):
-    """
-    Publish a Markdown document to the configured Notion database as a new row.
-
-    Pipeline
-    ────────
-    1. Validate that markdown_text is non-empty and NOTION_DATABASE_ID is set.
-    2. Create a new database page with structured properties:
-         Title, Type, Industry, Version, tags, Created by, Created time.
-    3. Parse Markdown → typed Notion blocks (headings, bullets, numbered lists,
-       tables, code blocks, quotes, paragraphs with inline formatting).
-    4. Push blocks to the page in chunks of ≤95 with rate-limit back-off.
-
-    Response (200):
-        {
-            "status":        "ok",
-            "page_id":       "<notion-page-id>",
-            "page_url":      "https://notion.so/<id>",
-            "blocks_pushed": <int>
-        }
-    """
     if not request.markdown_text or not request.markdown_text.strip():
         raise HTTPException(status_code=400, detail="markdown_text must not be empty.")
-
     if not _NOTION_DATABASE_ID:
-        raise HTTPException(
-            status_code=503,
-            detail="NOTION_DATABASE_ID env var is not set. Add it to your .env file.",
-        )
+        raise HTTPException(status_code=503, detail="NOTION_DATABASE_ID is not set.")
 
     try:
         result = await asyncio.to_thread(
@@ -462,14 +509,15 @@ async def publish_to_notion(request: PublishToNotionRequest):
             industry=request.industry,
             version=request.version,
             tags=request.tags,
-            created_by=request.created_by,
             database_id=_NOTION_DATABASE_ID,
             notion_client_instance=_notion_client,
         )
-    except ValueError as value_err:
-        raise HTTPException(status_code=400, detail=str(value_err))
-    except Exception as publish_err:
-        raise HTTPException(status_code=500, detail=f"Notion publish failed: {publish_err}")
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=f"Notion publish failed: {e}")
 
     return {
         "status": "ok",

@@ -767,10 +767,18 @@ with col_editor:
         else:
             st.session_state.is_publishing = True
             publish_title = document_name_lookup.get(selected_document, selected_document) or "Untitled Document"
+            publish_doc_type = selected_document if is_valid_document else ""
+            publish_dept = selected_department if is_valid_department else "General"
+
             with st.spinner("📤 Publishing to Notion — converting Markdown and pushing blocks..."):
                 publish_result = call_publish_to_notion_endpoint(
                     markdown_text=st.session_state.markdown_doc,
                     document_title=publish_title,
+                    document_type=publish_doc_type,
+                    industry=publish_dept,
+                    version="1.0",
+                    tags=[publish_doc_type] if publish_doc_type else [],
+                    created_by="DocForgeHub",
                 )
             st.session_state.is_publishing = False
             if publish_result and publish_result.get("status") == "ok":

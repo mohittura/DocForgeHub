@@ -52,3 +52,5 @@ added pdf download button and minor changes in progressive generation for sectio
 cleaned the code in backend-agent-schema, frontend-streamlit-ui, and fastapi-api-endpoints
 
 added notion publish feature
+
+added structured notion publish

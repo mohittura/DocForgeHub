@@ -1,4 +1,5 @@
 import os
+import asyncio
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, Query, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -401,60 +402,68 @@ async def generate_section_endpoint(request: GenerateSectionRequest):
 #  Notion Publish endpoint
 # ═══════════════════════════════════════════════════════════════
 
-from api.notion_publisher import publish_markdown_to_notion
+from api.notion_publisher import publish_to_notion_database
 from api.helpers import notion_client as _notion_client  # reuse the shared client
 
-# Root page under which all published documents are created.
-# Override via env-var NOTION_PUBLISH_ROOT_PAGE_ID if needed.
-_NOTION_ROOT_PAGE_ID = os.environ.get(
-    "NOTION_PUBLISH_ROOT_PAGE_ID",
-    "30589db15e5b80779819dc0d8c532954",  # same root used by /get_all_urls
-)
+# Notion database ID where published documents are stored as rows.
+# The database must have columns: Title, Type, Industry, Version,
+# tags, Created by, Created time  (exact names).
+_NOTION_DATABASE_ID = os.environ.get("NOTION_DATABASE_ID", "")
 
 
 class PublishToNotionRequest(BaseModel):
     """Request body for POST /publish-to-notion."""
     markdown_text: str
     document_title: str
-    parent_page_id: Optional[str] = None   # defaults to _NOTION_ROOT_PAGE_ID
+    document_type: str = ""
+    industry: str = "General"
+    version: str = "1.0"
+    tags: List[str] = []
+    created_by: str = "DocForgeHub"
 
 
 @app.post("/publish-to-notion")
 async def publish_to_notion(request: PublishToNotionRequest):
     """
-    Publish a Markdown document to Notion as a new child page.
+    Publish a Markdown document to the configured Notion database as a new row.
 
     Pipeline
     ────────
-    1. Validate that markdown_text is non-empty.
-    2. Determine the parent page (request field or env-var default).
-    3. Call notion_publisher.publish_markdown_to_notion which:
-       a. Creates the page shell with the given title.
-       b. Converts Markdown to Notion blocks (headings, paragraphs,
-          bullet lists, numbered lists, tables, code blocks, quotes).
-       c. Pushes blocks in chunks of ≤100 with rate-limit back-off.
-    4. Return {page_id, page_url, blocks_pushed} on success.
+    1. Validate that markdown_text is non-empty and NOTION_DATABASE_ID is set.
+    2. Create a new database page with structured properties:
+         Title, Type, Industry, Version, tags, Created by, Created time.
+    3. Parse Markdown → typed Notion blocks (headings, bullets, numbered lists,
+       tables, code blocks, quotes, paragraphs with inline formatting).
+    4. Push blocks to the page in chunks of ≤95 with rate-limit back-off.
 
     Response (200):
         {
-            "status": "ok",
-            "page_id": "<notion-page-id>",
-            "page_url": "https://notion.so/<id>",
+            "status":        "ok",
+            "page_id":       "<notion-page-id>",
+            "page_url":      "https://notion.so/<id>",
             "blocks_pushed": <int>
         }
     """
     if not request.markdown_text or not request.markdown_text.strip():
         raise HTTPException(status_code=400, detail="markdown_text must not be empty.")
 
-    parent_id = (request.parent_page_id or _NOTION_ROOT_PAGE_ID).strip().replace("-", "")
-    if not parent_id:
-        raise HTTPException(status_code=400, detail="No parent_page_id provided and NOTION_PUBLISH_ROOT_PAGE_ID is not set.")
+    if not _NOTION_DATABASE_ID:
+        raise HTTPException(
+            status_code=503,
+            detail="NOTION_DATABASE_ID env var is not set. Add it to your .env file.",
+        )
 
     try:
-        result = publish_markdown_to_notion(
+        result = await asyncio.to_thread(
+            publish_to_notion_database,
             markdown_text=request.markdown_text,
             document_title=request.document_title,
-            parent_page_id=parent_id,
+            document_type=request.document_type,
+            industry=request.industry,
+            version=request.version,
+            tags=request.tags,
+            created_by=request.created_by,
+            database_id=_NOTION_DATABASE_ID,
             notion_client_instance=_notion_client,
         )
     except ValueError as value_err:

@@ -786,6 +786,10 @@ with col_editor:
                 publish_result = call_publish_to_notion_endpoint(
                     markdown_text=st.session_state.markdown_doc,
                     document_title=publish_title,
+                    document_type=publish_title if is_valid_document else "",
+                    industry=selected_department if is_valid_department else "General",
+                    version="1.0",
+                    tags=[publish_title] if is_valid_document else [],
                 )
             st.session_state.is_publishing = False
             if publish_result and publish_result.get("status") == "ok":
@@ -799,6 +803,7 @@ with col_editor:
                 )
                 st.balloons()
                 logger.info("Document published to Notion: %s (%d blocks)", page_url, blocks_pushed)
+                st.rerun()
                 st.rerun()
             else:
                 st.error("❌ Notion publish failed — check the API logs for details.")

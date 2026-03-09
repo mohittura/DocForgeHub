@@ -7,6 +7,7 @@ from dotenv import load_dotenv
 import re
 
 from langchain_core.messages import SystemMessage, HumanMessage
+from langchain_openai import AzureChatOpenAI
 from langchain_groq import ChatGroq
 from langgraph.graph import StateGraph, END
 
@@ -38,9 +39,11 @@ logger = logging.getLogger("agent.agent_graph")
 load_dotenv()
 
 # ── Primary document-generation LLM ─────────────────────────────
-llm = ChatGroq(
-    api_key=os.getenv("GROQ_API_KEY"),
-    model="moonshotai/kimi-k2-instruct-0905",
+llm = AzureChatOpenAI(
+    api_key=os.getenv("AZURE_OPENAI_LLM_KEY"),
+    azure_endpoint=os.getenv("AZURE_LLM_ENDPOINT"),
+    api_version=os.getenv("AZURE_LLM_API_VERSION"),
+    azure_deployment=os.getenv("AZURE_LLM_DEPLOYMENT_41_MINI"),
     temperature=0.1,
     max_tokens=8192,
 )

@@ -155,6 +155,10 @@ Below is the document schema (all sections the document must cover):
 
 {required_section}
 
+Below are the EXISTING QUESTIONS already asked to the user (numbered list):
+
+{existing_questions}
+
 Below are the questions & answers already provided by the user:
 
 {questions_and_answers}
@@ -163,9 +167,12 @@ Below are the questions & answers already provided by the user:
 ## YOUR TASK
 ─────────────────────────────────────────────
 1. Identify any schema sections that are NOT adequately covered by the existing Q&A.
-2. For each uncovered section, generate a brief but **substantive** content suggestion \
-(2-4 sentences) that a professional document writer can use.
-3. Base your suggestions on:
+2. BEFORE flagging a section as uncovered, check the existing questions list above.
+   A section is covered if ANY existing question addresses its core information need,
+   even under a different wording or category name.
+3. For each genuinely uncovered section, generate a brief but **substantive** content
+   suggestion (2-4 sentences) that a professional document writer can use.
+4. Base your suggestions on:
    - The department and document type context
    - Information that can be logically inferred from the existing answers
    - Industry best practices and standards for this type of document
@@ -343,13 +350,25 @@ def build_gap_filler_prompt(
     document_type: str,
     required_section: str,
     questions_and_answers: str,
+    existing_questions: list[str] | None = None,
 ) -> str:
-    """Build the prompt that identifies and fills gaps between schema and Q&A."""
+    """Build the prompt that identifies and fills gaps between schema and Q&A.
+
+    Args:
+        existing_questions: Optional list of question text strings already asked,
+                            used to prevent generating semantically duplicate content.
+    """
+    if existing_questions:
+        numbered = "\n".join(f"  {i + 1}. {q}" for i, q in enumerate(existing_questions))
+    else:
+        numbered = "  (none provided)"
+
     return SCHEMA_GAP_FILLER_PROMPT.format(
         department=department,
         document_type=document_type,
         required_section=required_section,
         questions_and_answers=questions_and_answers,
+        existing_questions=numbered,
     )
 
 

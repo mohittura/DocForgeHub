@@ -54,3 +54,5 @@ cleaned the code in backend-agent-schema, frontend-streamlit-ui, and fastapi-api
 added notion publish feature
 
 added structured notion publish
+
+now the question generation knows the existing questions and the duplicates are filtered out with jaccard similarity with threshold of 0.5

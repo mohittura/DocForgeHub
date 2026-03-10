@@ -114,68 +114,97 @@ class AgentState(TypedDict):
 # ═══════════════════════════════════════════════════════════════
 
 _GAP_QUESTION_SYSTEM_PROMPT = """\
-You are a document-requirements analyst. Your job is to compare a document schema
-against a set of existing Q&A answers and identify which schema sections have
-INSUFFICIENT information to write good content.
+You are a strict document-requirements analyst. Your job is to compare a document
+schema against the EXISTING questions already asked, and identify ONLY schema
+sections that have NO existing question covering them at all.
 
-Rules:
-1. A section is "covered" if at least one Q&A answer meaningfully addresses it.
-2. A section is "uncovered" if no answer touches it, or the answer is very thin.
-3. For each uncovered section, generate EXACTLY ONE targeted question that would
-   give the document writer enough information to fill that section well.
-4. Questions must be practical, specific, and answerable in 1-3 sentences.
-5. Output ONLY valid JSON — no markdown, no explanation, no preamble.
+═══════════════════════════════════════════════════
+CRITICAL DEDUPLICATION RULES — READ CAREFULLY
+═══════════════════════════════════════════════════
+1. You will be given a list of EXISTING QUESTIONS already shown to the user.
+2. Before generating ANY new question, check it against EVERY existing question.
+3. A section is "covered" if ANY existing question addresses its core information
+   need — even if the wording is completely different.
+4. DO NOT generate a question if an existing one asks for the same information
+   under a different phrasing, angle, or category name.
+
+Examples of FORBIDDEN duplicates (these are the SAME question):
+  - Existing: "What are the main goals of this initiative?"
+    Forbidden: "What are the primary objectives you want to achieve?"
+  - Existing: "Who are the key stakeholders involved?"
+    Forbidden: "Which teams or individuals will be affected by this?"
+  - Existing: "What is the timeline for this project?"
+    Forbidden: "What are the key milestones and target completion dates?"
+  - Existing: "What risks could impact this project?"
+    Forbidden: "What challenges or obstacles might arise?"
+
+5. A section is "uncovered" ONLY if zero existing questions address it in any way.
+6. For each truly uncovered section, generate EXACTLY ONE targeted question.
+7. Questions must ask for information that is COMPLETELY ABSENT from existing Q&A.
+8. Output ONLY valid JSON — no markdown, no explanation, no preamble.
 
 Output format (JSON array):
 [
   {
-    "question": "What are the key risks and mitigation strategies for this project?",
-    "category": "Risk Management",
+    "question": "<specific question for information not covered by any existing question>",
+    "category": "<schema section title>",
     "answer_type": "text",
-    "section_covered": "Risk Assessment"
-  },
-  ...
+    "section_covered": "<exact schema section title>",
+    "why_not_duplicate": "<one sentence: which existing question you checked and why this is different>"
+  }
 ]
 
-If ALL sections are already covered, return an empty array: []
+If ALL sections are already covered by existing questions, return an empty array: []
 """
 
 
 def analyze_schema_gaps(state: AgentState) -> dict:
     """
-    NODE 1 (NEW): Analyze schema vs existing Q&A to identify coverage gaps.
+    NODE 1: Analyze schema vs existing Q&A to identify coverage gaps.
 
-    Uses a dedicated lightweight LLM to:
-      1. Compare every schema section against the existing answers
-      2. Generate one targeted question per uncovered section
-      3. Return the gap questions so they can be:
-         a) Displayed in the Streamlit UI for the user to answer
-         b) Saved to MongoDB's document_qas collection for future reuse
-
-    This replaces the old fill_schema_gaps node which used the main LLM
-    to synthesize supplementary content — which was wasteful and bypassed
-    the user entirely.
-
-    The generated questions are stored in state["gap_questions"] and also
-    synthesized into state["supplementary_content"] for the document writer
-    (using whatever answers are already in the Q&A payload for gap sections).
+    Key improvements over previous version:
+    - Passes the full list of EXISTING QUESTION TEXTS (not just answers) to the
+      LLM so it can perform semantic deduplication before generating anything.
+    - Runs a post-generation deduplication pass to catch any LLM slippage.
+    - Strips the internal `why_not_duplicate` field before returning gap questions
+      to the rest of the pipeline (it is only used as a reasoning scaffold).
     """
     logger.info("🔎 Node: analyze_schema_gaps — scanning schema coverage...")
 
     formatted_schema = format_required_section_for_prompt(state["required_section"])
     formatted_answers = format_questions_and_answers_for_prompt(state["questions_and_answers"])
 
-    user_message = f"""
+    # Build a numbered list of ALL existing question texts so the LLM can
+    # perform exact semantic comparison, not just guess from answers alone.
+    existing_question_texts = [
+        qa.get("question", "").strip()
+        for qa in state["questions_and_answers"]
+        if qa.get("question", "").strip()
+        and not qa.get("category", "").startswith("_")  # skip internal scope/memory entries
+    ]
+    numbered_existing_questions = "\n".join(
+        f"  {idx + 1}. {q}" for idx, q in enumerate(existing_question_texts)
+    ) if existing_question_texts else "  (none)"
+
+    user_message = f"""\
 DOCUMENT TYPE: {state['document_type']}
 DEPARTMENT: {state['department']}
 
 === SCHEMA (sections that must be covered) ===
 {formatted_schema}
 
-=== EXISTING Q&A ANSWERS ===
+=== EXISTING QUESTIONS ALREADY ASKED TO THE USER ===
+Check EVERY one of these before generating a gap question.
+If ANY existing question below covers a schema section, do NOT generate another question for it.
+
+{numbered_existing_questions}
+
+=== USER'S ANSWERS TO THOSE QUESTIONS ===
 {formatted_answers}
 
-Identify uncovered sections and generate gap questions now.
+Now identify which schema sections have NO existing question covering them,
+and generate gap questions ONLY for those sections.
+Remember: paraphrasing an existing question is NOT allowed.
 """
 
     try:
@@ -198,15 +227,29 @@ Identify uncovered sections and generate gap questions now.
             logger.info("   ✅ All schema sections are covered — no gap questions needed")
             return {"gap_questions": [], "supplementary_content": ""}
 
+        # ── Post-generation deduplication pass ───────────────────────────────
+        # Even with strict instructions, LLMs occasionally slip through
+        # paraphrased duplicates. This filter removes any gap question whose
+        # core noun phrase closely overlaps with an existing question.
+        gap_questions = _deduplicate_gap_questions(gap_questions, existing_question_texts)
+
+        if not gap_questions:
+            logger.info(
+                "   ✅ All generated gap questions were duplicates — filtered out"
+            )
+            return {"gap_questions": [], "supplementary_content": ""}
+
+        # Strip the internal reasoning scaffold field before returning
+        for gq in gap_questions:
+            gq.pop("why_not_duplicate", None)
+
         logger.info(
-            "   📝 Found %d schema gap(s) — questions generated for: %s",
+            "   📝 Found %d genuine schema gap(s) — questions generated for: %s",
             len(gap_questions),
             ", ".join(q.get("section_covered", "?") for q in gap_questions),
         )
 
-        # Build lightweight supplementary_content from existing answers
-        # that touch the gap areas — gives the document LLM something to
-        # work with even if the user hasn't answered the gap questions yet.
+        # Build supplementary_content notes for the document LLM
         supplementary_lines = []
         for gap_question in gap_questions:
             section = gap_question.get("section_covered", "")
@@ -225,6 +268,69 @@ Identify uncovered sections and generate gap questions now.
     except (json.JSONDecodeError, Exception) as error_msg:
         logger.warning("   ⚠️  analyze_schema_gaps failed (non-critical): %s", error_msg)
         return {"gap_questions": [], "supplementary_content": ""}
+
+
+# ── Deduplication helper ──────────────────────────────────────────────────────
+
+def _extract_key_terms(text: str) -> set[str]:
+    """
+    Extract meaningful lowercase words (>3 chars) from a question string,
+    stripping stop-words and question particles for semantic comparison.
+    """
+    stop_words = {
+        "what", "which", "who", "how", "when", "where", "why", "are", "is",
+        "the", "for", "and", "that", "this", "will", "does", "have", "with",
+        "your", "any", "all", "can", "should", "would", "could", "there",
+        "describe", "explain", "provide", "list", "define", "give", "tell",
+        "main", "key", "primary", "major", "core",
+    }
+    words = re.findall(r"[a-z]{4,}", text.lower())
+    return {w for w in words if w not in stop_words}
+
+
+def _deduplicate_gap_questions(
+    gap_questions: list[dict],
+    existing_questions: list[str],
+) -> list[dict]:
+    """
+    Remove any gap question that is semantically too close to an existing question.
+
+    Uses a Jaccard-similarity threshold on key-term sets: if a gap question
+    shares ≥50% of its key terms with any existing question, it is a duplicate.
+    Threshold is intentionally generous — false positives (keeping duplicates)
+    are more damaging in a production setting than false negatives (dropping a
+    rare genuine question).
+    """
+    DUPLICATE_THRESHOLD = 0.50
+
+    existing_term_sets = [_extract_key_terms(q) for q in existing_questions]
+
+    unique_gaps = []
+    for gap in gap_questions:
+        gap_terms = _extract_key_terms(gap.get("question", ""))
+        if not gap_terms:
+            continue
+
+        is_duplicate = False
+        for existing_terms in existing_term_sets:
+            if not existing_terms:
+                continue
+            intersection = gap_terms & existing_terms
+            union = gap_terms | existing_terms
+            jaccard = len(intersection) / len(union) if union else 0
+            if jaccard >= DUPLICATE_THRESHOLD:
+                logger.info(
+                    "   🚫 Dedup filter removed duplicate (Jaccard=%.2f): '%s'",
+                    jaccard,
+                    gap.get("question", "")[:80],
+                )
+                is_duplicate = True
+                break
+
+        if not is_duplicate:
+            unique_gaps.append(gap)
+
+    return unique_gaps
 
 
 # ═══════════════════════════════════════════════════════════════

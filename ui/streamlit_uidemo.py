@@ -829,18 +829,26 @@ with col_editor:
         if not subsection_titles:
             st.info("📋 No schema subsections found. Select a document with a schema to use progressive mode.")
         else:
-            # ── Show all already-generated subsections ──
+            # ── Show all already-generated subsections (each individually editable) ──
             for sub_idx, sub_title in enumerate(subsection_titles):
                 if sub_title not in st.session_state.prog_sections:
                     break  # stop at the first un-generated subsection
 
-                # Always use the schema subsection title — don't extract from
-                # generated text (the LLM may put a document-title heading first).
                 section_text = st.session_state.prog_sections[sub_title]
-                display_title = sub_title
-                st.markdown(f"✅ **{display_title}**")
-                with st.expander(f"📖 {display_title}", expanded=False):
-                    st.markdown(section_text)
+                # Unique, stable key per subsection index — prevents Streamlit from
+                # freezing on the initial render value when new sections arrive.
+                section_widget_key = f"prog_section_editor_{sub_idx}"
+                with st.expander(f"✅ {sub_title}", expanded=False):
+                    edited = st.text_area(
+                        label=sub_title,
+                        value=section_text,
+                        height=220,
+                        label_visibility="collapsed",
+                        key=section_widget_key,
+                    )
+                    # Write edits back so the combined preview stays in sync
+                    if edited != section_text:
+                        st.session_state.prog_sections[sub_title] = edited
 
             # ── Determine how many subsections have been generated ──
             generated_count = sum(
@@ -923,13 +931,18 @@ with col_editor:
                     for t in subsection_titles
                     if t in st.session_state.prog_sections
                 )
-                st.session_state.markdown_doc = st.text_area(
-                    "Combined Preview",
+                # Key includes section count so the widget remounts (and picks up
+                # the updated value) every time a new section is added. Without
+                # this Streamlit serves the frozen first-render value indefinitely.
+                combined_editor_key = f"prog_combined_editor_{len(st.session_state.prog_sections)}"
+                edited_full = st.text_area(
+                    "Full Document (combined & editable)",
                     value=full_preview,
-                    height=300,
-                    label_visibility="collapsed",
-                    key="prog_editor",
+                    height=350,
+                    key=combined_editor_key,
                 )
+                # Propagate manual edits so publish / PDF always use current text.
+                st.session_state.markdown_doc = edited_full
 
     else:
         # ── Single-shot mode: simple editor ──

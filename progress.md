@@ -56,3 +56,5 @@ added notion publish feature
 added structured notion publish
 
 now the question generation knows the existing questions and the duplicates are filtered out with jaccard similarity with threshold of 0.5
+
+bug fixed : combined markdown editor was frozen after one section generation, there was no editable window for each section generated

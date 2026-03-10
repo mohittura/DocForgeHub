@@ -288,11 +288,12 @@ for gap_idx, gap_question in enumerate(st.session_state.gap_questions):
 #  Fetch schema and flatten subsections for progressive mode
 # ═══════════════════════════════════════════════════════════════
 
-# all_subsections: flat, ordered list of dicts — each subsection carries
-# its parent section title so we can build the correct API payload.
-#   [ { "parent_title": "1. Objective", "title": "Description", "type": "list", "order": 1, ... }, ... ]
+# all_subsections: flat list — ONE entry per subsection, each gets a
+# unique _prog_key so that same-named subsections under different parent
+# sections (e.g. "Responses" under 8.1 AND 8.2) never collide in
+# prog_sections (which is a dict).
 all_subsections: list[dict] = []
-subsection_titles: list[str] = []  # ordered titles for the right-panel reveal
+subsection_titles: list[str] = []  # ordered unique _prog_key values
 
 if is_valid_document and st.session_state.prog_mode:
     document_name_for_schema = document_name_lookup.get(selected_document, selected_document)
@@ -306,26 +307,41 @@ if is_valid_document and st.session_state.prog_mode:
         schema_data = schema_response.json().get("required_section", schema_response.json())
         schema_sections = schema_data.get("sections", [])
 
+        seen_raw_titles: set[str] = set()
+
         for section_obj in schema_sections:
             parent_title = section_obj.get("title", "Document")
             subs = section_obj.get("subsections", [])
             if subs:
                 for sub in sorted(subs, key=lambda s: s.get("order", 0)):
+                    raw_title = sub.get("title", "").strip()
+                    # Make the prog_key unique when the same subsection title
+                    # appears under multiple parent sections.
+                    if raw_title in seen_raw_titles:
+                        prog_key = f"{parent_title} › {raw_title}"
+                    else:
+                        prog_key = raw_title
+                        seen_raw_titles.add(raw_title)
                     all_subsections.append({
                         **sub,
+                        "title": raw_title,       # original title sent to the API
+                        "_prog_key": prog_key,    # unique key used in prog_sections
                         "_parent_title": parent_title,
                     })
             else:
-                # Table-only or flat section — treat the section itself as a subsection
+                raw_title = parent_title
+                prog_key = raw_title if raw_title not in seen_raw_titles else f"{parent_title} › {raw_title}"
+                seen_raw_titles.add(raw_title)
                 all_subsections.append({
-                    "title": parent_title,
+                    "title": raw_title,
                     "type": section_obj.get("type", "text"),
                     "columns": section_obj.get("columns", []),
                     "order": section_obj.get("order", 0),
+                    "_prog_key": prog_key,
                     "_parent_title": parent_title,
                 })
 
-        subsection_titles = [sub["title"] for sub in all_subsections]
+        subsection_titles = [sub["_prog_key"] for sub in all_subsections]
         logger.info("Schema loaded — %d subsections: %s", len(all_subsections), subsection_titles)
     except Exception as schema_err:
         logger.warning("Failed to fetch schema: %s", schema_err)
@@ -607,7 +623,7 @@ with col_questions:
                 if current_page == total_pages - 1:
                     all_subsections_generated = (
                         subsection_titles
-                        and all(t in st.session_state.prog_sections for t in subsection_titles)
+                        and all(k in st.session_state.prog_sections for k in subsection_titles)
                     )
                     if all_subsections_generated:
                         generate_button_clicked = st.button(
@@ -712,24 +728,22 @@ with col_questions:
 
             else:
                 # ═══ PROGRESSIVE FINALIZE ═══
-                # Generate any subsection not yet done, then stitch in schema order
                 all_qa = collect_all_answered_qa(all_questions)
 
                 for sub_entry in all_subsections:
-                    sub_title = sub_entry["title"]
-                    if sub_title in st.session_state.prog_sections:
+                    prog_key = sub_entry.get("_prog_key", sub_entry["title"])
+                    if prog_key in st.session_state.prog_sections:
                         continue
                     parent_title = sub_entry.get("_parent_title", "Document")
-                    section_for_api = {
-                        "title": parent_title,
-                        "subsections": [sub_entry],
-                    }
+                    display_title = prog_key.split(" › ")[-1]
+                    clean_entry = {k: v for k, v in sub_entry.items() if not k.startswith("_")}
+                    section_for_api = {"title": parent_title, "subsections": [clean_entry]}
                     previously_generated = "\n\n".join(
                         st.session_state.prog_sections[t]
                         for t in subsection_titles
-                        if t in st.session_state.prog_sections and t != sub_title
+                        if t in st.session_state.prog_sections and t != prog_key
                     )
-                    with st.spinner(f"⚡ Generating '{sub_title}'..."):
+                    with st.spinner(f"⚡ Generating '{display_title}'..."):
                         section_result = call_generate_section(
                             department=selected_department,
                             document_type=selected_document,
@@ -738,9 +752,8 @@ with col_questions:
                             doc_memory=previously_generated,
                         )
                     if section_result and section_result.get("section_text"):
-                        st.session_state.prog_sections[sub_title] = section_result["section_text"]
+                        st.session_state.prog_sections[prog_key] = section_result["section_text"]
 
-                # Stitch all generated sections in schema order
                 full_doc = "\n\n".join(
                     st.session_state.prog_sections[t]
                     for t in subsection_titles
@@ -829,81 +842,78 @@ with col_editor:
         if not subsection_titles:
             st.info("📋 No schema subsections found. Select a document with a schema to use progressive mode.")
         else:
-            # ── Show all already-generated subsections (each individually editable) ──
-            for sub_idx, sub_title in enumerate(subsection_titles):
-                if sub_title not in st.session_state.prog_sections:
-                    break  # stop at the first un-generated subsection
+            # ── Find the first un-generated index (true "next" pointer) ─────────
+            # A first-missing scan is used instead of sum()-as-index because
+            # sum() counts total keys in prog_sections (a dict), but with
+            # duplicate-titled subsections collapsed, sum < len even when some
+            # slots are filled — causing already-done sections to reappear.
+            next_idx = next(
+                (i for i, k in enumerate(subsection_titles)
+                 if k not in st.session_state.prog_sections),
+                len(subsection_titles),
+            )
+            generated_count = next_idx  # always identical to next_idx
 
-                section_text = st.session_state.prog_sections[sub_title]
-                # Unique, stable key per subsection index — prevents Streamlit from
-                # freezing on the initial render value when new sections arrive.
-                section_widget_key = f"prog_section_editor_{sub_idx}"
-                with st.expander(f"✅ {sub_title}", expanded=False):
+            # ── Show completed subsections — each with its own editable area ────
+            for sub_idx in range(next_idx):
+                prog_key = subsection_titles[sub_idx]
+                # Strip the dedup prefix "Parent › " for display
+                display_label = prog_key.split(" › ")[-1]
+                section_text = st.session_state.prog_sections[prog_key]
+                with st.expander(f"✅ {display_label}", expanded=False):
                     edited = st.text_area(
-                        label=sub_title,
+                        label=display_label,
                         value=section_text,
                         height=220,
                         label_visibility="collapsed",
-                        key=section_widget_key,
+                        key=f"prog_section_editor_{sub_idx}",
                     )
-                    # Write edits back so the combined preview stays in sync
                     if edited != section_text:
-                        st.session_state.prog_sections[sub_title] = edited
+                        st.session_state.prog_sections[prog_key] = edited
 
-            # ── Determine how many subsections have been generated ──
-            generated_count = sum(
-                1 for t in subsection_titles if t in st.session_state.prog_sections
-            )
-
+            # ── Next section to generate ─────────────────────────────────────────
             if generated_count < len(subsection_titles):
-                # Show the generate button for the NEXT un-generated subsection
-                next_sub_title = subsection_titles[generated_count]
+                next_prog_key  = subsection_titles[generated_count]
                 next_sub_entry = all_subsections[generated_count]
-                parent_title = next_sub_entry.get("_parent_title", "Document")
-                sub_type = next_sub_entry.get("type", "text")
+                parent_title   = next_sub_entry.get("_parent_title", "Document")
+                sub_type       = next_sub_entry.get("type", "text")
+                display_next   = next_prog_key.split(" › ")[-1]
 
                 st.divider()
                 type_icon = "📊" if sub_type == "table" else "📝"
-                st.subheader(f"{type_icon} Next: {next_sub_title}")
-
-                # Show progress
+                st.subheader(f"{type_icon} Next: {display_next}")
                 st.progress(generated_count / len(subsection_titles))
                 st.caption(f"Step {generated_count + 1} of {len(subsection_titles)}")
 
                 if not progressive_all_answered:
-                    remaining = total_questions - answered_count
-                    st.warning(f"🔒 Answer all questions first ({remaining} remaining)")
+                    st.warning(f"🔒 Answer all questions first ({total_questions - answered_count} remaining)")
                 else:
-                    button_label = f"⚡ Generate: {next_sub_title}"
-
-                    generate_section_clicked = st.button(
-                        button_label,
+                    if st.button(
+                        f"⚡ Generate: {display_next}",
                         disabled=st.session_state.prog_generating,
                         use_container_width=True,
                         type="primary",
                         key=f"prog_gen_{generated_count}",
-                    )
-
-                    if generate_section_clicked:
-                        # Collect ALL answered Q&A — the agent filters by relevance
+                    ):
                         all_qa = collect_all_answered_qa(all_questions)
-
+                        # Send exactly ONE subsection to the API — strip internal
+                        # _prog_key so the backend doesn't see it as an unknown field
+                        clean_entry = {k: v for k, v in next_sub_entry.items()
+                                       if not k.startswith("_")}
                         section_for_api = {
                             "title": parent_title,
-                            "subsections": [next_sub_entry],
+                            "subsections": [clean_entry],
                         }
                         previously_generated = "\n\n".join(
                             st.session_state.prog_sections[t]
                             for t in subsection_titles
                             if t in st.session_state.prog_sections
                         )
-
                         logger.info(
-                            "Progressive generate — subsection='%s', parent='%s', type='%s', qa_count=%d",
-                            next_sub_title, parent_title, sub_type, len(all_qa),
+                            "Progressive — key='%s', label='%s', parent='%s', qa=%d",
+                            next_prog_key, display_next, parent_title, len(all_qa),
                         )
-
-                        with st.spinner(f"⚡ Generating '{next_sub_title}'..."):
+                        with st.spinner(f"⚡ Generating '{display_next}'..."):
                             section_result = call_generate_section(
                                 department=selected_department,
                                 document_type=selected_document,
@@ -911,19 +921,17 @@ with col_editor:
                                 questions_and_answers=all_qa,
                                 doc_memory=previously_generated,
                             )
-
                         if section_result and section_result.get("section_text"):
-                            st.session_state.prog_sections[next_sub_title] = section_result["section_text"]
+                            st.session_state.prog_sections[next_prog_key] = section_result["section_text"]
                             st.session_state.prog_current_step = generated_count + 1
                             st.rerun()
                         else:
-                            st.error(f"❌ Failed to generate '{next_sub_title}'. Check API logs.")
+                            st.error(f"❌ Failed to generate '{display_next}'. Check API logs.")
             else:
-                # All subsections generated!
                 st.divider()
                 st.success("🎉 All sections generated! Click 'Finalize Document' in the questions panel.")
 
-            # ── Combined editable preview ──
+            # ── Combined editable preview ─────────────────────────────────────────
             if st.session_state.prog_sections:
                 st.divider()
                 full_preview = "\n\n".join(
@@ -931,17 +939,14 @@ with col_editor:
                     for t in subsection_titles
                     if t in st.session_state.prog_sections
                 )
-                # Key includes section count so the widget remounts (and picks up
-                # the updated value) every time a new section is added. Without
-                # this Streamlit serves the frozen first-render value indefinitely.
-                combined_editor_key = f"prog_combined_editor_{len(st.session_state.prog_sections)}"
+                # Dynamic key forces remount when new sections arrive so the
+                # widget always shows the latest content (not the frozen first render).
                 edited_full = st.text_area(
                     "Full Document (combined & editable)",
                     value=full_preview,
                     height=350,
-                    key=combined_editor_key,
+                    key=f"prog_combined_editor_{len(st.session_state.prog_sections)}",
                 )
-                # Propagate manual edits so publish / PDF always use current text.
                 st.session_state.markdown_doc = edited_full
 
     else:

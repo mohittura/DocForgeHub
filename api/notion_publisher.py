@@ -226,6 +226,76 @@ def _table_block(rows: list[list[str]]) -> dict:
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
+#  Notion code block language normalisation
+#
+#  Notion's API only accepts a fixed set of language strings. Any language
+#  not in that set causes a 400 validation error. This map converts common
+#  aliases and unsupported languages (e.g. "http", "sh", "js") to their
+#  accepted equivalents. Anything not in the map falls back to "plain text".
+# ═══════════════════════════════════════════════════════════════════════════════
+
+_NOTION_LANGUAGE_MAP: dict[str, str] = {
+    # Direct matches (already valid — identity entries for safety)
+    "abap": "abap", "abc": "abc", "agda": "agda", "arduino": "arduino",
+    "ascii art": "ascii art", "assembly": "assembly", "bash": "bash",
+    "basic": "basic", "bnf": "bnf", "c": "c", "c#": "c#", "c++": "c++",
+    "clojure": "clojure", "coffeescript": "coffeescript", "coq": "coq",
+    "css": "css", "dart": "dart", "dhall": "dhall", "diff": "diff",
+    "docker": "docker", "ebnf": "ebnf", "elixir": "elixir", "elm": "elm",
+    "erlang": "erlang", "f#": "f#", "flow": "flow", "fortran": "fortran",
+    "gherkin": "gherkin", "glsl": "glsl", "go": "go", "graphql": "graphql",
+    "groovy": "groovy", "haskell": "haskell", "hcl": "hcl", "html": "html",
+    "idris": "idris", "java": "java", "javascript": "javascript",
+    "json": "json", "julia": "julia", "kotlin": "kotlin", "latex": "latex",
+    "less": "less", "lisp": "lisp", "livescript": "livescript",
+    "llvm ir": "llvm ir", "lua": "lua", "makefile": "makefile",
+    "markdown": "markdown", "markup": "markup", "matlab": "matlab",
+    "mathematica": "mathematica", "mermaid": "mermaid", "nix": "nix",
+    "notion formula": "notion formula", "objective-c": "objective-c",
+    "ocaml": "ocaml", "pascal": "pascal", "perl": "perl", "php": "php",
+    "plain text": "plain text", "powershell": "powershell", "prolog": "prolog",
+    "protobuf": "protobuf", "purescript": "purescript", "python": "python",
+    "r": "r", "racket": "racket", "reason": "reason", "ruby": "ruby",
+    "rust": "rust", "sass": "sass", "scala": "scala", "scheme": "scheme",
+    "scss": "scss", "shell": "shell", "smalltalk": "smalltalk",
+    "solidity": "solidity", "sql": "sql", "swift": "swift", "toml": "toml",
+    "typescript": "typescript", "vb.net": "vb.net", "verilog": "verilog",
+    "vhdl": "vhdl", "visual basic": "visual basic",
+    "webassembly": "webassembly", "xml": "xml", "yaml": "yaml",
+    "java/c/c++/c#": "java/c/c++/c#",
+    # Common aliases / unsupported languages → nearest valid equivalent
+    "http": "plain text",
+    "https": "plain text",
+    "sh": "shell",
+    "zsh": "shell",
+    "bash-session": "bash",
+    "console": "bash",
+    "terminal": "bash",
+    "js": "javascript",
+    "jsx": "javascript",
+    "ts": "typescript",
+    "tsx": "typescript",
+    "py": "python",
+    "python3": "python",
+    "rb": "ruby",
+    "rs": "rust",
+    "cs": "c#",
+    "csharp": "c#",
+    "cpp": "c++",
+    "c++": "c++",
+    "objc": "objective-c",
+    "dockerfile": "docker",
+    "tf": "hcl",
+    "terraform": "hcl",
+    "proto": "protobuf",
+    "proto3": "protobuf",
+    "md": "markdown",
+    "text": "plain text",
+    "txt": "plain text",
+    "": "plain text",
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
 #  Markdown → Notion block list
 # ═══════════════════════════════════════════════════════════════════════════════
 
@@ -259,7 +329,8 @@ def markdown_to_notion_blocks(markdown_text: str) -> list[dict]:
         # ── Fenced code block ─────────────────────────────────────────────────
         code_fence_match = re.match(r"^```(\w*)", line)
         if code_fence_match:
-            lang = code_fence_match.group(1) or "plain text"
+            raw_lang = code_fence_match.group(1).strip().lower()
+            lang = _NOTION_LANGUAGE_MAP.get(raw_lang, "plain text")
             code_lines: list[str] = []
             idx += 1
             while idx < len(lines) and not lines[idx].strip().startswith("```"):

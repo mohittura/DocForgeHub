@@ -114,97 +114,150 @@ class AgentState(TypedDict):
 # ═══════════════════════════════════════════════════════════════
 
 _GAP_QUESTION_SYSTEM_PROMPT = """\
-You are a strict document-requirements analyst. Your job is to compare a document
-schema against the EXISTING questions already asked, and identify ONLY schema
-sections that have NO existing question covering them at all.
+You are a document-requirements analyst. Your job is to compare a document schema
+against a set of existing Q&A answers and identify which schema sections have
+INSUFFICIENT information to write good content.
 
-═══════════════════════════════════════════════════
-CRITICAL DEDUPLICATION RULES — READ CAREFULLY
-═══════════════════════════════════════════════════
-1. You will be given a list of EXISTING QUESTIONS already shown to the user.
-2. Before generating ANY new question, check it against EVERY existing question.
-3. A section is "covered" if ANY existing question addresses its core information
-   need — even if the wording is completely different.
-4. DO NOT generate a question if an existing one asks for the same information
-   under a different phrasing, angle, or category name.
+Rules:
+1. A section is "covered" if at least one existing QUESTION (not just its answer)
+   already asks for the same information — regardless of wording differences.
+   "What authentication method is used?" and "Which auth scheme does the API use?"
+   cover the same information need — do NOT generate a duplicate.
+2. A section is "uncovered" only if NO existing question addresses that information
+   need at all.
+3. For each genuinely uncovered section, generate EXACTLY ONE targeted question.
+4. Questions must be practical, specific, and answerable in 1-3 sentences.
+5. You MUST include a "why_not_duplicate" field explaining why this question is not
+   already covered by any existing question. Be specific — name the existing question
+   it might seem similar to and explain the difference.
+6. Output ONLY valid JSON — no markdown, no explanation, no preamble.
 
-Examples of FORBIDDEN duplicates (these are the SAME question):
-  - Existing: "What are the main goals of this initiative?"
-    Forbidden: "What are the primary objectives you want to achieve?"
-  - Existing: "Who are the key stakeholders involved?"
-    Forbidden: "Which teams or individuals will be affected by this?"
-  - Existing: "What is the timeline for this project?"
-    Forbidden: "What are the key milestones and target completion dates?"
-  - Existing: "What risks could impact this project?"
-    Forbidden: "What challenges or obstacles might arise?"
-
-5. A section is "uncovered" ONLY if zero existing questions address it in any way.
-6. For each truly uncovered section, generate EXACTLY ONE targeted question.
-7. Questions must ask for information that is COMPLETELY ABSENT from existing Q&A.
-8. Output ONLY valid JSON — no markdown, no explanation, no preamble.
+FORBIDDEN: Do NOT generate questions that are paraphrases of existing questions.
+Examples of forbidden duplicates:
+  Existing: "What is the API base URL?"  →  Forbidden: "What URL should clients use?"
+  Existing: "What auth method is used?"  →  Forbidden: "How do clients authenticate?"
+  Existing: "What are the rate limits?"  →  Forbidden: "How many requests per second?"
 
 Output format (JSON array):
 [
   {
-    "question": "<specific question for information not covered by any existing question>",
-    "category": "<schema section title>",
+    "question": "What are the key risks and mitigation strategies for this project?",
+    "category": "Risk Management",
     "answer_type": "text",
-    "section_covered": "<exact schema section title>",
-    "why_not_duplicate": "<one sentence: which existing question you checked and why this is different>"
-  }
+    "section_covered": "Risk Assessment",
+    "why_not_duplicate": "No existing question asks about risks or mitigations."
+  },
+  ...
 ]
 
-If ALL sections are already covered by existing questions, return an empty array: []
+If ALL sections are already covered, return an empty array: []
 """
+
+
+def _extract_key_terms(text: str) -> set[str]:
+    """Lowercase words >3 chars with stop words removed — used for Jaccard dedup."""
+    stop = {
+        "what", "which", "who", "how", "when", "where", "that", "this",
+        "with", "your", "have", "will", "does", "from", "about", "into",
+        "should", "would", "could", "used", "uses", "using", "does",
+    }
+    return {w for w in re.findall(r"[a-z]{4,}", text.lower()) if w not in stop}
+
+
+def _deduplicate_gap_questions(
+    gap_questions: list[dict],
+    existing_questions: list[str],
+    threshold: float = 0.5,
+) -> list[dict]:
+    """
+    Post-generation Jaccard similarity filter.
+
+    Removes any gap question whose key-term overlap with ANY existing question
+    exceeds `threshold` (default 50%). Also deduplicates within the gap
+    questions themselves in case the LLM generated two near-identical ones.
+    """
+    def jaccard(a: set, b: set) -> float:
+        if not a or not b:
+            return 0.0
+        return len(a & b) / len(a | b)
+
+    existing_term_sets = [_extract_key_terms(q) for q in existing_questions]
+    kept: list[dict] = []
+    kept_terms: list[set] = []
+
+    for gq in gap_questions:
+        gq_terms = _extract_key_terms(gq.get("question", ""))
+
+        # Check against existing questions
+        duplicate = any(
+            jaccard(gq_terms, ex_terms) >= threshold
+            for ex_terms in existing_term_sets
+        )
+        if duplicate:
+            logger.info(
+                "   🗑️  Dedup filtered (vs existing): '%s'", gq.get("question", "")[:80]
+            )
+            continue
+
+        # Check within the gap questions already kept
+        duplicate = any(
+            jaccard(gq_terms, kept_t) >= threshold
+            for kept_t in kept_terms
+        )
+        if duplicate:
+            logger.info(
+                "   🗑️  Dedup filtered (vs gap peers): '%s'", gq.get("question", "")[:80]
+            )
+            continue
+
+        kept.append(gq)
+        kept_terms.append(gq_terms)
+
+    return kept
 
 
 def analyze_schema_gaps(state: AgentState) -> dict:
     """
     NODE 1: Analyze schema vs existing Q&A to identify coverage gaps.
 
-    Key improvements over previous version:
-    - Passes the full list of EXISTING QUESTION TEXTS (not just answers) to the
-      LLM so it can perform semantic deduplication before generating anything.
-    - Runs a post-generation deduplication pass to catch any LLM slippage.
-    - Strips the internal `why_not_duplicate` field before returning gap questions
-      to the rest of the pipeline (it is only used as a reasoning scaffold).
+    Deduplication strategy (two layers):
+      1. LLM-level: existing question texts are injected into the prompt so the
+         LLM can compare question-to-question (not just answer-to-answer). The
+         why_not_duplicate reasoning field scaffolds the LLM into checking each
+         candidate against the list before emitting it.
+      2. Post-generation: _deduplicate_gap_questions() applies Jaccard similarity
+         on key terms to catch any paraphrased duplicates that slipped through.
     """
     logger.info("🔎 Node: analyze_schema_gaps — scanning schema coverage...")
 
     formatted_schema = format_required_section_for_prompt(state["required_section"])
     formatted_answers = format_questions_and_answers_for_prompt(state["questions_and_answers"])
 
-    # Build a numbered list of ALL existing question texts so the LLM can
-    # perform exact semantic comparison, not just guess from answers alone.
-    existing_question_texts = [
-        qa.get("question", "").strip()
+    # Extract existing question texts (skip _-prefixed internal entries)
+    existing_questions = [
+        qa["question"]
         for qa in state["questions_and_answers"]
-        if qa.get("question", "").strip()
-        and not qa.get("category", "").startswith("_")  # skip internal scope/memory entries
+        if not qa.get("category", "").startswith("_") and qa.get("question")
     ]
-    numbered_existing_questions = "\n".join(
-        f"  {idx + 1}. {q}" for idx, q in enumerate(existing_question_texts)
-    ) if existing_question_texts else "  (none)"
+    existing_questions_block = "\n".join(
+        f"{i+1}. {q}" for i, q in enumerate(existing_questions)
+    ) if existing_questions else "(none)"
 
-    user_message = f"""\
+    user_message = f"""
 DOCUMENT TYPE: {state['document_type']}
 DEPARTMENT: {state['department']}
 
 === SCHEMA (sections that must be covered) ===
 {formatted_schema}
 
-=== EXISTING QUESTIONS ALREADY ASKED TO THE USER ===
-Check EVERY one of these before generating a gap question.
-If ANY existing question below covers a schema section, do NOT generate another question for it.
+=== EXISTING QUESTIONS (do NOT duplicate any of these) ===
+{existing_questions_block}
 
-{numbered_existing_questions}
-
-=== USER'S ANSWERS TO THOSE QUESTIONS ===
+=== EXISTING Q&A ANSWERS ===
 {formatted_answers}
 
-Now identify which schema sections have NO existing question covering them,
-and generate gap questions ONLY for those sections.
-Remember: paraphrasing an existing question is NOT allowed.
+Identify genuinely uncovered sections and generate gap questions now.
+Remember: check every candidate against the existing questions list above before including it.
 """
 
     try:
@@ -227,29 +280,19 @@ Remember: paraphrasing an existing question is NOT allowed.
             logger.info("   ✅ All schema sections are covered — no gap questions needed")
             return {"gap_questions": [], "supplementary_content": ""}
 
-        # ── Post-generation deduplication pass ───────────────────────────────
-        # Even with strict instructions, LLMs occasionally slip through
-        # paraphrased duplicates. This filter removes any gap question whose
-        # core noun phrase closely overlaps with an existing question.
-        gap_questions = _deduplicate_gap_questions(gap_questions, existing_question_texts)
+        # Strip the why_not_duplicate scaffold field before returning
+        for q in gap_questions:
+            q.pop("why_not_duplicate", None)
 
-        if not gap_questions:
-            logger.info(
-                "   ✅ All generated gap questions were duplicates — filtered out"
-            )
-            return {"gap_questions": [], "supplementary_content": ""}
-
-        # Strip the internal reasoning scaffold field before returning
-        for gq in gap_questions:
-            gq.pop("why_not_duplicate", None)
+        # Post-generation deduplication safety net
+        gap_questions = _deduplicate_gap_questions(gap_questions, existing_questions)
 
         logger.info(
-            "   📝 Found %d genuine schema gap(s) — questions generated for: %s",
+            "   📝 Found %d schema gap(s) — questions generated for: %s",
             len(gap_questions),
             ", ".join(q.get("section_covered", "?") for q in gap_questions),
         )
 
-        # Build supplementary_content notes for the document LLM
         supplementary_lines = []
         for gap_question in gap_questions:
             section = gap_question.get("section_covered", "")
@@ -268,69 +311,6 @@ Remember: paraphrasing an existing question is NOT allowed.
     except (json.JSONDecodeError, Exception) as error_msg:
         logger.warning("   ⚠️  analyze_schema_gaps failed (non-critical): %s", error_msg)
         return {"gap_questions": [], "supplementary_content": ""}
-
-
-# ── Deduplication helper ──────────────────────────────────────────────────────
-
-def _extract_key_terms(text: str) -> set[str]:
-    """
-    Extract meaningful lowercase words (>3 chars) from a question string,
-    stripping stop-words and question particles for semantic comparison.
-    """
-    stop_words = {
-        "what", "which", "who", "how", "when", "where", "why", "are", "is",
-        "the", "for", "and", "that", "this", "will", "does", "have", "with",
-        "your", "any", "all", "can", "should", "would", "could", "there",
-        "describe", "explain", "provide", "list", "define", "give", "tell",
-        "main", "key", "primary", "major", "core",
-    }
-    words = re.findall(r"[a-z]{4,}", text.lower())
-    return {w for w in words if w not in stop_words}
-
-
-def _deduplicate_gap_questions(
-    gap_questions: list[dict],
-    existing_questions: list[str],
-) -> list[dict]:
-    """
-    Remove any gap question that is semantically too close to an existing question.
-
-    Uses a Jaccard-similarity threshold on key-term sets: if a gap question
-    shares ≥50% of its key terms with any existing question, it is a duplicate.
-    Threshold is intentionally generous — false positives (keeping duplicates)
-    are more damaging in a production setting than false negatives (dropping a
-    rare genuine question).
-    """
-    DUPLICATE_THRESHOLD = 0.50
-
-    existing_term_sets = [_extract_key_terms(q) for q in existing_questions]
-
-    unique_gaps = []
-    for gap in gap_questions:
-        gap_terms = _extract_key_terms(gap.get("question", ""))
-        if not gap_terms:
-            continue
-
-        is_duplicate = False
-        for existing_terms in existing_term_sets:
-            if not existing_terms:
-                continue
-            intersection = gap_terms & existing_terms
-            union = gap_terms | existing_terms
-            jaccard = len(intersection) / len(union) if union else 0
-            if jaccard >= DUPLICATE_THRESHOLD:
-                logger.info(
-                    "   🚫 Dedup filter removed duplicate (Jaccard=%.2f): '%s'",
-                    jaccard,
-                    gap.get("question", "")[:80],
-                )
-                is_duplicate = True
-                break
-
-        if not is_duplicate:
-            unique_gaps.append(gap)
-
-    return unique_gaps
 
 
 # ═══════════════════════════════════════════════════════════════
@@ -953,6 +933,109 @@ document_generation_agent = build_document_generation_graph()
 
 
 # ═══════════════════════════════════════════════════════════════
+#  Lean graph for progressive section generation
+#
+#  Skips analyze_schema_gaps entirely — gap analysis is a one-time
+#  pre-generation step, not something that should run per section.
+#  This eliminates the Groq LLM call that caused 413/429 errors and
+#  a wasted ~2-3 s on every section request.
+#
+#  Topology: build_prompt → generate_document → quality_gate → fix_document
+# ═══════════════════════════════════════════════════════════════
+
+def build_section_generation_graph() -> StateGraph:
+    graph = StateGraph(AgentState)
+    graph.add_node("build_prompt", build_prompt)
+    graph.add_node("generate_document", generate_document)
+    graph.add_node("quality_gate", quality_gate)
+    graph.add_node("fix_document", fix_document)
+    graph.set_entry_point("build_prompt")
+    graph.add_edge("build_prompt", "generate_document")
+    graph.add_edge("generate_document", "quality_gate")
+    graph.add_conditional_edges(
+        "quality_gate",
+        decide_after_quality_gate,
+        {"fix_document": "fix_document", "end": END},
+    )
+    graph.add_edge("fix_document", "quality_gate")
+    compiled = graph.compile()
+    logger.info("✅ Section graph compiled — 4 nodes, no gap analysis, entry=build_prompt")
+    return compiled
+
+
+section_generation_agent = build_section_generation_graph()
+
+
+# ═══════════════════════════════════════════════════════════════
+#  Memory summariser
+#
+#  Condenses previously-generated sections into a ~1500-char
+#  "decisions & terminology" digest. This gives the next section's
+#  LLM call full awareness of what was written — without the risk
+#  of hallucination that comes from arbitrary tail-truncation,
+#  and without the token cost of sending the full accumulated doc.
+# ═══════════════════════════════════════════════════════════════
+
+_MEMORY_SUMMARY_PROMPT = """\
+You are a document consistency assistant. You will be given the text of \
+previously generated sections of a {document_type} document.
+
+Produce a concise CONSISTENCY DIGEST in under 1500 characters. Cover:
+1. Key decisions, names, versions, and terminology already used
+2. Tone and writing style (formal/technical/etc.)
+3. Any specific values, numbers, or policies already stated
+4. Section titles already written (so the next section does not repeat them)
+
+Rules:
+- Write in compact bullet points, not prose.
+- Do NOT summarise content verbatim — extract only what is needed for \
+the next section to stay consistent.
+- Do NOT add any new information not present in the source text.
+- Output ONLY the digest — no preamble, no headings.
+
+Previously generated sections:
+{doc_memory}
+"""
+
+# Bypass threshold: if doc_memory is already under this, skip the LLM call.
+_MEMORY_SUMMARY_THRESHOLD = 1_500
+
+
+def _summarise_doc_memory(doc_memory: str, document_type: str) -> str:
+    """
+    Summarise accumulated section text into a compact consistency digest.
+
+    Uses the main Azure LLM (not Groq) to avoid burning the Groq daily quota.
+    Falls back to tail-truncation if the LLM call fails, so generation is
+    never blocked by a summarisation error.
+    """
+    if not doc_memory.strip() or len(doc_memory) <= _MEMORY_SUMMARY_THRESHOLD:
+        return doc_memory  # already short enough — no LLM call needed
+
+    logger.info(
+        "   🗜️  Summarising doc_memory: %d chars → target ≤%d chars",
+        len(doc_memory), _MEMORY_SUMMARY_THRESHOLD,
+    )
+    try:
+        prompt = _MEMORY_SUMMARY_PROMPT.format(
+            document_type=document_type,
+            doc_memory=doc_memory,
+        )
+        response = llm.invoke([HumanMessage(content=prompt)])
+        summary = response.content.strip()
+        logger.info(
+            "   ✅ Memory summarised: %d → %d chars", len(doc_memory), len(summary)
+        )
+        return summary
+    except Exception as err:
+        # Non-fatal: fall back to keeping the most recent 1500 chars
+        logger.warning(
+            "   ⚠️  Memory summarisation failed (%s) — falling back to tail truncation", err
+        )
+        return "…[earlier sections condensed]\n\n" + doc_memory[-_MEMORY_SUMMARY_THRESHOLD:]
+
+
+# ═══════════════════════════════════════════════════════════════
 #  Public API
 # ═══════════════════════════════════════════════════════════════
 
@@ -962,23 +1045,11 @@ async def run_agent(
     questions_and_answers: list[dict],
     required_section: dict,
 ) -> dict:
-    """
-    Run the document generation agent end-to-end.
-
-    Returns:
-        generated_document   – final Markdown text
-        gap_questions        – NEW: questions for uncovered schema sections
-        status               – "passed" or "failed"
-        quality_issues       – any remaining issues
-        quality_scores       – LLM quality scores
-        quality_suggestions  – improvement suggestions
-        retry_count          – fix attempts made
-    """
+    """Run the full document generation agent (single-shot mode)."""
     logger.info(
         "🚀 run_agent — department=%s, document_type=%s, answers=%d",
         department, document_type, len(questions_and_answers),
     )
-
     initial_state: AgentState = {
         "department": department,
         "document_type": document_type,
@@ -994,11 +1065,9 @@ async def run_agent(
         "retry_count": 0,
         "status": "generating",
     }
-
     final_state = await asyncio.to_thread(
         document_generation_agent.invoke, initial_state
     )
-
     logger.info(
         "🏁 Agent finished — status=%s, retries=%d, doc=%d chars, gap_questions=%d",
         final_state.get("status", "unknown"),
@@ -1006,7 +1075,6 @@ async def run_agent(
         len(final_state.get("generated_document", "")),
         len(final_state.get("gap_questions", [])),
     )
-
     return {
         "generated_document": final_state.get("generated_document", ""),
         "gap_questions": final_state.get("gap_questions", []),
@@ -1028,14 +1096,7 @@ async def analyze_gaps_only(
     questions_and_answers: list[dict],
     required_section: dict,
 ) -> list[dict]:
-    """
-    Run ONLY the schema-gap analysis (no document generation).
-
-    Used by POST /gap-questions to analyse gaps before generation
-    and let the user answer them first.
-
-    Returns list of gap question dicts.
-    """
+    """Run ONLY schema-gap analysis — no document generation."""
     state: AgentState = {
         "department": department,
         "document_type": document_type,
@@ -1051,14 +1112,36 @@ async def analyze_gaps_only(
         "retry_count": 0,
         "status": "generating",
     }
-
     result = await asyncio.to_thread(analyze_schema_gaps, state)
     return result.get("gap_questions", [])
 
 
 # ═══════════════════════════════════════════════════════════════
-#  Progressive: generate a single section with memory
+#  Progressive: generate ONE section with controlled prompt size
+#
+#  Three controls keep every section prompt under ~15 k chars:
+#
+#  1. LEAN GRAPH  — section_generation_agent skips analyze_schema_gaps.
+#                   No Groq call per section → no 413/429 errors.
+#
+#  2. QA FILTERING — only Q&A whose category matches the target
+#     subsection is included (+ ≤3 global-context answers).
+#
+#  3. MEMORY SUMMARY — doc_memory is condensed by the LLM into a
+#     compact consistency digest instead of being arbitrarily
+#     truncated. The LLM sees every key decision made so far —
+#     just compressed — eliminating hallucination of already-written
+#     content while keeping token cost flat.
 # ═══════════════════════════════════════════════════════════════
+
+def _extract_key_terms_for_filter(text: str) -> set[str]:
+    """Lowercase words >3 chars, stop-words removed — for QA category matching."""
+    stop = {
+        "what", "which", "that", "this", "with", "your", "have",
+        "will", "does", "from", "about", "into", "when", "where",
+    }
+    return {w for w in re.findall(r"[a-z]{4,}", text.lower()) if w not in stop}
+
 
 async def generate_single_section(
     department: str,
@@ -1067,27 +1150,9 @@ async def generate_single_section(
     questions_and_answers: list[dict],
     doc_memory: str = "",
 ) -> str:
-    """
-    Generate ONE section of a document using the FULL LangGraph agent pipeline.
+    """Generate ONE section using the lean graph, filtered QA, and summarised memory."""
 
-    This runs the same graph as run_agent (build_prompt → generate_document →
-    quality_gate → fix_document) but scoped to a single section's subsections
-    and Q&A. This gives progressive generation the same quality guarantees —
-    strict heading rules, quality gate, and up to 2 fix retries — as single-shot.
-
-    Args:
-        department:            e.g. "Product Management"
-        document_type:         e.g. "Feature Prioritization Framework"
-        section:               dict with keys "title" and "subsections" — the
-                               subsection slice from required_section for this
-                               step. The subsections list typically contains one
-                               entry for progressive generation.
-        questions_and_answers: ALL answered Q&A (the agent uses all context;
-                               the schema scope constrains what gets generated).
-        doc_memory:            markdown text of previously generated sections,
-                               injected as context so the LLM stays consistent.
-    """
-    # ── Strip internal keys (e.g. _parent_title) from subsection dicts ───────
+    # ── Strip all _-prefixed UI internal keys from subsection dicts ───────────
     raw_subsections = section.get("subsections", [])
     clean_subsections = [
         {k: v for k, v in sub.items() if not k.startswith("_")}
@@ -1096,59 +1161,85 @@ async def generate_single_section(
     subsection_names = [s.get("title", "") for s in clean_subsections]
 
     logger.info(
-        "📝 generate_single_section — parent='%s', subsections=%s, qa_count=%d",
+        "📝 generate_single_section — parent='%s', subsections=%s, qa_total=%d, memory=%d chars",
         section.get("title", "Untitled"),
         subsection_names,
         len(questions_and_answers),
+        len(doc_memory),
     )
 
-    # ── Build a scoped required_section that the main agent understands ──────
-    # Use the SUBSECTION title as the section title — this prevents the LLM
-    # from generating the full document hierarchy (doc title → parent → subsection)
-    # for every single step. Each step generates ONLY its subsection content.
-    sub_title = clean_subsections[0]["title"] if clean_subsections else section.get("title", "")
+    # ── Scoped required_section ────────────────────────────────────────────────
+    parent_section_title = section.get(
+        "title", clean_subsections[0]["title"] if clean_subsections else "Document"
+    )
     scoped_required_section = {
         "document_type": document_type,
         "document_name": document_type,
-        "sections": [
-            {
-                "title": sub_title,
-                "subsections": clean_subsections,
-            }
-        ]
+        "sections": [{"title": parent_section_title, "subsections": clean_subsections}],
     }
 
-    # ── Inject scope constraint + memory into Q&A ────────────────────────────
-    enriched_qa = list(questions_and_answers)
+    # ── 1. Filter QA to relevant answers only ─────────────────────────────────
+    target_terms = set()
+    for name in subsection_names:
+        target_terms |= _extract_key_terms_for_filter(name)
 
-    # Prepend a strong scope instruction so the LLM only generates the
-    # requested subsection(s) and doesn't expand into the full document.
+    relevant_qa: list[dict] = []
+    global_ctx_qa: list[dict] = []
+
+    for qa in questions_and_answers:
+        cat = qa.get("category", "")
+        if cat.startswith("_"):
+            continue
+        cat_terms = _extract_key_terms_for_filter(cat)
+        if target_terms & cat_terms:
+            relevant_qa.append(qa)
+        elif len(global_ctx_qa) < 3:
+            global_ctx_qa.append(qa)
+
+    if not relevant_qa:
+        relevant_qa = [q for q in questions_and_answers if not q.get("category", "").startswith("_")]
+        global_ctx_qa = []
+
+    filtered_qa = relevant_qa + global_ctx_qa
+    logger.info(
+        "   🔎 QA: %d relevant + %d ctx = %d sent (from %d total)",
+        len(relevant_qa), len(global_ctx_qa), len(filtered_qa),
+        len([q for q in questions_and_answers if not q.get("category", "").startswith("_")]),
+    )
+
+    # ── 2. Summarise doc_memory into a consistency digest ─────────────────────
+    # Run in a thread since it makes a synchronous LLM call.
+    condensed_memory = await asyncio.to_thread(
+        _summarise_doc_memory, doc_memory, document_type
+    )
+
+    # ── 3. Assemble enriched QA: scope → memory digest → filtered answers ─────
     scope_names = ", ".join(f'"{n}"' for n in subsection_names if n)
-    enriched_qa = [
+    enriched_qa: list[dict] = [
         {
-            "question": "SCOPE CONSTRAINT — what section(s) should this document contain?",
+            "question": "SCOPE CONSTRAINT",
             "answer": (
-                f"Generate ONLY the following subsection(s): {scope_names}. "
-                f"Do NOT generate any other sections, headings, or subsections. "
-                f"Output ONLY the content for the specified subsection(s). "
-                f"The previously generated sections are provided separately for context only — do NOT repeat them."
+                f"Generate ONLY: {scope_names}. "
+                "Do NOT add any other sections or headings. "
+                "Previously generated content is summarised below for reference — do NOT repeat or regenerate it."
             ),
             "category": "_scope",
             "answer_type": "text",
         }
-    ] + enriched_qa
+    ]
+    if condensed_memory.strip():
+        enriched_qa.append({
+            "question": (
+                "Consistency digest of previously generated sections "
+                "(reference only — do NOT repeat or regenerate any of this)"
+            ),
+            "answer": condensed_memory,
+            "category": "_memory",
+            "answer_type": "text",
+        })
+    enriched_qa.extend(filtered_qa)
 
-    if doc_memory.strip():
-        enriched_qa = [
-            {
-                "question": "Previously generated sections (for consistency — do NOT repeat these, use same terminology and decisions)",
-                "answer": doc_memory,
-                "category": "_memory",
-                "answer_type": "text",
-            }
-        ] + enriched_qa
-
-    # ── Run the full agent graph scoped to this section ───────────────────────
+    # ── 4. Run lean section graph (no gap analysis) ────────────────────────────
     initial_state: AgentState = {
         "department": department,
         "document_type": document_type,
@@ -1166,15 +1257,16 @@ async def generate_single_section(
     }
 
     final_state = await asyncio.to_thread(
-        document_generation_agent.invoke, initial_state
+        section_generation_agent.invoke, initial_state
     )
 
     section_text = final_state.get("generated_document", "")
-    status = final_state.get("status", "unknown")
-    retries = final_state.get("retry_count", 0)
+    status       = final_state.get("status", "unknown")
+    retries      = final_state.get("retry_count", 0)
 
     logger.info(
-        "   ✅ Section '%s' generated — status=%s, retries=%d, %d chars",
-        section.get("title", "Untitled"), status, retries, len(section_text),
+        "   ✅ '%s' done — status=%s, retries=%d, %d chars (qa_sent=%d, memory=%d chars)",
+        section.get("title", "Untitled"), status, retries,
+        len(section_text), len(enriched_qa), len(condensed_memory),
     )
     return section_text

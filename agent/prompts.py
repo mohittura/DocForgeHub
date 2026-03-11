@@ -137,6 +137,54 @@ Generate the table now. Output NOTHING except the heading and table.
 """
 
 
+# ── 1c: Section-Only Prompt Template ─────────────────────────────
+#
+# Used exclusively for progressive generation — generates ONE section
+# at a time. Critically, it does NOT instruct the LLM to output a
+# document title heading or a version/metadata footer, which are the
+# two primary sources of repetition across section calls.
+
+SECTION_ONLY_PROMPT_TEMPLATE = """\
+You are a **senior SaaS document specialist** writing ONE section of a larger {document_type} \
+document for the {department} department.
+
+─────────────────────────────────────────────
+## CRITICAL RULES — READ BEFORE WRITING
+─────────────────────────────────────────────
+- Generate ONLY the section(s) listed in the schema below — absolutely nothing else.
+- ❌ Do NOT output a document title heading (no `# {document_type}` or any `# ` heading).
+- ❌ Do NOT output a version, date, or metadata footer.
+- ❌ Do NOT output an introduction, executive summary, or any section not in the schema.
+- ❌ Do NOT repeat, re-summarise, or regenerate anything described in the consistency digest.
+- ❌ Do NOT use placeholders like [Company Name], [TBD], [Insert here].
+- ❌ Do NOT copy user answers verbatim — elevate them into professional prose.
+- Start your output DIRECTLY with the first `##` section heading from the schema.
+
+### Writing Standards
+- Elevate every answer into polished, professional, industry-grade prose.
+- Every subsection must be substantive — minimum 2-3 sentences or a real Markdown table.
+- Use authoritative language appropriate for {department}.
+- For `type: table` sections: output a REAL Markdown table with exact columns — no prose describing it.
+- For `type: text` sections: output professional paragraphs or structured lists.
+
+─────────────────────────────────────────────
+## SECTION SCHEMA (generate ONLY these)
+─────────────────────────────────────────────
+{required_section}
+
+─────────────────────────────────────────────
+## QUESTIONS & ANSWERS
+─────────────────────────────────────────────
+Use these as raw input — transform them into polished content:
+
+{questions_and_answers}
+
+{supplementary_content}
+
+Generate ONLY the section(s) defined in the schema above. Begin with the first `##` heading.
+"""
+
+
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 #  Section 2: Schema Gap Filler Prompt
 #
@@ -252,8 +300,9 @@ Return your review in this EXACT JSON format (no commentary before or after):
 #
 #  These functions fill in the prompt templates with actual data.
 #  4a — build_system_prompt       (main document generation prompt)
-#  4b — build_gap_filler_prompt   (schema gap analysis prompt)
-#  4c — build_quality_review_prompt (document quality review prompt)
+#  4b — build_section_only_prompt (single-section progressive prompt)
+#  4c — build_gap_filler_prompt   (schema gap analysis prompt)
+#  4d — build_quality_review_prompt (document quality review prompt)
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 # ── 4a: Build the main generation prompt ─────────────────────────
@@ -343,7 +392,53 @@ def build_table_only_prompt(
     )
 
 
-# ── 4b: Build the schema gap filler prompt ───────────────────────
+# ── 4b: Build the section-only prompt (progressive generation) ────
+
+def build_section_only_prompt(
+    department: str,
+    document_type: str,
+    required_section: str,
+    questions_and_answers: str,
+    supplementary_content: str = "",
+) -> str:
+    """
+    Build a prompt for generating a SINGLE section in progressive mode.
+
+    This intentionally omits the document title heading and version/metadata
+    footer instructions that SYSTEM_PROMPT_TEMPLATE includes, which are the
+    root cause of those elements being repeated on every section call.
+
+    Args:
+        department:              e.g. "Product Management"
+        document_type:           e.g. "Feature Prioritization Framework"
+        required_section:        Formatted schema for this ONE section only
+        questions_and_answers:   Filtered Q&A string (relevant answers only)
+        supplementary_content:   Consistency digest from previously generated sections
+                                 (reference only — LLM must not regenerate it)
+    """
+    if supplementary_content and supplementary_content.strip():
+        formatted_supplementary = (
+            "─────────────────────────────────────────────\n"
+            "## CONSISTENCY DIGEST (reference only — do NOT repeat or regenerate)\n"
+            "─────────────────────────────────────────────\n"
+            "The following is a summary of previously generated sections. "
+            "Use it only for consistency — do NOT reproduce, re-summarise, or reference it "
+            "explicitly in your output:\n\n"
+            f"{supplementary_content}"
+        )
+    else:
+        formatted_supplementary = ""
+
+    return SECTION_ONLY_PROMPT_TEMPLATE.format(
+        department=department,
+        document_type=document_type,
+        required_section=required_section,
+        questions_and_answers=questions_and_answers,
+        supplementary_content=formatted_supplementary,
+    )
+
+
+# ── 4c: Build the schema gap filler prompt ───────────────────────
 
 def build_gap_filler_prompt(
     department: str,
@@ -372,7 +467,7 @@ def build_gap_filler_prompt(
     )
 
 
-# ── 4c: Build the quality review prompt ─────────────────────────
+# ── 4d: Build the quality review prompt ─────────────────────────
 
 def build_quality_review_prompt(
     department: str,

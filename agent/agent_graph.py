@@ -13,6 +13,7 @@ from langgraph.graph import StateGraph, END
 
 from agent.prompts import (
     build_system_prompt,
+    build_section_only_prompt,
     build_table_only_prompt,
     build_gap_filler_prompt,
     build_quality_review_prompt,
@@ -314,7 +315,7 @@ Remember: check every candidate against the existing questions list above before
 
 
 # ═══════════════════════════════════════════════════════════════
-#  NODE 2: build_prompt  (unchanged logic, updated field names)
+#  NODE 2: build_prompt
 # ═══════════════════════════════════════════════════════════════
 
 def build_prompt(state: AgentState) -> dict:
@@ -327,12 +328,17 @@ def build_prompt(state: AgentState) -> dict:
         - Supplementary content notes from analyze_schema_gaps
 
     For TABLE-ONLY schemas uses the strict table-only prompt.
-    For mixed schemas, appends a strict section allowlist to the prompt so
-    the LLM knows upfront exactly which headings to include and nothing more.
+    For SECTION-MODE (progressive generation, flagged via _section_mode=True in
+    required_section), uses build_section_only_prompt which omits the document
+    title heading and version/metadata footer — the two main sources of repetition
+    across section calls.
+    For full document generation uses build_system_prompt as before.
     Uses get_table_section_title() to correctly resolve the document title
     for schemas that omit 'title' on the section (e.g. Change Request Log).
     """
     logger.info("📝 Node: build_prompt — assembling system prompt")
+
+    is_section_mode = state["required_section"].get("_section_mode", False)
 
     formatted_answers = format_questions_and_answers_for_prompt(
         state["questions_and_answers"]
@@ -367,27 +373,41 @@ def build_prompt(state: AgentState) -> dict:
             headings_list = "\n".join(f"  - {t}" for t in required_headings)
             strict_rule = (
                 f"\n\n⚠️  STRICT SECTION RULE:\n"
-                f"Your document MUST contain ALL of the following headings and NO others.\n"
+                f"Your output MUST contain ALL of the following headings and NO others.\n"
                 f"Do NOT add, rename, merge, reorder, or omit any heading:\n"
                 f"{headings_list}\n"
             )
         else:
             strict_rule = ""
 
-        system_prompt = build_system_prompt(
-            department=state["department"],
-            document_type=state["document_type"],
-            required_section=formatted_schema + strict_rule,
-            questions_and_answers=formatted_answers,
-            supplementary_content=state.get("supplementary_content", ""),
-        )
+        if is_section_mode:
+            # Progressive generation: use section-only prompt which suppresses
+            # document title heading and version/metadata footer output.
+            logger.info("   📄 Section-mode — using section-only prompt (no title/footer)")
+            system_prompt = build_section_only_prompt(
+                department=state["department"],
+                document_type=state["document_type"],
+                required_section=formatted_schema + strict_rule,
+                questions_and_answers=formatted_answers,
+                supplementary_content=state.get("supplementary_content", ""),
+            )
+        else:
+            # Full document generation: use the standard system prompt.
+            system_prompt = build_system_prompt(
+                department=state["department"],
+                document_type=state["document_type"],
+                required_section=formatted_schema + strict_rule,
+                questions_and_answers=formatted_answers,
+                supplementary_content=state.get("supplementary_content", ""),
+            )
 
     logger.info(
-        "   ✅ Prompt built — %d chars, department=%s, document=%s, answers=%d",
+        "   ✅ Prompt built — %d chars, department=%s, document=%s, answers=%d, section_mode=%s",
         len(system_prompt),
         state["department"],
         state["document_type"],
         len(state["questions_and_answers"]),
+        is_section_mode,
     )
 
     return {
@@ -398,12 +418,14 @@ def build_prompt(state: AgentState) -> dict:
 
 
 # ═══════════════════════════════════════════════════════════════
-#  NODE 3: generate_document  (unchanged)
+#  NODE 3: generate_document
 # ═══════════════════════════════════════════════════════════════
 
 def generate_document(state: AgentState) -> dict:
     """NODE 3: Call the primary LLM to generate the Markdown document."""
     logger.info("🤖 Node: generate_document — calling LLM...")
+
+    is_section_mode = state["required_section"].get("_section_mode", False)
 
     if is_table_only_schema(state["required_section"]):
         # Use get_table_section_title so the instruction names the document correctly
@@ -413,6 +435,15 @@ def generate_document(state: AgentState) -> dict:
             f"Generate the {table_title} as a Markdown table now. "
             f"Output ONLY the heading and table — no introductions, no descriptions, "
             f"no extra sections. Just the title and the table with data rows."
+        )
+    elif is_section_mode:
+        # Progressive section generation: do NOT ask for a complete document,
+        # a title heading, or a footer — those are the sources of repetition.
+        human_instruction = (
+            "Generate ONLY the section(s) specified in the schema above. "
+            "Do NOT include a document title heading (no `# ` heading). "
+            "Do NOT include a version, date, or metadata footer. "
+            "Start your output directly with the first `##` section heading."
         )
     else:
         human_instruction = (
@@ -634,7 +665,7 @@ def validate_document_structure(document_text: str, required_section: dict) -> l
 
 
 # ═══════════════════════════════════════════════════════════════
-#  NODE 4: quality_gate  (unchanged)
+#  NODE 4: quality_gate
 # ═══════════════════════════════════════════════════════════════
 
 def quality_gate(state: AgentState) -> dict:
@@ -642,6 +673,7 @@ def quality_gate(state: AgentState) -> dict:
     logger.info("🔍 Node: quality_gate — reviewing document quality...")
 
     document_text = state.get("generated_document", "")
+    is_section_mode = state["required_section"].get("_section_mode", False)
 
     # TABLE-ONLY: deterministic validation
     if is_table_only_schema(state["required_section"]):
@@ -801,8 +833,10 @@ def quality_gate(state: AgentState) -> dict:
         if phrase.lower() in document_text.lower():
             issues_found.append(f"Contains placeholder: '{phrase}'")
 
-    if document_text.count("\n#") < 5:
-        issues_found.append("Too few sections (expected at least 5 headings)")
+    # Only enforce the "5+ headings" rule for full document generation, not single sections.
+    if not is_section_mode:
+        if document_text.count("\n#") < 5:
+            issues_found.append("Too few sections (expected at least 5 headings)")
 
     sections_split = document_text.split("\n## ")
     # Get thin sections (excluding title part)
@@ -827,7 +861,7 @@ def quality_gate(state: AgentState) -> dict:
 
 
 # ═══════════════════════════════════════════════════════════════
-#  NODE 5: fix_document  (unchanged)
+#  NODE 5: fix_document
 # ═══════════════════════════════════════════════════════════════
 
 def fix_document(state: AgentState) -> dict:
@@ -1132,6 +1166,12 @@ async def analyze_gaps_only(
 #     truncated. The LLM sees every key decision made so far —
 #     just compressed — eliminating hallucination of already-written
 #     content while keeping token cost flat.
+#
+#  4. SECTION MODE FLAG — scoped_required_section carries
+#     _section_mode=True so build_prompt uses build_section_only_prompt
+#     (no title heading, no footer) and generate_document sends a
+#     section-specific human instruction instead of "generate the
+#     complete document" — eliminating repeated title/footer output.
 # ═══════════════════════════════════════════════════════════════
 
 def _extract_key_terms_for_filter(text: str) -> set[str]:
@@ -1169,6 +1209,9 @@ async def generate_single_section(
     )
 
     # ── Scoped required_section ────────────────────────────────────────────────
+    # _section_mode=True tells build_prompt to use build_section_only_prompt
+    # (no document title heading, no version/metadata footer) and tells
+    # generate_document to send a section-specific human instruction.
     parent_section_title = section.get(
         "title", clean_subsections[0]["title"] if clean_subsections else "Document"
     )
@@ -1176,6 +1219,7 @@ async def generate_single_section(
         "document_type": document_type,
         "document_name": document_type,
         "sections": [{"title": parent_section_title, "subsections": clean_subsections}],
+        "_section_mode": True,   # ← suppresses title heading and footer in prompts/instructions
     }
 
     # ── 1. Filter QA to relevant answers only ─────────────────────────────────

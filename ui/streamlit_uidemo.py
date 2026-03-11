@@ -174,6 +174,10 @@ if "gap_source" not in st.session_state:
 if "gap_doc_type" not in st.session_state:
     st.session_state.gap_doc_type = ""
 
+# Track which document was active last run so we can detect changes
+if "active_document" not in st.session_state:
+    st.session_state.active_document = ""
+
 # Progressive / pagination state
 if "prog_mode" not in st.session_state:
     st.session_state.prog_mode = False
@@ -191,11 +195,39 @@ if "prog_current_step" not in st.session_state:
     st.session_state.prog_current_step = 0
 
 
+# -------------------------------------------------
+# Helper: clear all per-document state
+# Called automatically on document change AND by the manual clear button.
+# -------------------------------------------------
+
+def _clear_all_document_state():
+    """Reset every piece of state that is specific to the current document."""
+    st.session_state.answers = {}
+    st.session_state.gap_answers = {}
+    st.session_state.gap_questions = []
+    st.session_state.gap_source = ""
+    st.session_state.gap_doc_type = ""
+    st.session_state.markdown_doc = ""
+    st.session_state.prog_sections = {}
+    st.session_state.prog_current_step = 0
+    st.session_state.q_page = 0
+    st.session_state.last_published_url = ""
+    # Clear any widget values that Streamlit has cached in session_state
+    # (answer widgets are keyed as "widget_answer_N" and "widget_gap_answer_N")
+    keys_to_delete = [
+        k for k in st.session_state
+        if k.startswith("widget_answer_") or k.startswith("widget_gap_answer_")
+        or k.startswith("prog_section_editor_")
+    ]
+    for k in keys_to_delete:
+        del st.session_state[k]
+
+
 # =================================================
 # LEFT SIDEBAR
 # =================================================
 with st.sidebar:
-    st.write("<h1>📄</br>DocForge Hub</h1>", unsafe_allow_html=True)
+    st.write("<h1>📄</br>DocForgeHub</h1>", unsafe_allow_html=True)
 
     st.subheader("Department")
     selected_department = st.selectbox(
@@ -222,12 +254,18 @@ with st.sidebar:
         label_visibility="collapsed",
     )
 
-    # Auto-clear gap questions when the document changes
-    if st.session_state.gap_doc_type and st.session_state.gap_doc_type != selected_document:
-        st.session_state.gap_questions = []
-        st.session_state.gap_answers = {}
-        st.session_state.gap_source = ""
-        st.session_state.gap_doc_type = ""
+    # ── Auto-clear on document change ───────────────────────────────────────
+    # If the user picks a different document, wipe all answers, gap questions,
+    # generated markdown, and progressive sections so stale content never bleeds
+    # across into a new document session.
+    if st.session_state.active_document and st.session_state.active_document != selected_document:
+        _clear_all_document_state()
+        st.session_state.active_document = selected_document
+        st.rerun()
+
+    # Record the current document on first load
+    if not st.session_state.active_document and selected_document not in ("", "(select a department first)"):
+        st.session_state.active_document = selected_document
 
     st.subheader("Generation Mode")
     mode_choice = st.radio(
@@ -294,6 +332,7 @@ for gap_idx, gap_question in enumerate(st.session_state.gap_questions):
 # prog_sections (which is a dict).
 all_subsections: list[dict] = []
 subsection_titles: list[str] = []  # ordered unique _prog_key values
+schema_sections: list[dict] = []
 
 if is_valid_document and st.session_state.prog_mode:
     document_name_for_schema = document_name_lookup.get(selected_document, selected_document)
@@ -773,13 +812,28 @@ with col_questions:
 with col_editor:
     st.markdown('<div class="separator-left">', unsafe_allow_html=True)
 
-    editor_header_col, publish_col = st.columns([4, 1])
+    editor_header_col, clear_col, publish_col = st.columns([3, 1, 1])
 
     with editor_header_col:
         if st.session_state.prog_mode:
             st.header("Preview")
         else:
             st.header("Markdown View")
+
+    with clear_col:
+        # ── Clear All Answers button ─────────────────────────────────────────
+        # Resets all answers, gap questions, generated markdown, and progressive
+        # sections for the current document. Identical to what happens automatically
+        # on a document change, so the user can start fresh without switching docs.
+        clear_clicked = st.button(
+            "🗑️ Clear All",
+            help="Clear all answers, gap questions, and the generated document for this document type.",
+            use_container_width=True,
+            disabled=not is_valid_document,
+        )
+        if clear_clicked:
+            _clear_all_document_state()
+            st.rerun()
 
     with publish_col:
         publish_clicked = st.button(

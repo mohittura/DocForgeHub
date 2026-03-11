@@ -374,7 +374,7 @@ streamlit cache clear
 | File | Purpose |
 |------|---------|
 | [CODEBASE_ARCHITECTURE.md](CODEBASE_ARCHITECTURE.md) | Complete architectural reference (all files, data flows, design decisions) |
-| [docs/](docs/) | Line-by-line code explanations for every file in `agent/`, `api/`, and `ui/` |
+| [DogForgeHub Library](https://www.notion.so/31489db15e5b804c9049d062c6cdce54?v=31489db15e5b80b796d3000ca706ebcb) | All the Generated documents are here |
 | README.md | This quick-start guide |
 
 ---

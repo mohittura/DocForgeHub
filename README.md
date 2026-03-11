@@ -47,9 +47,9 @@ FastAPI Backend (Port 8000)
     └── LangGraph Agent
             ├── Node 1: analyze_gaps
             ├── Node 2: build_prompt
-            ├── Node 3: generate_document   ← kimi-k2-instruct (primary LLM)
-            ├── Node 4: quality_gate        ← kimi-k2-instruct (review)
-            └── Node 5: fix_document        ← kimi-k2-instruct (retry, up to 2x)
+            ├── Node 3: generate_document   ← Azure GPT-4.1-mini (primary LLM)
+            ├── Node 4: quality_gate        ← Azure GPT-4.1-mini (review)
+            └── Node 5: fix_document        ← Azure GPT-4.1-mini (retry, up to 2x)
 ```
 
 **For a full architectural deep-dive**, see [CODEBASE_ARCHITECTURE.md](CODEBASE_ARCHITECTURE.md)
@@ -58,14 +58,14 @@ FastAPI Backend (Port 8000)
 
 | Component | Technology | Purpose |
 |-----------|-----------|---------|
-| **Primary LLM** | Groq + `kimi-k2-instruct-0905` | Document generation, quality review, fix attempts |
-| **Analysis LLM** | Groq + `llama-3.3-70b-versatile` | Schema gap analysis, structured JSON output |
+| **Primary LLM** | Azure OpenAI GPT-4.1-mini (`AzureChatOpenAI`) | Document generation, quality review, fix attempts, memory summarisation |
+| **Analysis LLM** | Groq + `llama-3.3-70b-versatile` (`ChatGroq`) | Schema gap analysis, structured JSON output |
 | **Orchestration** | LangGraph | 5-node state machine for document generation |
-| **Backend API** | FastAPI | Async REST gateway (9 endpoints) |
+| **Backend API** | FastAPI | Async REST gateway (10 endpoints) |
 | **Database** | MongoDB Atlas | Q&As, schemas, gap question cache |
 | **Async Driver** | Motor | Non-blocking MongoDB operations |
 | **Frontend** | Streamlit | Interactive Q&A UI and document editor |
-| **Content Source** | Notion API | Page URL history, recursive hierarchy retrieval |
+| **Notion** | `notion-client` + custom publisher | Page URL history, Markdown → Notion block conversion, database publishing |
 | **PDF Export** | ReportLab | Markdown → professional A4 PDF |
 
 ---
@@ -76,7 +76,8 @@ FastAPI Backend (Port 8000)
 
 - Python 3.12+
 - MongoDB Atlas account (free tier sufficient)
-- Groq API key (free tier: ~200K tokens/month)
+- Azure OpenAI resource with GPT-4.1-mini deployment (primary generation LLM)
+- Groq API key (free tier: ~200K tokens/month, used for gap analysis only)
 - Notion workspace & integration key
 
 ### 1. Clone & Set Up Environment
@@ -95,13 +96,17 @@ pip install -r requirements.txt
 Create a `.env` file in the **project root**:
 
 ```env
-# Groq API Keys (primary + optional fallbacks)
-GROQ_API_KEY="gsk_your_primary_key"
-GROQ_API_KEY_2="gsk_fallback_key_1"
-# ... up to GROQ_API_KEY_7
+# Azure OpenAI (primary LLM — document generation, quality review, fixes)
+AZURE_OPENAI_LLM_KEY="your_azure_key"
+AZURE_LLM_ENDPOINT="your-resource.openai.azure"
+AZURE_LLM_API_VERSION=""
+AZURE_LLM_DEPLOYMENT_41_MINI=""
+
+# Groq (analysis LLM — gap analysis only)
+GROQ_API_KEY="gsk_your_groq_key"
 
 # MongoDB Atlas
-MONGODB_CONNECTION_STRING="mongodb+srv://user:password@cluster.mongodb.net/"
+MONGODB_CONNECTION_STRING=""
 
 # Notion
 NOTION_API_KEY="secret_your_notion_integration_key"
@@ -155,9 +160,10 @@ DocForgeHub/
 │
 ├── api/                            # FastAPI REST backend
 │   ├── __init__.py
-│   ├── main.py                     # 9 endpoints (departments → generate)
+│   ├── main.py                     # 10 endpoints (departments → publish)
 │   ├── db.py                       # Async Motor/MongoDB singleton connection
-│   └── helpers.py                  # Notion API: recursive page traversal
+│   ├── helpers.py                  # Notion API: recursive page traversal
+│   └── notion_publisher.py         # Markdown → Notion blocks + database publisher
 │
 ├── ui/                             # Streamlit interactive frontend
 │   ├── streamlit_uidemo.py         # Main app (sidebar, Q&A panels, doc editor)
@@ -173,11 +179,24 @@ DocForgeHub/
 │   ├── final_filtered_QAs/         # Q&A JSON files, organized by department
 │   └── notion_documents/           # Schema JSON files extracted from Notion
 │
+├── docs/                           # Line-by-line code explanations
+│   ├── agent_graph_explained.md
+│   ├── prompts_explained.md
+│   ├── schema_helpers_explained.md
+│   ├── validation_helpers_explained.md
+│   ├── db_explained.md
+│   ├── helpers_explained.md
+│   ├── main_explained.md
+│   ├── notion_publisher_explained.md
+│   ├── streamlit_uidemo_explained.md
+│   ├── api_helpers_explained.md
+│   ├── question_helpers_explained.md
+│   └── pdf_generator_explained.md
+│
 ├── .env                            # Environment variables (never commit)
 ├── .gitignore
 ├── requirements.txt
 ├── CODEBASE_ARCHITECTURE.md        # Deep architectural reference
-├── progress.md                     # Development changelog
 └── README.md                       # This file
 ```
 
@@ -229,6 +248,7 @@ All endpoints are served at `http://localhost:8000`. Interactive docs at `/docs`
 | `POST` | `/save-questions` | Upsert answered gap questions to MongoDB |
 | `POST` | `/generate` | Full 5-node agent → complete document |
 | `POST` | `/generate-section` | Generate one section with doc memory |
+| `POST` | `/publish-to-notion` | Publish Markdown document to Notion database |
 | `GET` | `/get_all_urls` | Notion page URL history |
 
 ### Example: Generate a Document
@@ -252,13 +272,13 @@ curl -X POST http://localhost:8000/generate \
 
 | Feature | Detail |
 |---------|--------|
-| **Dual-LLM routing** | kimi-k2 for prose quality; llama-3.3-70b for cheap structured analysis |
+| **Dual-LLM routing** | Azure GPT-4.1-mini for prose quality; Groq llama-3.3-70b for cheap structured analysis |
 | **5-node LangGraph agent** | Deterministic state machine with automatic retry (up to 2x) |
 | **Cache-first gap analysis** | O(1) LLM calls per document type after first user; reuses MongoDB cache |
 | **Two validation modes** | Deterministic (table column checks) + LLM-based (semantic structure review) |
 | **Schema-driven generation** | Every output validated against MongoDB required_section schema |
 | **PDF export** | ReportLab renders Markdown → styled A4 PDF (tables, headings, bullets) |
-| **Groq key fallback** | Up to 7 API keys rotated automatically on rate-limit |
+| **Notion publishing** | Markdown → Notion block conversion + database row publisher with rate limiting |
 | **Async throughout** | FastAPI + Motor → non-blocking, concurrent-session capable |
 | **Streamlit caching** | `st.cache_data` with 5–10 min TTL for departments, doc types, questions |
 
@@ -290,7 +310,8 @@ DocForgeHub ships with data for **10 departments × 10 document types = 100 docu
 | `GET /questions` | < 50 ms | Streamlit cache hit (5 min TTL) |
 | `POST /gap-questions` (cache hit) | < 100 ms | Direct MongoDB lookup |
 | `POST /gap-questions` (fresh) | 10–15 s | llama-3.3-70b LLM call |
-| `POST /generate` | 30–60 s | Full 5-node workflow, kimi-k2 |
+| `POST /generate` | 30–60 s | Full 5-node workflow, Azure GPT-4.1-mini |
+| `POST /publish-to-notion` | 5–15 s | Markdown conversion + rate-limited Notion API calls |
 | PDF export | < 2 s | Pure ReportLab, no LLM |
 
 ---
@@ -313,7 +334,7 @@ DocForgeHub ships with data for **10 departments × 10 document types = 100 docu
 
 Edit `agent/prompts.py`:
 - `SYSTEM_PROMPT_TEMPLATE` — for mixed (text + table) documents
-- `TABLE_PROMPT_TEMPLATE` — for table-only documents
+- `TABLE_ONLY_PROMPT_TEMPLATE` — for table-only documents
 - `build_quality_review_prompt()` — for the quality gate node
 - `build_gap_filler_prompt()` — for the gap analysis LLM call
 
@@ -332,7 +353,7 @@ Edit `agent/agent_graph.py`:
 - **Never commit `.env`** — all secrets live there
 - CORS is locked to `localhost:8501` and `127.0.0.1:8501` — update `api/main.py` for production
 - Use MongoDB Atlas IP allowlist in production
-- Rotate Groq API keys regularly; configure fallbacks via `GROQ_API_KEY_2` … `GROQ_API_KEY_7`
+- Rotate Azure OpenAI and Groq API keys regularly
 
 ---
 
@@ -358,7 +379,7 @@ streamlit cache clear
 
 **Gap questions not saving** — Check that `document_type` matches exactly what is stored in MongoDB. Monitor logs for `POST /save-questions` errors.
 
-**Generation > 60 s** — Check Groq API latency. Try reducing the number of Q&As passed (fewer answered questions = shorter prompt).
+**Generation > 60 s** — Check Azure OpenAI API latency (primary LLM). Try reducing the number of Q&As passed (fewer answered questions = shorter prompt).
 
 ---
 
@@ -367,7 +388,7 @@ streamlit cache clear
 | File | Purpose |
 |------|---------|
 | [CODEBASE_ARCHITECTURE.md](CODEBASE_ARCHITECTURE.md) | Complete architectural reference (all files, data flows, design decisions) |
-| [progress.md](progress.md) | Development changelog |
+| [docs/](docs/) | Line-by-line code explanations for every file in `agent/`, `api/`, and `ui/` |
 | README.md | This quick-start guide |
 
 ---

@@ -25,15 +25,15 @@ Instead of hallucinating content for uncovered schema sections, DocForgeHub:
 
 | Layer | Technology | Version | Purpose | Rationale |
 |-------|-----------|---------|---------|-----------|
-| **Primary LLM** | Groq + `moonshotai/kimi-k2-instruct-0905` | — | Document generation, quality review, fix retries | Best-in-class prose quality, 200K context window |
-| **Analysis LLM** | Groq + `llama-3.3-70b-versatile` | — | Schema gap analysis, structured JSON output | Fast, cheap, strong at structured reasoning — ~5x cheaper than kimi-k2 |
+| **Primary LLM** | Azure OpenAI GPT-4.1-mini (`AzureChatOpenAI`) | — | Document generation, quality review, fix retries, memory summarisation | Best-in-class prose quality, low latency via Azure, `temperature=0.1` for deterministic output |
+| **Analysis LLM** | Groq + `llama-3.3-70b-versatile` (`ChatGroq`) | — | Schema gap analysis, structured JSON output | Fast, cheap, strong at structured reasoning — avoids burning primary LLM quota on analysis |
 | **Orchestration** | LangGraph (`langgraph`) | >= 0.1.0 | 5-node document generation state machine | Deterministic state management, conditional routing, built-in retry |
-| **LLM SDK** | `langchain-groq`, `langchain-core` | >= 0.0.1 | Groq `ChatGroq` model + `SystemMessage`/`HumanMessage` types | Native Groq API integration |
-| **REST API** | FastAPI | >= 0.104.1 | Async REST gateway, 9 endpoints | Async/await, Pydantic validation, auto-generated `/docs` |
+| **LLM SDK** | `langchain-openai`, `langchain-groq`, `langchain-core` | >= 0.0.1 | `AzureChatOpenAI` + `ChatGroq` + `SystemMessage`/`HumanMessage` types | Native Azure + Groq API integration |
+| **REST API** | FastAPI | >= 0.104.1 | Async REST gateway, 10 endpoints | Async/await, Pydantic validation, auto-generated `/docs` |
 | **Database** | MongoDB Atlas | — | Q&As, schemas, gap question cache | Flexible JSON schema, aggregation pipeline, upsert support |
 | **Async Driver** | Motor | >= 3.3.0 | Non-blocking MongoDB operations | Integrates natively with FastAPI's event loop |
 | **Frontend** | Streamlit | >= 1.32.0 | Interactive Q&A UI, document editor, PDF download | `st.cache_data` caching, wide layout, native widget types |
-| **Notion** | `notion-client` | >= 2.1.0 | Recursive child-page traversal for history panel | Official Notion SDK |
+| **Notion** | `notion-client` + custom publisher | >= 2.1.0 | Recursive child-page traversal, Markdown → Notion blocks, database publishing | Official Notion SDK + custom Markdown-to-block converter |
 | **PDF Export** | ReportLab (`reportlab`) | — | Markdown to styled A4 PDF | Pure-Python, no headless browser required |
 | **Config** | `python-dotenv` | >= 1.0.0 | `.env` loading at startup | Standard pattern |
 | **Language** | Python | 3.12+ | Entire codebase | Type hints, async/await, TypedDict |
@@ -54,9 +54,10 @@ DocForgeHub/
 |
 +-- api/                               # FastAPI application
 |   +-- __init__.py
-|   +-- main.py                        # 9 REST endpoints + Pydantic request models
+|   +-- main.py                        # 10 REST endpoints + Pydantic request models
 |   +-- db.py                          # Async Motor singleton (get_db / close_client)
 |   +-- helpers.py                     # Notion API: recursive page traversal
+|   +-- notion_publisher.py            # Markdown → Notion blocks + database publisher
 |
 +-- ui/                                # Streamlit frontend
 |   +-- streamlit_uidemo.py            # Main app: sidebar, Q&A panels, editor, PDF
@@ -75,7 +76,6 @@ DocForgeHub/
 +-- .env                               # Secrets (never commit)
 +-- requirements.txt
 +-- CODEBASE_ARCHITECTURE.md           # This file
-+-- progress.md
 +-- README.md
 ```
 

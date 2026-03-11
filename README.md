@@ -179,20 +179,6 @@ DocForgeHub/
 │   ├── final_filtered_QAs/         # Q&A JSON files, organized by department
 │   └── notion_documents/           # Schema JSON files extracted from Notion
 │
-├── docs/                           # Line-by-line code explanations
-│   ├── agent_graph_explained.md
-│   ├── prompts_explained.md
-│   ├── schema_helpers_explained.md
-│   ├── validation_helpers_explained.md
-│   ├── db_explained.md
-│   ├── helpers_explained.md
-│   ├── main_explained.md
-│   ├── notion_publisher_explained.md
-│   ├── streamlit_uidemo_explained.md
-│   ├── api_helpers_explained.md
-│   ├── question_helpers_explained.md
-│   └── pdf_generator_explained.md
-│
 ├── .env                            # Environment variables (never commit)
 ├── .gitignore
 ├── requirements.txt

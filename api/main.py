@@ -3,17 +3,24 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI, Query, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from api.db import get_db, close_client
+from api.redis_cache import get_cache, set_cache, flush_prefix, delete_cache, close_redis
 from notion_client import Client
 from typing import List, Dict, Any, Optional
 from pydantic import BaseModel
 from datetime import datetime
 from agent.agent_graph import run_agent, analyze_gaps_only, generate_single_section
 
+# ── Cache TTLs (seconds) ─────────────────────────────────────────────────────
+_TTL_DEPARTMENTS  = 3600   # 5 min — departments rarely change
+_TTL_DOC_TYPES    = 3600   # 5 min — same cadence
+_TTL_NOTION_PAGES = 120   # 2 min — published pages update more often
+
 
 @asynccontextmanager #defining the db lifespan in the project
 async def lifespan(app: FastAPI):
     yield
     await close_client()
+    await close_redis()
 
 
 app = FastAPI(title="DocForge Hub API", lifespan=lifespan) # app startup
@@ -30,6 +37,14 @@ app.add_middleware( # added cors middleware to allow the local streamlit url
 @app.get("/departments")
 async def get_departments():
     """Return a sorted list of unique department names."""
+    cache_key = "departments"
+
+    # ── Cache read ────────────────────────────────────────────────
+    cached = await get_cache(cache_key)
+    if cached is not None:
+        return cached
+
+    # ── Cache miss: query MongoDB ─────────────────────────────────
     db = get_db()
     pipeline = [
         {"$group": {"_id": "$department"}}, # $group will store the department as the primary id
@@ -47,12 +62,24 @@ async def get_departments():
             })
     # Sort by code
     departments.sort(key=lambda d: d.get("code", "0"))
-    return {"departments": departments}
+    response = {"departments": departments}
+
+    # ── Cache write ───────────────────────────────────────────────
+    await set_cache(cache_key, response, ttl=_TTL_DEPARTMENTS)
+    return response
 
 
 @app.get("/document-types")
 async def get_document_types(department: str = Query(..., description="Department name")):
     """Return document types for the given department."""
+    cache_key = f"doc_types:{department}"
+
+    # ── Cache read ────────────────────────────────────────────────
+    cached = await get_cache(cache_key)
+    if cached is not None:
+        return cached
+
+    # ── Cache miss: query MongoDB ─────────────────────────────────
     db = get_db()
     pipeline = [
         {"$match": {"department.name": department}},
@@ -67,7 +94,11 @@ async def get_document_types(department: str = Query(..., description="Departmen
             "document_name": result_item["_id"]["document_name"],
         })
     doc_types.sort(key=lambda document_item: document_item["document_type"]) #sorted by document type
-    return {"document_types": doc_types}
+    response = {"document_types": doc_types}
+
+    # ── Cache write ───────────────────────────────────────────────
+    await set_cache(cache_key, response, ttl=_TTL_DOC_TYPES)
+    return response
 
 
 @app.get("/questions")
@@ -93,12 +124,21 @@ from api.helpers import (
 
 
 @app.get("/get_all_urls")
-def get_all_urls_endpoint():
+async def get_all_urls_endpoint():
     """
     Query the Notion database directly via requests — bypasses notion-client
     version incompatibilities entirely.
+
+    Results are cached in Redis for _TTL_NOTION_PAGES seconds to avoid
+    hammering the Notion API on every UI refresh.
     """
+    import asyncio
     import requests as _requests
+
+    # ── Cache read ────────────────────────────────────────────────
+    cached = await get_cache("notion_pages")
+    if cached is not None:
+        return cached
 
     raw_db_id   = os.environ.get("NOTION_DATABASE_ID", "").replace("-", "")
     raw_view_id = os.environ.get("NOTION_VIEW_ID", "").replace("-", "")
@@ -132,11 +172,14 @@ def get_all_urls_endpoint():
             body["start_cursor"] = next_cursor
 
         try:
-            resp = _requests.post(
-                f"https://api.notion.com/v1/databases/{to_dashed(raw_db_id)}/query",
-                headers=headers,
-                json=body,
-                timeout=30,
+            # Run the blocking requests call in a thread so we don't block the event loop
+            resp = await asyncio.to_thread(
+                lambda: _requests.post(
+                    f"https://api.notion.com/v1/databases/{to_dashed(raw_db_id)}/query",
+                    headers=headers,
+                    json=body,
+                    timeout=30,
+                )
             )
             resp.raise_for_status()
             data = resp.json()
@@ -178,7 +221,12 @@ def get_all_urls_endpoint():
         next_cursor = data.get("next_cursor")
 
     print(f"[get_all_urls] Returning {len(pages)} pages")
-    return {"page_count": len(pages), "pages": pages}
+    response = {"page_count": len(pages), "pages": pages}
+
+    # ── Cache write ───────────────────────────────────────────────
+    await set_cache("notion_pages", response, ttl=_TTL_NOTION_PAGES)
+
+    return response
 
 
 
@@ -374,6 +422,8 @@ async def save_gap_questions(request: SaveQuestionsRequest):
         "updated": updated_count,
         "total": saved_count + updated_count,
     }
+    # Note: gap questions don't change department/doc-type lists so no cache
+    # invalidation is needed for those keys.
 
 
 class GenerateDocumentRequest(BaseModel):
@@ -518,6 +568,9 @@ async def publish_to_notion(request: PublishToNotionRequest):
         import traceback
         traceback.print_exc()
         raise HTTPException(status_code=500, detail=f"Notion publish failed: {e}")
+
+    # Invalidate the Notion pages cache so the new page appears immediately
+    await delete_cache("notion_pages")
 
     return {
         "status": "ok",

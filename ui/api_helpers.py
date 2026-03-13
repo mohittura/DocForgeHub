@@ -4,6 +4,10 @@ FastAPI endpoint helper functions for the DocForge Hub Streamlit UI.
 These functions wrap HTTP calls to the FastAPI backend. They handle
 request construction, error handling, and logging. They do NOT depend
 on Streamlit at all and can be reused by any Python client.
+
+Caching note: departments, document-types, and notion pages are now cached
+server-side in Redis (see api/redis_cache.py). There is no need for
+@st.cache_data on these helpers — the FastAPI layer handles TTLs.
 """
 
 import logging

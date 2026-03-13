@@ -35,6 +35,7 @@ Instead of hallucinating content for uncovered schema sections, DocForgeHub:
 | **Frontend** | Streamlit | >= 1.32.0 | Interactive Q&A UI, document editor, PDF download | `st.cache_data` caching, wide layout, native widget types |
 | **Notion** | `notion-client` + custom publisher | >= 2.1.0 | Recursive child-page traversal, Markdown → Notion blocks, database publishing | Official Notion SDK + custom Markdown-to-block converter |
 | **PDF Export** | ReportLab (`reportlab`) | — | Markdown to styled A4 PDF | Pure-Python, no headless browser required |
+| **Cache** | Redis (`redis.asyncio`) | >= 4.0.0 | Server-side TTL cache for static read endpoints | Eliminates repeated MongoDB aggregations and Notion API calls; graceful no-op fallback if Redis is unavailable |
 | **Config** | `python-dotenv` | >= 1.0.0 | `.env` loading at startup | Standard pattern |
 | **Language** | Python | 3.12+ | Entire codebase | Type hints, async/await, TypedDict |
 
@@ -58,6 +59,7 @@ DocForgeHub/
 |   +-- db.py                          # Async Motor singleton (get_db / close_client)
 |   +-- helpers.py                     # Notion API: recursive page traversal
 |   +-- notion_publisher.py            # Markdown → Notion blocks + database publisher
+|   +-- redis_cache.py                 # Async Redis wrapper: get/set/delete/flush_prefix + graceful fallback
 |
 +-- ui/                                # Streamlit frontend
 |   +-- streamlit_uidemo.py            # Main app: sidebar, Q&A panels, editor, PDF
@@ -125,7 +127,8 @@ DocForgeHub/
 |  POST /generate             POST /generate-section                           |
 |                                                                              |
 |  api/db.py --------- Motor (async) ----------------------+                  |
-|  api/helpers.py ----- Notion API -------------------+    |                  |
+|  api/redis_cache.py - Redis (async) --------+    |    |                  |
+|  api/helpers.py ----- Notion API -----------+----+----+----+              |
 |  agent/* ------------ LangGraph agent ----------+   |    |                  |
 +---------------------------------------------------+---+--+------------------+
                                                     |   |  |
@@ -331,6 +334,46 @@ root_page_id = "30589db15e5b80779819dc0d8c532954"
 
 ---
 
+### `api/redis_cache.py`
+
+Thin async wrapper around `redis.asyncio` with JSON serialisation and graceful fallback. All functions are module-level coroutines — no class required.
+
+**Client lifecycle:**
+
+```python
+_redis_client = None   # module-level singleton
+
+async def _get_client():
+    # Creates client on first call, reuses thereafter
+    # Returns None (silently) if Redis is unavailable
+    client = aioredis.from_url(REDIS_URL, decode_responses=True, socket_connect_timeout=2)
+    await client.ping()   # fast reachability check
+```
+
+If `ping()` raises (Redis not running, wrong URL, etc.), `_get_client()` returns `None` and every downstream function short-circuits with a no-op return — the app keeps working without caching.
+
+**Public API:**
+
+| Function | Description |
+|----------|-------------|
+| `get_cache(key) -> Any \| None` | Deserialise JSON value; `None` on miss or Redis unavailability. Logs `✅ Cache HIT` or `❌ Cache MISS` at INFO level. |
+| `set_cache(key, value, ttl=3600)` | Serialise to JSON, store with TTL. Logs `💾 Cache SET`. |
+| `delete_cache(key)` | Delete one key (used for post-write invalidation). Logs `🗑️  Cache DEL`. |
+| `flush_prefix(prefix) -> int` | Delete all keys matching `prefix*` via `KEYS` scan. Returns count deleted. |
+| `close_redis()` | Graceful `aclose()` — called by FastAPI lifespan on shutdown. |
+
+**Cache keys in use:**
+
+| Key | Endpoint | TTL | Invalidated by |
+|-----|----------|-----|----------------|
+| `departments` | `GET /departments` | 3600s | Never (data is stable) |
+| `doc_types:{department}` | `GET /document-types` | 3600s | Never (data is stable) |
+| `notion_pages` | `GET /get_all_urls` | 120s | `POST /publish-to-notion` |
+
+**Environment variable:** `REDIS_URL` (default: `redis://localhost:6379`). Override in `.env` for managed Redis (e.g. Redis Cloud, Upstash, ElastiCache).
+
+---
+
 ### `api/main.py`
 
 The FastAPI application. Configures CORS, defines all 9 endpoints, and owns all Pydantic request models.
@@ -341,6 +384,7 @@ The FastAPI application. Configures CORS, defines all 9 endpoints, and owns all 
 async def lifespan(app: FastAPI):
     yield
     await close_client()          # Motor cleanup on shutdown
+    await close_redis()           # Redis connection cleanup on shutdown
 
 app = FastAPI(title="DocForge Hub API", lifespan=lifespan)
 
@@ -354,6 +398,8 @@ app.add_middleware(CORSMiddleware,
 
 #### `GET /departments`
 
+**Cache:** Redis key `departments`, TTL 3600s. Cache hit returns immediately; miss runs the aggregation and writes the result.
+
 MongoDB aggregation on `document_qas`:
 ```python
 pipeline = [
@@ -364,6 +410,8 @@ pipeline = [
 Extracts `{code, name, slug}` from each `department` subdocument. Python-sorts the final list by `code` as a second pass. Returns `{departments: [{code, name, slug}]}`.
 
 #### `GET /document-types?department={name}`
+
+**Cache:** Redis key `doc_types:{department}`, TTL 3600s. Per-department keying ensures a change to one department never evicts another.
 
 ```python
 pipeline = [
@@ -397,9 +445,13 @@ Returns `{required_section: {...}}` or raises HTTP 404 if not found.
 
 #### `GET /get_all_urls`
 
-Calls `retrieve_all_child_pages_recursive(root_page_id)` synchronously and returns:
+**Cache:** Redis key `notion_pages`, TTL 120s (shorter than departments because new documents publish more frequently). The endpoint is now `async def` — the blocking `requests.post` call to Notion is offloaded via `asyncio.to_thread` so it never blocks the event loop.
+
+**Cache invalidation:** `POST /publish-to-notion` calls `delete_cache("notion_pages")` immediately after a successful publish, so the newly published page appears on the next `/get_all_urls` request rather than waiting for TTL expiry.
+
+Returns:
 ```json
-{"root_page_id": "...", "page_count": 42, "pages": [{"id": "...", "title": "...", "url": "..."}]}
+{"page_count": 42, "pages": [{"id": "...", "title": "...", "url": "..."}]}
 ```
 
 #### `POST /gap-questions` — Cache-First Gap Analysis
@@ -1498,6 +1550,7 @@ Progressive generation uses the same `document_generation_agent` graph as single
 | `GROQ_API_KEY_2` ... `GROQ_API_KEY_7` | Optional | Fallback keys for manual rotation on rate-limit |
 | `MONGODB_CONNECTION_STRING` | Yes | Atlas connection URI with credentials |
 | `NOTION_API_KEY` | Yes | Notion integration secret for page URL traversal |
+| `REDIS_URL` | No | Redis connection URL (default: `redis://localhost:6379`). If unset or Redis is unreachable, caching is silently disabled. |
 
 ---
 
@@ -1505,10 +1558,13 @@ Progressive generation uses the same `document_generation_agent` graph as single
 
 | Operation | Typical Time | Bottleneck |
 |-----------|-------------|-----------|
-| GET /departments (first call) | < 50ms | MongoDB aggregation |
-| GET /departments (cached) | ~0ms | Streamlit st.cache_data |
-| GET /questions (first call) | < 50ms | MongoDB cursor + list |
-| GET /questions (cached) | ~0ms | Streamlit st.cache_data |
+| GET /departments (Redis HIT) | < 5ms | Redis key lookup |
+| GET /departments (Redis MISS) | < 50ms | MongoDB aggregation → written to Redis |
+| GET /document-types (Redis HIT) | < 5ms | Redis key lookup |
+| GET /document-types (Redis MISS) | < 50ms | MongoDB aggregation → written to Redis |
+| GET /get_all_urls (Redis HIT) | < 5ms | Redis key lookup |
+| GET /get_all_urls (Redis MISS) | 1-3s | Notion API query |
+| GET /questions | < 50ms | MongoDB cursor (not Redis-cached) |
 | POST /gap-questions (cache hit) | < 100ms | MongoDB find_one |
 | POST /gap-questions (cache miss) | 10-15s | llama-3.3-70b LLM call |
 | POST /save-questions | < 200ms | MongoDB upsert loop |
@@ -1529,3 +1585,4 @@ Progressive generation uses the same `document_generation_agent` graph as single
 - **Progressive mode requires schema**: Document types without a `required_section` MongoDB record silently fall back to empty `all_subsections`, making the Generate button non-functional in progressive mode.
 - **Quality review JSON parse failures**: If kimi-k2 returns malformed JSON in Node 4, the system falls back to rule-based checks which are intentionally lenient to avoid excessive false rejections. A document that the rule-based checks pass may still have prose quality issues.
 - **Node 1 is non-fatal**: If `analyze_schema_gaps` throws any exception, the agent continues with `gap_questions=[]` and `supplementary_content=""`. This means gap analysis failure never blocks document generation.
+- **Redis is optional but recommended**: Without Redis, every UI load re-runs MongoDB aggregations for departments and document types, and every Notion history load re-queries the Notion API. With Redis running locally, these become sub-5ms lookups. The `socket_connect_timeout=2` in `_get_client()` ensures a missing Redis server degrades gracefully within 2 seconds on first request rather than hanging.

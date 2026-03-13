@@ -64,6 +64,7 @@ FastAPI Backend (Port 8000)
 | **Backend API** | FastAPI | Async REST gateway (10 endpoints) |
 | **Database** | MongoDB Atlas | Q&As, schemas, gap question cache |
 | **Async Driver** | Motor | Non-blocking MongoDB operations |
+| **Cache** | Redis (`redis.asyncio`) | Server-side TTL cache for departments, document types, and Notion pages |
 | **Frontend** | Streamlit | Interactive Q&A UI and document editor |
 | **Notion** | `notion-client` + custom publisher | Page URL history, Markdown → Notion block conversion, database publishing |
 | **PDF Export** | ReportLab | Markdown → professional A4 PDF |
@@ -75,6 +76,7 @@ FastAPI Backend (Port 8000)
 ### Prerequisites
 
 - Python 3.12+
+- Redis server (local or managed — optional, app works without it)
 - MongoDB Atlas account (free tier sufficient)
 - Azure OpenAI resource with GPT-4.1-mini deployment (primary generation LLM)
 - Groq API key (free tier: ~200K tokens/month, used for gap analysis only)
@@ -89,6 +91,9 @@ cd DocForgeHub
 python -m venv .venv
 source .venv/bin/activate        # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
+
+# Start Redis (if running locally)
+redis-server
 ```
 
 ### 2. Configure Environment Variables
@@ -110,6 +115,9 @@ MONGODB_CONNECTION_STRING=""
 
 # Notion
 NOTION_API_KEY="secret_your_notion_integration_key"
+
+# Redis (optional — falls back gracefully if not set)
+REDIS_URL="redis://localhost:6379"
 ```
 
 > ⚠️ **Never commit `.env` to version control.** It is already listed in `.gitignore`.
@@ -163,7 +171,8 @@ DocForgeHub/
 │   ├── main.py                     # 10 endpoints (departments → publish)
 │   ├── db.py                       # Async Motor/MongoDB singleton connection
 │   ├── helpers.py                  # Notion API: recursive page traversal
-│   └── notion_publisher.py         # Markdown → Notion blocks + database publisher
+│   ├── notion_publisher.py         # Markdown → Notion blocks + database publisher
+│   └── redis_cache.py              # Async Redis wrapper — TTL cache + graceful fallback
 │
 ├── ui/                             # Streamlit interactive frontend
 │   ├── streamlit_uidemo.py         # Main app (sidebar, Q&A panels, doc editor)
@@ -266,7 +275,7 @@ curl -X POST http://localhost:8000/generate \
 | **PDF export** | ReportLab renders Markdown → styled A4 PDF (tables, headings, bullets) |
 | **Notion publishing** | Markdown → Notion block conversion + database row publisher with rate limiting |
 | **Async throughout** | FastAPI + Motor → non-blocking, concurrent-session capable |
-| **Streamlit caching** | `st.cache_data` with 5–10 min TTL for departments, doc types, questions |
+| **Server-side Redis cache** | Async TTL cache (3600s) for `/departments`, `/document-types`, `/get_all_urls`; auto-invalidated on writes |
 
 ---
 
@@ -293,7 +302,9 @@ DocForgeHub ships with data for **10 departments × 10 document types = 100 docu
 
 | Operation | Typical Time | Notes |
 |-----------|-------------|-------|
-| `GET /questions` | < 50 ms | Streamlit cache hit (5 min TTL) |
+| `GET /departments` | < 5 ms | Redis cache hit (3600s TTL) |
+| `GET /document-types` | < 5 ms | Redis cache hit (3600s TTL) |
+| `GET /questions` | < 50 ms | MongoDB cursor (not cached — per-user answers vary) |
 | `POST /gap-questions` (cache hit) | < 100 ms | Direct MongoDB lookup |
 | `POST /gap-questions` (fresh) | 10–15 s | llama-3.3-70b LLM call |
 | `POST /generate` | 30–60 s | Full 5-node workflow, Azure GPT-4.1-mini |

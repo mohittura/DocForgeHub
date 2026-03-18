@@ -1,0 +1,1111 @@
+"""
+ui/doc_forge_ui.py
+
+DocForge Hub UI — extracted from the original streamlit_uidemo.py.
+
+This file is a faithful 1-to-1 port of the original.
+Every variable name, every comment, every piece of logic is
+preserved exactly as written in the original streamlit_uidemo.py.
+
+The only structural changes are:
+  1. All top-level code is wrapped inside render_doc_forge_ui()
+     so it can be called by streamlit_uidemo.py (the new router).
+  2. Session-state keys are prefixed with "dfh_" to avoid
+     colliding with CiteRagLab ("crl_") keys in the shared session.
+     The internal variable names remain unchanged — only the
+     st.session_state key strings have the prefix added.
+  3. logging.basicConfig() is NOT called here (the router does it);
+     logger = logging.getLogger("ui.doc_forge_ui") is added.
+  4. logger.info() / logger.warning() / logger.error() calls are
+     added at key moments, matching the emoji style of agent_graph.py.
+  5. st.set_page_config() is removed (called once in the router).
+  6. The cached fetcher functions keep their original names.
+"""
+
+import sys
+import os
+import logging
+import requests
+import streamlit as st
+
+# ── sys.path: ensure ui/ and project root are importable ─────────────────────
+_HERE         = os.path.dirname(os.path.abspath(__file__))
+_PROJECT_ROOT = os.path.abspath(os.path.join(_HERE, ".."))
+for _path in [_HERE, _PROJECT_ROOT]:
+    if _path not in sys.path:
+        sys.path.insert(0, _path)
+
+from api_helpers import (
+    fetch_departments,
+    fetch_document_types,
+    fetch_questions,
+    fetch_notion_page_urls,
+    call_gap_questions_endpoint,
+    call_save_questions_endpoint,
+    call_generate_endpoint,
+    call_generate_section,
+    call_publish_to_notion_endpoint,
+    FASTAPI_URL,
+)
+from pdf_generator import generate_pdf_from_markdown, build_safe_pdf_filename
+from question_helpers import (
+    build_unified_question_list,
+    build_ordered_categories,
+    collect_all_answered_qa,
+    collect_page_answered_qa,
+    question_has_answer,
+    render_question_widget,
+)
+
+logger = logging.getLogger("ui.doc_forge_ui")
+
+
+# -------------------------------------------------
+# Cached API data fetchers
+# (original names kept exactly)
+# -------------------------------------------------
+
+@st.cache_data(ttl=300)
+def get_departments_from_fastapi():
+    logger.info("Fetching departments from FastAPI")
+    return fetch_departments()
+
+@st.cache_data(ttl=300)
+def get_document_types_from_fastapi(department_name):
+    logger.info("Fetching document types for department='%s'", department_name)
+    return fetch_document_types(department_name)
+
+@st.cache_data(ttl=300)
+def get_questions_from_fastapi(document_type):
+    logger.info("Fetching questions for document_type='%s'", document_type)
+    return fetch_questions(document_type)
+
+@st.cache_data(ttl=60)
+def get_notionpage_urls_from_fastapi():
+    logger.info("Fetching Notion page URLs")
+    return fetch_notion_page_urls()
+
+
+# -------------------------------------------------
+# render_doc_forge_ui()
+# Everything below is the original streamlit_uidemo.py
+# body, wrapped in this function. Session-state keys
+# have a "dfh_" prefix; all other names are unchanged.
+# -------------------------------------------------
+
+def render_doc_forge_ui():
+
+    # -------------------------------------------------
+    # CSS  (original, unchanged)
+    # -------------------------------------------------
+    st.markdown(
+        """
+        <style>
+
+        /* Vertical separators */
+        .block-container {
+            padding-top: 1rem;
+            margin-top: 2%;
+        }
+
+        .separator-right {
+            border-right: 1px solid #444;
+            padding-right: 1rem;
+        }
+
+        .separator-left {
+            border-left: 1px solid #444;
+            padding-left: 1rem;
+        }
+
+        /* Markdown editor sizing */
+        textarea {
+            font-family: monospace;
+        }
+
+        /* Gap question banner */
+        .gap-banner {
+            background: linear-gradient(90deg, #1a1a2e 0%, #16213e 100%);
+            border-left: 4px solid #e94560;
+            border-radius: 6px;
+            padding: 0.75rem 1rem;
+            margin: 0.5rem 0 1rem 0;
+            font-size: 0.88rem;
+            color: #ccc;
+        }
+        .gap-banner strong { color: #e94560; }
+
+        /* Subtle badge for gap questions */
+        .gap-badge {
+            display: inline-block;
+            background: #e94560;
+            color: white;
+            font-size: 0.68rem;
+            font-weight: 700;
+            padding: 1px 7px;
+            border-radius: 10px;
+            margin-left: 6px;
+            vertical-align: middle;
+            letter-spacing: 0.04em;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    # ---------------------------------------------------
+    # Load the initial data
+    # ---------------------------------------------------
+
+    pages = get_notionpage_urls_from_fastapi()
+    departments = get_departments_from_fastapi()
+    department_names = [dept_dict["name"] for dept_dict in departments]
+
+    # -------------------------------------------------
+    # Session State
+    # NOTE: keys are prefixed "dfh_" to avoid collision
+    # with CiteRagLab state, but variable names inside
+    # this function are identical to the original.
+    # -------------------------------------------------
+    if "dfh_history" not in st.session_state:
+        st.session_state.dfh_history = []
+
+    # Sync history on every rerun — cache (ttl=60) keeps it fast
+    _latest_pages = get_notionpage_urls_from_fastapi()
+    if _latest_pages:
+        st.session_state.dfh_history = _latest_pages
+
+    if "dfh_answers" not in st.session_state:
+        st.session_state.dfh_answers = {}
+
+    if "dfh_gap_answers" not in st.session_state:
+        st.session_state.dfh_gap_answers = {}
+
+    if "dfh_gap_questions" not in st.session_state:
+        st.session_state.dfh_gap_questions = []
+
+    if "dfh_markdown_doc" not in st.session_state:
+        st.session_state.dfh_markdown_doc = ""
+
+    if "dfh_is_generating" not in st.session_state:
+        st.session_state.dfh_is_generating = False
+
+    if "dfh_is_analyzing" not in st.session_state:
+        st.session_state.dfh_is_analyzing = False
+
+    if "dfh_is_saving" not in st.session_state:
+        st.session_state.dfh_is_saving = False
+
+    if "dfh_is_publishing" not in st.session_state:
+        st.session_state.dfh_is_publishing = False
+
+    if "dfh_last_published_url" not in st.session_state:
+        st.session_state.dfh_last_published_url = ""
+
+    if "dfh_gap_source" not in st.session_state:
+        st.session_state.dfh_gap_source = ""
+
+    if "dfh_gap_doc_type" not in st.session_state:
+        st.session_state.dfh_gap_doc_type = ""
+
+    # Track which document was active last run so we can detect changes
+    if "dfh_active_document" not in st.session_state:
+        st.session_state.dfh_active_document = ""
+
+    # Progressive / pagination state
+    if "dfh_prog_mode" not in st.session_state:
+        st.session_state.dfh_prog_mode = False
+    if "dfh_q_page" not in st.session_state:
+        st.session_state.dfh_q_page = 0
+    if "dfh_prog_sections" not in st.session_state:
+        st.session_state.dfh_prog_sections = {}       # {category_name: generated_text}
+    # Purge stale integer keys left from previous sessions
+    if any(isinstance(category_key, int) for category_key in st.session_state.dfh_prog_sections):
+        st.session_state.dfh_prog_sections = {}
+    if "dfh_prog_generating" not in st.session_state:
+        st.session_state.dfh_prog_generating = False
+    # Track which category step we are on in progressive mode (sequential reveal)
+    if "dfh_prog_current_step" not in st.session_state:
+        st.session_state.dfh_prog_current_step = 0
+
+    # -------------------------------------------------
+    # Helper: clear all per-document state
+    # Called automatically on document change AND by the manual clear button.
+    # -------------------------------------------------
+
+    def _clear_all_document_state():
+        """Reset every piece of state that is specific to the current document."""
+        logger.info("🗑️  _clear_all_document_state — resetting all per-document state")
+        st.session_state.dfh_answers = {}
+        st.session_state.dfh_gap_answers = {}
+        st.session_state.dfh_gap_questions = []
+        st.session_state.dfh_gap_source = ""
+        st.session_state.dfh_gap_doc_type = ""
+        st.session_state.dfh_markdown_doc = ""
+        st.session_state.dfh_prog_sections = {}
+        st.session_state.dfh_prog_current_step = 0
+        st.session_state.dfh_q_page = 0
+        st.session_state.dfh_last_published_url = ""
+        # Clear any widget values that Streamlit has cached in session_state
+        # (answer widgets are keyed as "widget_answer_N" and "widget_gap_answer_N")
+        keys_to_delete = [
+            k for k in st.session_state
+            if k.startswith("widget_answer_") or k.startswith("widget_gap_answer_")
+            or k.startswith("prog_section_editor_")
+        ]
+        for k in keys_to_delete:
+            del st.session_state[k]
+        logger.info("   ✅ Cleared %d widget keys", len(keys_to_delete))
+
+    # =================================================
+    # LEFT SIDEBAR
+    # =================================================
+    with st.sidebar:
+        st.write("<h1>📄</br>DocForgeHub</h1>", unsafe_allow_html=True)
+
+        st.subheader("Department")
+        selected_department = st.selectbox(
+            "Department",
+            department_names or ["(no departments found)"],
+            label_visibility="collapsed"
+        )
+
+        st.subheader("Document")
+        is_valid_department = selected_department and selected_department != "(no departments found)"
+        doc_types = get_document_types_from_fastapi(selected_department) if is_valid_department else []
+        document_names = [doc_dict["document_type"] for doc_dict in doc_types]
+
+        # Build lookups
+        document_name_lookup = {
+            doc_dict["document_type"]: doc_dict.get("document_name", doc_dict["document_type"])
+            for doc_dict in doc_types
+        }
+        department_obj_lookup = {dept_dict["name"]: dept_dict for dept_dict in departments}
+
+        selected_document = st.selectbox(
+            "Document",
+            document_names or ["(select a department first)"],
+            label_visibility="collapsed",
+        )
+
+        # ── Auto-clear on document change ───────────────────────────────────────
+        # If the user picks a different document, wipe all answers, gap questions,
+        # generated markdown, and progressive sections so stale content never bleeds
+        # across into a new document session.
+        if st.session_state.dfh_active_document and st.session_state.dfh_active_document != selected_document:
+            logger.info(
+                "Document changed: '%s' → '%s' — clearing state",
+                st.session_state.dfh_active_document, selected_document,
+            )
+            _clear_all_document_state()
+            st.session_state.dfh_active_document = selected_document
+            st.rerun()
+
+        # Record the current document on first load
+        if not st.session_state.dfh_active_document and selected_document not in ("", "(select a department first)"):
+            st.session_state.dfh_active_document = selected_document
+
+        st.subheader("Generation Mode")
+        mode_choice = st.radio(
+            "Mode",
+            ["Single-Shot", "Progressive"],
+            index=1 if st.session_state.dfh_prog_mode else 0,
+            label_visibility="collapsed",
+            help="Single-Shot: generates the full document at once. Progressive: generates section-by-section with memory.",
+        )
+        st.session_state.dfh_prog_mode = (mode_choice == "Progressive")
+
+        st.subheader("Generation History")
+        history_container = st.container(height=270)
+        with history_container:
+            if not st.session_state.dfh_history:
+                st.caption("No published documents yet.")
+            for history_item in st.session_state.dfh_history:
+                title    = history_item.get("title", "Untitled")
+                url      = history_item.get("url", "#")
+                doc_type = history_item.get("type", "")
+                industry = history_item.get("industry", "")
+                subtitle = " · ".join(filter(None, [doc_type, industry]))
+                st.markdown(
+                    f"<a href='{url}' target='_blank' style='text-decoration:none;'>"
+                    f"<div style='padding:5px 4px;margin-bottom:4px;border-radius:4px;'>"
+                    f"<div style='font-size:0.83rem;font-weight:600;color:#e8e8e8;'>{title}</div>"
+                    f"{'<div style=\"font-size:0.71rem;color:#999;margin-top:1px;\">' + subtitle + '</div>' if subtitle else ''}"
+                    f"</div></a>",
+                    unsafe_allow_html=True,
+                )
+
+    # =================================================
+    # MAIN AREA
+    # =================================================
+    col_questions, col_editor = st.columns([2, 3])
+
+    ########################################
+    # Load questions for the selected document
+    ########################################
+
+    is_valid_document = selected_document and selected_document != "(select a department first)"
+    questions = get_questions_from_fastapi(selected_document) if is_valid_document else []
+
+    logger.info(
+        "DocForgeHub render — dept='%s'  doc='%s'  questions=%d  prog_mode=%s",
+        selected_department, selected_document, len(questions),
+        st.session_state.dfh_prog_mode,
+    )
+
+    for question_idx, question_data in enumerate(questions):
+        answer_key = f"answer_{question_idx}"
+        if answer_key not in st.session_state.dfh_answers:
+            st.session_state.dfh_answers[answer_key] = question_data.get("answer", "") or ""
+
+    for gap_idx, gap_question in enumerate(st.session_state.dfh_gap_questions):
+        gap_answer_key = f"gap_answer_{gap_idx}"
+        if gap_answer_key not in st.session_state.dfh_gap_answers:
+            st.session_state.dfh_gap_answers[gap_answer_key] = gap_question.get("answer", "") or ""
+
+    # ═══════════════════════════════════════════════════════════════
+    #  Fetch schema and flatten subsections for progressive mode
+    # ═══════════════════════════════════════════════════════════════
+
+    # all_subsections: flat list — ONE entry per subsection, each gets a
+    # unique _prog_key so that same-named subsections under different parent
+    # sections (e.g. "Responses" under 8.1 AND 8.2) never collide in
+    # prog_sections (which is a dict).
+    all_subsections: list[dict] = []
+    subsection_titles: list[str] = []  # ordered unique _prog_key values
+    schema_sections: list[dict] = []
+
+    if is_valid_document and st.session_state.dfh_prog_mode:
+        document_name_for_schema = document_name_lookup.get(selected_document, selected_document)
+        logger.info("📐 Fetching schema for document_name='%s'", document_name_for_schema)
+        try:
+            schema_response = requests.get(
+                f"{FASTAPI_URL}/required-section",
+                params={"department": selected_department, "document_name": document_name_for_schema},
+                timeout=15,
+            )
+            schema_response.raise_for_status()
+            schema_data = schema_response.json().get("required_section", schema_response.json())
+            schema_sections = schema_data.get("sections", [])
+
+            seen_raw_titles: set[str] = set()
+
+            for section_obj in schema_sections:
+                parent_title = section_obj.get("title", "Document")
+                subs = section_obj.get("subsections", [])
+                if subs:
+                    for sub in sorted(subs, key=lambda s: s.get("order", 0)):
+                        raw_title = sub.get("title", "").strip()
+                        # Make the prog_key unique when the same subsection title
+                        # appears under multiple parent sections.
+                        if raw_title in seen_raw_titles:
+                            prog_key = f"{parent_title} › {raw_title}"
+                        else:
+                            prog_key = raw_title
+                            seen_raw_titles.add(raw_title)
+                        all_subsections.append({
+                            **sub,
+                            "title": raw_title,       # original title sent to the API
+                            "_prog_key": prog_key,    # unique key used in prog_sections
+                            "_parent_title": parent_title,
+                        })
+                else:
+                    raw_title = parent_title
+                    prog_key = raw_title if raw_title not in seen_raw_titles else f"{parent_title} › {raw_title}"
+                    seen_raw_titles.add(raw_title)
+                    all_subsections.append({
+                        "title": raw_title,
+                        "type": section_obj.get("type", "text"),
+                        "columns": section_obj.get("columns", []),
+                        "order": section_obj.get("order", 0),
+                        "_prog_key": prog_key,
+                        "_parent_title": parent_title,
+                    })
+
+            subsection_titles = [sub["_prog_key"] for sub in all_subsections]
+            logger.info("Schema loaded — %d subsections: %s", len(all_subsections), subsection_titles)
+        except Exception as schema_err:
+            logger.warning("Failed to fetch schema: %s", schema_err)
+
+    # ═══════════════════════════════════════════════════════════════
+    #  Build a UNIFIED question list using helpers
+    # ═══════════════════════════════════════════════════════════════
+
+    all_questions = build_unified_question_list(
+        questions=questions,
+        answers_state=st.session_state.dfh_answers,
+        gap_questions=st.session_state.dfh_gap_questions,
+        gap_answers_state=st.session_state.dfh_gap_answers,
+    )
+
+    ordered_categories = build_ordered_categories(all_questions)
+
+    # ═══════════════════════════════════════════════════════════════
+    #  Pagination — always 5 questions per page
+    # ═══════════════════════════════════════════════════════════════
+
+    PAGE_SIZE = 5
+    total_questions = len(all_questions)
+    total_pages = max(1, -(-total_questions // PAGE_SIZE))
+
+    if st.session_state.dfh_q_page >= total_pages:
+        st.session_state.dfh_q_page = total_pages - 1
+    if st.session_state.dfh_q_page < 0:
+        st.session_state.dfh_q_page = 0
+
+    current_page = st.session_state.dfh_q_page
+    page_start = current_page * PAGE_SIZE
+    page_end = min(page_start + PAGE_SIZE, total_questions)
+    page_questions = all_questions[page_start:page_end]
+
+    def get_sec_idx_for_page(page_idx: int, sections: list) -> tuple:
+        """Map a page index to a schema section index."""
+        if not sections:
+            return 0, None
+        section_index = min(
+            int(page_idx / max(total_pages, 1) * len(sections)),
+            len(sections) - 1,
+        )
+        return section_index, sections[section_index]
+
+    def get_section_qa_for_sec_idx(section_idx: int, sections: list) -> list:
+        """Return ALL answered Q&A for sections[section_idx]."""
+        if not sections or section_idx >= len(sections):
+            return []
+
+        target_section = sections[section_idx]
+        section_title_lower = target_section.get("title", "").lower().strip()
+        subsection_title_set = {
+            subsection.get("title", "").lower().strip()
+            for subsection in target_section.get("subsections", [])
+        }
+
+        matched_qa = []
+        for widget_key, question_dict, answer_state, is_gap_flag in all_questions:
+            question_category_lower = question_dict.get("category", "").lower().strip()
+            answer_text = answer_state.get(widget_key, "")
+            if not answer_text.strip():
+                continue
+            if (
+                question_category_lower in subsection_title_set
+                or question_category_lower == section_title_lower
+                or section_title_lower in question_category_lower
+            ):
+                matched_qa.append({
+                    "question": question_dict.get("question", ""),
+                    "answer": answer_text,
+                    "category": question_dict.get("category", ""),
+                    "answer_type": question_dict.get("answer_type", "text"),
+                })
+
+        # Fallback: if category matching found nothing, use proportional page slice
+        if not matched_qa:
+            pages_per_section = max(1, total_pages // len(sections))
+            fallback_start = section_idx * pages_per_section * PAGE_SIZE
+            fallback_end = min(fallback_start + pages_per_section * PAGE_SIZE, total_questions)
+            for widget_key, question_dict, answer_state, is_gap_flag in all_questions[fallback_start:fallback_end]:
+                answer_text = answer_state.get(widget_key, "")
+                if answer_text.strip():
+                    matched_qa.append({
+                        "question": question_dict.get("question", ""),
+                        "answer": answer_text,
+                        "category": question_dict.get("category", ""),
+                        "answer_type": question_dict.get("answer_type", "text"),
+                    })
+
+        return matched_qa
+
+    # ═══════════════════════════════════════════════════════════════
+    #  QUESTIONS PANEL (paginated)
+    # ═══════════════════════════════════════════════════════════════
+
+    with col_questions:
+        st.markdown('<div class="separator-right">', unsafe_allow_html=True)
+
+        if not questions:
+            st.info("Select a department and document to load questions.")
+        else:
+            # ── Section header ──
+            if st.session_state.dfh_prog_mode and schema_sections:
+                section_idx, current_section = get_sec_idx_for_page(current_page, schema_sections)
+                section_label = (
+                    current_section.get("title", f"Page {current_page + 1}")
+                    if current_section else f"Page {current_page + 1}"
+                )
+                st.header(f"Page {current_page + 1} of {total_pages}")
+                st.subheader(f"📌 {section_label}")
+                if current_section:
+                    section_subsections = current_section.get("subsections", [])
+                    if section_subsections:
+                        subsection_title_list = [subsection.get("title", "") for subsection in section_subsections]
+                        st.caption("Covers: " + ", ".join(subsection_title_list))
+            else:
+                st.header("Questions")
+                st.caption(f"Page {current_page + 1} of {total_pages}")
+
+            # ── Render the 5 questions for this page ──
+            for widget_key, question_data, answer_state, is_gap_flag in page_questions:
+                render_question_widget(
+                    question=question_data,
+                    widget_key=widget_key,
+                    answer_state=answer_state,
+                    is_gap=is_gap_flag,
+                )
+
+            # ── Progress bar ──
+            answered_count = sum(
+                1 for widget_key, question_dict, answer_state, is_gap_flag in all_questions
+                if question_has_answer(widget_key, answer_state)
+            )
+            st.progress(
+                answered_count / max(total_questions, 1),
+                text=f"{answered_count} of {total_questions} answered"
+            )
+
+            # ── Gap questions controls ──
+            mongo_gap_questions = [question for question in questions if question.get("is_gap_question")]
+            session_gap_questions = st.session_state.dfh_gap_questions
+            has_any_gap_questions = bool(mongo_gap_questions or session_gap_questions)
+
+            # Save button for session gap questions
+            if session_gap_questions and st.session_state.dfh_gap_source == "generated":
+                st.markdown("")
+                save_col, save_info_col = st.columns([1, 2])
+                with save_col:
+                    save_clicked = st.button(
+                        "💾 Save gap questions",
+                        disabled=st.session_state.dfh_is_saving,
+                        help="Saves these questions + your answers to the database.",
+                        use_container_width=True,
+                    )
+                with save_info_col:
+                    st.caption("Save to make these questions permanent.")
+
+                if save_clicked:
+                    st.session_state.dfh_is_saving = True
+                    gap_qa_to_save = []
+                    for gap_idx, gap_question in enumerate(session_gap_questions):
+                        gap_answer_key = f"gap_answer_{gap_idx}"
+                        gap_qa_to_save.append({
+                            **gap_question,
+                            "answer": st.session_state.dfh_gap_answers.get(gap_answer_key, ""),
+                        })
+                    dept_obj = department_obj_lookup.get(selected_department, {"name": selected_department})
+                    doc_name = document_name_lookup.get(selected_document, selected_document)
+                    logger.info(
+                        "💾 Saving %d gap questions — doc_type='%s'",
+                        len(gap_qa_to_save), selected_document,
+                    )
+                    with st.spinner("Saving gap questions to database..."):
+                        save_result = call_save_questions_endpoint(
+                            department_obj=dept_obj,
+                            document_type=selected_document,
+                            document_name=doc_name,
+                            gap_questions=gap_qa_to_save,
+                        )
+                    st.session_state.dfh_is_saving = False
+                    if save_result:
+                        saved_count = save_result.get("saved", 0)
+                        updated_count = save_result.get("updated", 0)
+                        logger.info("   ✅ Saved %d new, updated %d", saved_count, updated_count)
+                        st.success(f"✅ Saved {saved_count} new, updated {updated_count}.")
+                        get_questions_from_fastapi.clear()
+                    else:
+                        logger.error("   ❌ Save gap questions failed")
+                        st.error("❌ Save failed — check API logs.")
+
+            # Analyse gaps button
+            if not has_any_gap_questions and questions:
+                st.divider()
+                analyse_col, analyse_info_col = st.columns([1, 2])
+                with analyse_col:
+                    analyse_clicked = st.button(
+                        "🔍 Analyse schema gaps",
+                        disabled=st.session_state.dfh_is_analyzing,
+                        help="Uses AI to identify which document sections aren't covered.",
+                        use_container_width=True,
+                    )
+                with analyse_info_col:
+                    st.caption("Optional: detect and fill schema coverage gaps.")
+
+                if analyse_clicked and is_valid_document:
+                    st.session_state.dfh_is_analyzing = True
+                    current_qa_for_gap_analysis = []
+                    for question_idx, question_item in enumerate(questions):
+                        if question_item.get("is_gap_question"):
+                            continue
+                        answer_key = f"answer_{question_idx}"
+                        current_qa_for_gap_analysis.append({
+                            "question": question_item.get("question", ""),
+                            "answer": st.session_state.dfh_answers.get(answer_key, ""),
+                            "category": question_item.get("category", ""),
+                            "answer_type": question_item.get("answer_type", "text"),
+                        })
+                    doc_name = document_name_lookup.get(selected_document, selected_document)
+                    logger.info(
+                        "🔍 Gap analysis triggered — %d answers sent",
+                        len(current_qa_for_gap_analysis),
+                    )
+                    with st.spinner("🤖 Analysing schema coverage... this takes ~10 seconds."):
+                        gap_analysis_result = call_gap_questions_endpoint(
+                            department=selected_department,
+                            document_type=selected_document,
+                            document_name=doc_name,
+                            questions_and_answers=current_qa_for_gap_analysis,
+                        )
+                    st.session_state.dfh_is_analyzing = False
+                    if gap_analysis_result:
+                        gap_questions_from_api = gap_analysis_result.get("gap_questions", [])
+                        if gap_questions_from_api:
+                            st.session_state.dfh_gap_questions = gap_questions_from_api
+                            st.session_state.dfh_gap_source = gap_analysis_result.get("source", "generated")
+                            st.session_state.dfh_gap_doc_type = selected_document
+                            for gap_idx, gap_question in enumerate(gap_questions_from_api):
+                                gap_answer_key = f"gap_answer_{gap_idx}"
+                                if gap_answer_key not in st.session_state.dfh_gap_answers:
+                                    st.session_state.dfh_gap_answers[gap_answer_key] = ""
+                            logger.info("   ✅ %d gap question(s) generated", len(gap_questions_from_api))
+                            st.rerun()
+                        else:
+                            logger.info("   ✅ No gaps found — all schema sections covered")
+                            st.success("✅ All schema sections are fully covered — no gaps found!")
+                    else:
+                        logger.error("   ❌ Gap analysis call failed")
+                        st.error("❌ Gap analysis failed. Check API logs.")
+
+            st.divider()
+
+            # ── Navigation: Back / Action / Next ──
+            nav_back_col, nav_action_col, nav_next_col = st.columns([1, 2, 1])
+
+            with nav_back_col:
+                if current_page > 0:
+                    if st.button("← Back", use_container_width=True):
+                        st.session_state.dfh_q_page -= 1
+                        st.rerun()
+
+            with nav_next_col:
+                if current_page < total_pages - 1:
+                    if st.button("Next →", use_container_width=True):
+                        st.session_state.dfh_q_page += 1
+                        st.rerun()
+
+            with nav_action_col:
+                if not st.session_state.dfh_prog_mode:
+                    # ── Single-shot generate button ──
+                    single_shot_remaining = total_questions - answered_count
+                    single_shot_all_answered = answered_count == total_questions and total_questions > 0
+                    generate_button_clicked = st.button(
+                        "⚡ Generate Document" if single_shot_all_answered
+                        else f"🔒 Answer all questions first ({single_shot_remaining} remaining)",
+                        disabled=st.session_state.dfh_is_generating or not single_shot_all_answered,
+                        use_container_width=True,
+                        type="primary",
+                    )
+                else:
+                    # ── Progressive mode: finalize button only on last page ──
+                    generate_button_clicked = False
+                    progressive_all_answered = answered_count == total_questions and total_questions > 0
+                    progressive_remaining = total_questions - answered_count
+
+                    if current_page == total_pages - 1:
+                        all_subsections_generated = (
+                            subsection_titles
+                            and all(k in st.session_state.dfh_prog_sections for k in subsection_titles)
+                        )
+                        if all_subsections_generated:
+                            generate_button_clicked = st.button(
+                                "📄 Finalize Document" if progressive_all_answered
+                                else f"🔒 Finalize ({progressive_remaining} questions remaining)",
+                                disabled=not progressive_all_answered,
+                                use_container_width=True,
+                            )
+                        else:
+                            remaining_subs = sum(1 for t in subsection_titles if t not in st.session_state.dfh_prog_sections)
+                            st.info(f"Generate all sections in the preview panel first ({remaining_subs} remaining).")
+
+            # ══════════════════════════════════════════════════════
+            # Handle single-shot generate OR progressive finalize
+            # ══════════════════════════════════════════════════════
+            if generate_button_clicked and questions:
+                if not st.session_state.dfh_prog_mode:
+                    # ═══ SINGLE-SHOT GENERATION ═══
+                    st.session_state.dfh_is_generating = True
+
+                    questions_and_answers = []
+
+                    # Core (non-gap) questions
+                    for question_idx, question_item in enumerate(questions):
+                        if question_item.get("is_gap_question"):
+                            continue
+                        answer_key = f"answer_{question_idx}"
+                        questions_and_answers.append({
+                            "question": question_item.get("question", ""),
+                            "answer": st.session_state.dfh_answers.get(answer_key, ""),
+                            "category": question_item.get("category", ""),
+                            "answer_type": question_item.get("answer_type", "text"),
+                        })
+
+                    # MongoDB-persisted gap questions
+                    for question_idx, question_item in enumerate(questions):
+                        if not question_item.get("is_gap_question"):
+                            continue
+                        answer_key = f"answer_{question_idx}"
+                        questions_and_answers.append({
+                            "question": question_item.get("question", ""),
+                            "answer": st.session_state.dfh_answers.get(answer_key, ""),
+                            "category": question_item.get("category", "Additional Information"),
+                            "answer_type": question_item.get("answer_type", "text"),
+                            "is_gap_question": True,
+                        })
+
+                    # Session gap questions
+                    for gap_idx, gap_question in enumerate(st.session_state.dfh_gap_questions):
+                        gap_answer_key = f"gap_answer_{gap_idx}"
+                        questions_and_answers.append({
+                            "question": gap_question.get("question", ""),
+                            "answer": st.session_state.dfh_gap_answers.get(gap_answer_key, ""),
+                            "category": gap_question.get("category", "Additional Information"),
+                            "answer_type": gap_question.get("answer_type", "text"),
+                            "is_gap_question": True,
+                        })
+
+                    logger.info("Generate clicked — sending %d answers to agent", len(questions_and_answers))
+                    document_name_for_request = document_name_lookup.get(selected_document, selected_document)
+
+                    with st.spinner("Agent is generating your document... This may take 30-60 seconds."):
+                        generation_result = call_generate_endpoint(
+                            department=selected_department,
+                            document_type=selected_document,
+                            document_name=document_name_for_request,
+                            questions_and_answers=questions_and_answers,
+                        )
+
+                    st.session_state.dfh_is_generating = False
+
+                    if generation_result:
+                        st.session_state.dfh_markdown_doc = generation_result.get("generated_document", "")
+                        generation_status = generation_result.get("status", "unknown")
+                        quality_scores = generation_result.get("quality_scores", {})
+                        retry_count = generation_result.get("retry_count", 0)
+
+                        new_gap_questions = generation_result.get("gap_questions", [])
+                        if new_gap_questions and not st.session_state.dfh_gap_questions:
+                            st.session_state.dfh_gap_questions = new_gap_questions
+                            st.session_state.dfh_gap_source = generation_result.get("source", "generated")
+                            st.session_state.dfh_gap_doc_type = selected_document
+                            for gap_idx, gap_question in enumerate(new_gap_questions):
+                                gap_answer_key = f"gap_answer_{gap_idx}"
+                                if gap_answer_key not in st.session_state.dfh_gap_answers:
+                                    st.session_state.dfh_gap_answers[gap_answer_key] = ""
+                            st.info(f"💡 {len(new_gap_questions)} gap question(s) detected. Answer them and regenerate.")
+
+                        if generation_status == "passed":
+                            st.success(f"✅ Document generated! (retries: {retry_count})")
+                        else:
+                            st.warning(f"⚠️ Generated with issues (status: {generation_status}, retries: {retry_count})")
+
+                        if quality_scores:
+                            with st.expander("📊 Quality Scores", expanded=(generation_status == "passed")):
+                                score_cols = st.columns(len(quality_scores))
+                                for score_col, (criterion, score) in zip(score_cols, quality_scores.items()):
+                                    score_col.metric(criterion.replace("_", " ").title(), f"{score}/5")
+
+                        logger.info(
+                            "   ✅ Generation complete — status=%s, retries=%d, length=%d chars",
+                            generation_status, retry_count,
+                            len(st.session_state.dfh_markdown_doc),
+                        )
+                    else:
+                        logger.error("   ❌ Generation call returned None")
+                        st.error("❌ Generation failed. Check the API logs for details.")
+
+                else:
+                    # ═══ PROGRESSIVE FINALIZE ═══
+                    all_qa = collect_all_answered_qa(all_questions)
+
+                    for sub_entry in all_subsections:
+                        prog_key = sub_entry.get("_prog_key", sub_entry["title"])
+                        if prog_key in st.session_state.dfh_prog_sections:
+                            continue
+                        parent_title = sub_entry.get("_parent_title", "Document")
+                        display_title = prog_key.split(" › ")[-1]
+                        clean_entry = {k: v for k, v in sub_entry.items() if not k.startswith("_")}
+                        section_for_api = {"title": parent_title, "subsections": [clean_entry]}
+                        previously_generated = "\n\n".join(
+                            st.session_state.dfh_prog_sections[t]
+                            for t in subsection_titles
+                            if t in st.session_state.dfh_prog_sections and t != prog_key
+                        )
+                        logger.info("⚡ Progressive finalize — generating section '%s'", display_title)
+                        with st.spinner(f"⚡ Generating '{display_title}'..."):
+                            section_result = call_generate_section(
+                                department=selected_department,
+                                document_type=selected_document,
+                                section=section_for_api,
+                                questions_and_answers=all_qa,
+                                doc_memory=previously_generated,
+                            )
+                        if section_result and section_result.get("section_text"):
+                            st.session_state.dfh_prog_sections[prog_key] = section_result["section_text"]
+
+                    full_doc = "\n\n".join(
+                        st.session_state.dfh_prog_sections[t]
+                        for t in subsection_titles
+                        if t in st.session_state.dfh_prog_sections
+                    )
+                    st.session_state.dfh_markdown_doc = full_doc
+                    logger.info("   ✅ Progressive finalize complete — %d chars", len(full_doc))
+                    st.success("🎉 Document finalized! View it in the preview panel →")
+
+        st.markdown("</div>", unsafe_allow_html=True)
+        st.markdown("</div>", unsafe_allow_html=True)
+
+    # ═══════════════════════════════════════════════════════════════
+    #  RIGHT PANEL: Preview / Editor — Sequential Progressive Reveal
+    # ═══════════════════════════════════════════════════════════════
+
+    with col_editor:
+        st.markdown('<div class="separator-left">', unsafe_allow_html=True)
+
+        editor_header_col, clear_col, publish_col = st.columns([3, 1, 1])
+
+        with editor_header_col:
+            if st.session_state.dfh_prog_mode:
+                st.header("Preview")
+            else:
+                st.header("Markdown View")
+
+        with clear_col:
+            # ── Clear All Answers button ─────────────────────────────────────────
+            # Resets all answers, gap questions, generated markdown, and progressive
+            # sections for the current document. Identical to what happens automatically
+            # on a document change, so the user can start fresh without switching docs.
+            clear_clicked = st.button(
+                "🗑️ Clear All",
+                help="Clear all answers, gap questions, and the generated document for this document type.",
+                use_container_width=True,
+                disabled=not is_valid_document,
+            )
+            if clear_clicked:
+                logger.info("Clear All clicked")
+                _clear_all_document_state()
+                st.rerun()
+
+        with publish_col:
+            publish_clicked = st.button(
+                "🚀 Publish",
+                disabled=st.session_state.dfh_is_publishing or not st.session_state.dfh_markdown_doc,
+                help="Publish this document to Notion",
+            )
+
+        # ── Notion publish pipeline ──────────────────────────────────────────────
+        if publish_clicked:
+            if not st.session_state.dfh_markdown_doc:
+                st.warning("Nothing to publish yet — generate a document first.")
+            else:
+                st.session_state.dfh_is_publishing = True
+                publish_title = document_name_lookup.get(selected_document, selected_document) or "Untitled Document"
+                logger.info("🚀 Publishing '%s' to Notion", publish_title)
+                with st.spinner("📤 Publishing to Notion — converting Markdown and pushing blocks..."):
+                    publish_result = call_publish_to_notion_endpoint(
+                        markdown_text=st.session_state.dfh_markdown_doc,
+                        document_title=publish_title,
+                        document_type=publish_title if is_valid_document else "",
+                        industry=selected_department if is_valid_department else "General",
+                        version="1.0",
+                        tags=[publish_title] if is_valid_document else [],
+                    )
+                st.session_state.dfh_is_publishing = False
+                if publish_result and publish_result.get("status") == "ok":
+                    page_url = publish_result.get("page_url", "")
+                    blocks_pushed = publish_result.get("blocks_pushed", 0)
+                    st.session_state.dfh_last_published_url = page_url
+                    get_notionpage_urls_from_fastapi.clear()
+                    st.success(
+                        f"✅ Published to Notion — {blocks_pushed} blocks written!  "
+                        f"[Open page]({page_url})"
+                    )
+                    st.balloons()
+                    logger.info("Document published to Notion: %s (%d blocks)", page_url, blocks_pushed)
+                    st.rerun()
+                    st.rerun()
+                else:
+                    logger.error("   ❌ Notion publish failed")
+                    st.error("❌ Notion publish failed — check the API logs for details.")
+
+        # Show link to last published page if available
+        if st.session_state.dfh_last_published_url:
+            st.caption(f"Last published → [{st.session_state.dfh_last_published_url}]({st.session_state.dfh_last_published_url})")
+
+        st.markdown('<div class="scrollable">', unsafe_allow_html=True)
+
+        if st.session_state.dfh_prog_mode:
+            # ═══════════════════════════════════════════════════════
+            #  SEQUENTIAL PROGRESSIVE GENERATION
+            #
+            #  Walks through EVERY schema subsection in order.
+            #  After the user generates one subsection, the result
+            #  appears and the NEXT subsection's generate button is
+            #  revealed. The user cannot skip ahead.
+            # ═══════════════════════════════════════════════════════
+
+            progressive_all_answered = answered_count == total_questions and total_questions > 0
+
+            if not subsection_titles:
+                st.info("📋 No schema subsections found. Select a document with a schema to use progressive mode.")
+            else:
+                # ── Find the first un-generated index (true "next" pointer) ─────────
+                # A first-missing scan is used instead of sum()-as-index because
+                # sum() counts total keys in prog_sections (a dict), but with
+                # duplicate-titled subsections collapsed, sum < len even when some
+                # slots are filled — causing already-done sections to reappear.
+                next_idx = next(
+                    (i for i, k in enumerate(subsection_titles)
+                     if k not in st.session_state.dfh_prog_sections),
+                    len(subsection_titles),
+                )
+                generated_count = next_idx  # always identical to next_idx
+
+                # ── Show completed subsections — each with its own editable area ────
+                for sub_idx in range(next_idx):
+                    prog_key = subsection_titles[sub_idx]
+                    # Strip the dedup prefix "Parent › " for display
+                    display_label = prog_key.split(" › ")[-1]
+                    section_text = st.session_state.dfh_prog_sections[prog_key]
+                    with st.expander(f"✅ {display_label}", expanded=False):
+                        edited = st.text_area(
+                            label=display_label,
+                            value=section_text,
+                            height=220,
+                            label_visibility="collapsed",
+                            key=f"prog_section_editor_{sub_idx}",
+                        )
+                        if edited != section_text:
+                            st.session_state.dfh_prog_sections[prog_key] = edited
+
+                # ── Next section to generate ─────────────────────────────────────────
+                if generated_count < len(subsection_titles):
+                    next_prog_key  = subsection_titles[generated_count]
+                    next_sub_entry = all_subsections[generated_count]
+                    parent_title   = next_sub_entry.get("_parent_title", "Document")
+                    sub_type       = next_sub_entry.get("type", "text")
+                    display_next   = next_prog_key.split(" › ")[-1]
+
+                    st.divider()
+                    type_icon = "📊" if sub_type == "table" else "📝"
+                    st.subheader(f"{type_icon} Next: {display_next}")
+                    st.progress(generated_count / len(subsection_titles))
+                    st.caption(f"Step {generated_count + 1} of {len(subsection_titles)}")
+
+                    if not progressive_all_answered:
+                        st.warning(f"🔒 Answer all questions first ({total_questions - answered_count} remaining)")
+                    else:
+                        if st.button(
+                            f"⚡ Generate: {display_next}",
+                            disabled=st.session_state.dfh_prog_generating,
+                            use_container_width=True,
+                            type="primary",
+                            key=f"prog_gen_{generated_count}",
+                        ):
+                            all_qa = collect_all_answered_qa(all_questions)
+                            # Send exactly ONE subsection to the API — strip internal
+                            # _prog_key so the backend doesn't see it as an unknown field
+                            clean_entry = {k: v for k, v in next_sub_entry.items()
+                                           if not k.startswith("_")}
+                            section_for_api = {
+                                "title": parent_title,
+                                "subsections": [clean_entry],
+                            }
+                            previously_generated = "\n\n".join(
+                                st.session_state.dfh_prog_sections[t]
+                                for t in subsection_titles
+                                if t in st.session_state.dfh_prog_sections
+                            )
+                            logger.info(
+                                "Progressive — key='%s', label='%s', parent='%s', qa=%d",
+                                next_prog_key, display_next, parent_title, len(all_qa),
+                            )
+                            with st.spinner(f"⚡ Generating '{display_next}'..."):
+                                section_result = call_generate_section(
+                                    department=selected_department,
+                                    document_type=selected_document,
+                                    section=section_for_api,
+                                    questions_and_answers=all_qa,
+                                    doc_memory=previously_generated,
+                                )
+                            if section_result and section_result.get("section_text"):
+                                st.session_state.dfh_prog_sections[next_prog_key] = section_result["section_text"]
+                                st.session_state.dfh_prog_current_step = generated_count + 1
+                                logger.info(
+                                    "   ✅ Section '%s' generated (%d chars)",
+                                    display_next, len(section_result["section_text"]),
+                                )
+                                st.rerun()
+                            else:
+                                logger.error("   ❌ Failed to generate section '%s'", display_next)
+                                st.error(f"❌ Failed to generate '{display_next}'. Check API logs.")
+                else:
+                    st.divider()
+                    st.success("🎉 All sections generated! Click 'Finalize Document' in the questions panel.")
+
+                # ── Combined editable preview ─────────────────────────────────────────
+                if st.session_state.dfh_prog_sections:
+                    st.divider()
+                    full_preview = "\n\n".join(
+                        st.session_state.dfh_prog_sections[t]
+                        for t in subsection_titles
+                        if t in st.session_state.dfh_prog_sections
+                    )
+                    # Dynamic key forces remount when new sections arrive so the
+                    # widget always shows the latest content (not the frozen first render).
+                    edited_full = st.text_area(
+                        "Full Document (combined & editable)",
+                        value=full_preview,
+                        height=350,
+                        key=f"prog_combined_editor_{len(st.session_state.dfh_prog_sections)}",
+                    )
+                    st.session_state.dfh_markdown_doc = edited_full
+
+        else:
+            # ── Single-shot mode: simple editor ──
+            st.session_state.dfh_markdown_doc = st.text_area(
+                "Markdown Editor",
+                value=st.session_state.dfh_markdown_doc,
+                height=450,
+                label_visibility="collapsed",
+            )
+
+        if st.session_state.dfh_markdown_doc:
+            with st.expander("📖 Preview rendered document", expanded=False):
+                st.markdown(st.session_state.dfh_markdown_doc)
+
+            st.divider()
+            try:
+                pdf_bytes = generate_pdf_from_markdown(
+                    st.session_state.dfh_markdown_doc,
+                    document_title=selected_document,
+                )
+                st.download_button(
+                    label="⬇ Download PDF",
+                    data=pdf_bytes,
+                    file_name=build_safe_pdf_filename(selected_document),
+                    mime="application/pdf",
+                    use_container_width=True,
+                )
+            except Exception as _pdf_err:
+                logger.warning("PDF generation failed: %s", _pdf_err)
+                st.warning(f"⚠️ Could not generate PDF: {_pdf_err}")
+
+        # Progressive mode: reset button
+        if st.session_state.dfh_prog_mode and st.session_state.dfh_prog_sections:
+            if st.button("🔄 Reset Progressive Session", use_container_width=True):
+                logger.info("🔄 Progressive session reset")
+                st.session_state.dfh_prog_sections = {}
+                st.session_state.dfh_prog_current_step = 0
+                st.session_state.dfh_q_page = 0
+                st.session_state.dfh_markdown_doc = ""
+                st.rerun()
+
+        st.markdown("</div>", unsafe_allow_html=True)
+        st.markdown("</div>", unsafe_allow_html=True)

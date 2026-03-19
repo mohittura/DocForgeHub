@@ -79,7 +79,7 @@ def _init_crl_session_state():
         st.session_state.crl_search_term = ""
 
     if "crl_filters" not in st.session_state:
-        st.session_state.crl_filters = {"industry": "", "doc_type": "", "version": ""}
+        st.session_state.crl_filters = {"industry": "", "doc_type": "", "version": "", "tags": ""}
 
     if "crl_ingest_running" not in st.session_state:
         st.session_state.crl_ingest_running = False
@@ -238,33 +238,45 @@ def _render_chat_tab():
     st.subheader(f"CiteRagLab — {session_title}")
 
     # ── Metadata filter strip ────────────────────────────────────────────────
-    filter_col_industry, filter_col_doctype, filter_col_version, filter_col_clear = st.columns([2, 2, 1, 1])
+    # All four keys match Notion database columns:
+    #   industry → Industry (select)
+    #   doc_type → Type (select)
+    #   version  → Version (rich_text)
+    #   tags     → tags (multi_select) — substring match
+    filter_col_industry, filter_col_doctype, filter_col_version, filter_col_tags, filter_col_clear = st.columns([2, 2, 1, 2, 1])
     with filter_col_industry:
         st.session_state.crl_filters["industry"] = st.text_input(
             "Industry",
-            value=st.session_state.crl_filters["industry"],
+            value=st.session_state.crl_filters.get("industry", ""),
             placeholder="Industry (e.g. Fintech)",
             key="crl_filter_industry",
         )
     with filter_col_doctype:
         st.session_state.crl_filters["doc_type"] = st.text_input(
             "Doc type",
-            value=st.session_state.crl_filters["doc_type"],
+            value=st.session_state.crl_filters.get("doc_type", ""),
             placeholder="Doc type (e.g. Policy)",
             key="crl_filter_doc_type",
         )
     with filter_col_version:
         st.session_state.crl_filters["version"] = st.text_input(
             "Version",
-            value=st.session_state.crl_filters["version"],
+            value=st.session_state.crl_filters.get("version", ""),
             placeholder="Version",
             key="crl_filter_version",
+        )
+    with filter_col_tags:
+        st.session_state.crl_filters["tags"] = st.text_input(
+            "Tags",
+            value=st.session_state.crl_filters.get("tags", ""),
+            placeholder="Tag (e.g. HR)",
+            key="crl_filter_tags",
         )
     with filter_col_clear:
         st.write("")   # vertical alignment spacer
         if st.button("✕ Clear filters", use_container_width=True, key="crl_clear_filters_button"):
             logger.info("Filters cleared")
-            st.session_state.crl_filters = {"industry": "", "doc_type": "", "version": ""}
+            st.session_state.crl_filters = {"industry": "", "doc_type": "", "version": "", "tags": ""}
             st.rerun()
 
     st.divider()

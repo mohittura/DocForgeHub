@@ -63,8 +63,12 @@ def _get_client() -> Client:
         api_key = os.getenv("NOTION_API_KEY")
         if not api_key:
             raise ValueError("NOTION_API_KEY is not set in environment / .env")
-        _notion_client = Client(auth=api_key)
-        logger.info("✅ Notion client initialised")
+        # Pin to API version 2022-06-28 — the stable version that retains
+        # GET/POST /databases/{id}/query.  The default in notion-client v3
+        # is 2025-09-03 which moved database querying to a different
+        # /data_sources endpoint that requires extra setup.
+        _notion_client = Client(auth=api_key, notion_version="2022-06-28")
+        logger.info("✅ Notion client initialised (api_version=2022-06-28)")
     return _notion_client
 
 
@@ -345,43 +349,100 @@ def get_all_pages(database_id: Optional[str] = None) -> list[dict]:
     Handles database pagination (100 rows per request) automatically.
     All API calls are rate-limited via _notion_call().
     """
-    db_id = (database_id or os.getenv("NOTION_ROOT_PAGE_ID", "")).strip()
-    if not db_id:
+    raw_id = (database_id or os.getenv("NOTION_ROOT_PAGE_ID", "")).strip()
+    if not raw_id:
         raise ValueError(
             "database_id not supplied and NOTION_ROOT_PAGE_ID is not set in .env"
         )
 
-    # Notion accepts IDs with or without dashes — normalise to no-dashes
-    db_id = db_id.replace("-", "")
+    # Normalise to the dashed UUID format the Notion SDK expects.
+    # Whether the user supplies with or without dashes, we produce:
+    #   xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+    clean = raw_id.replace("-", "")
+    if len(clean) == 32:
+        db_id = f"{clean[0:8]}-{clean[8:12]}-{clean[12:16]}-{clean[16:20]}-{clean[20:32]}"
+    else:
+        # Unexpected format — use as-is and let Notion return the error
+        db_id = raw_id
+        logger.warning(
+            "   ⚠️  get_all_pages: unexpected ID format '%s' — using as-is", raw_id
+        )
 
     logger.info(
         "🔍 get_all_pages — querying Notion database id='%s'", db_id
     )
 
-    client   = _get_client()
+    client = _get_client()
+
+    # ── Verify the integration can see the database ───────────────────────────
+    # A common failure mode is that the Notion integration hasn't been
+    # explicitly shared on the database page. We do a retrieve() call first
+    # so the error message is clear rather than silently returning 0 rows.
+    try:
+        db_meta = _notion_call(client.databases.retrieve, database_id=db_id)
+        logger.info(
+            "   ✅ Database reachable — title=%r  object=%s",
+            db_meta.get("title", [{}])[0].get("plain_text", "(no title)")
+            if db_meta.get("title") else "(no title)",
+            db_meta.get("object", "?"),
+        )
+    except Exception as err:
+        logger.error(
+            "   ❌ Cannot access database '%s': %s\n"
+            "   → Make sure the Notion integration has been shared on this database:\n"
+            "     1. Open the database in Notion\n"
+            "     2. Click '...' → Connections → Add the integration\n"
+            "     3. Re-run ingestion",
+            db_id, err,
+        )
+        raise RuntimeError(
+            f"Notion integration cannot access database '{db_id}'. "
+            f"Share the integration on the database in Notion first. Error: {err}"
+        )
+
     pages    = []
     cursor   = None
     has_more = True
+    page_num = 0
 
     while has_more:
-        query_kwargs: dict = {"database_id": db_id, "page_size": 100}
+        # With API version 2022-06-28 the database query endpoint is
+        # POST /v1/databases/{id}/query — called via client.request() since
+        # notion-client v3 removed the databases.query() convenience method.
+        body: dict = {"page_size": 100}
         if cursor:
-            query_kwargs["start_cursor"] = cursor
+            body["start_cursor"] = cursor
 
         try:
-            resp = _notion_call(client.databases.query, **query_kwargs)
+            resp = _notion_call(
+                client.request,
+                path=f"databases/{db_id}/query",
+                method="POST",
+                body=body,
+            )
         except Exception as err:
             logger.error(
-                "   ❌ databases.query failed for db_id='%s': %s", db_id, err
+                "   ❌ databases query failed (page %d) for db_id='%s': %s",
+                page_num + 1, db_id, err,
             )
             break
 
-        for row in resp.get("results", []):
+        results = resp.get("results", [])
+        page_num += 1
+        logger.info(
+            "   📋 Query page %d — %d row(s) returned  has_more=%s",
+            page_num, len(results), resp.get("has_more", False),
+        )
+
+        for row in results:
             if row.get("object") != "page":
+                logger.debug(
+                    "      Skipping non-page object: %s", row.get("object")
+                )
                 continue
 
-            page_id = row["id"]
-            props   = row.get("properties", {})
+            row_page_id = row["id"]
+            props       = row.get("properties", {})
 
             title    = _prop_title(props)
             doc_type = _prop_select(props, "Type")
@@ -389,12 +450,12 @@ def get_all_pages(database_id: Optional[str] = None) -> list[dict]:
             version  = _prop_rich_text(props, "Version")
             tags     = _prop_multi_select(props, "tags")
 
-            # Fallback title from child_page metadata if title property is empty
             if not title:
                 title = row.get("child_page", {}).get("title", "(untitled)")
 
             logger.info(
-                "   📄 Row: title='%s'  type=%s  industry=%s  version=%s  tags=%s",
+                "   📄 Row %d: title='%s'  type=%s  industry=%s  version=%s  tags=%s",
+                len(pages) + 1,
                 title,
                 doc_type or "(none)",
                 industry or "(none)",
@@ -403,7 +464,7 @@ def get_all_pages(database_id: Optional[str] = None) -> list[dict]:
             )
 
             pages.append({
-                "page_id":  page_id,
+                "page_id":  row_page_id,
                 "title":    title    or "(untitled)",
                 "doc_type": doc_type or "Document",
                 "industry": industry or "General",

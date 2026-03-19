@@ -3,59 +3,88 @@ rag/retrieval/retriever_rag.py
 
 Retrieval engine for CiteRagLab.
 
-Responsibilities:
-  1. Embed a user query using text-embedding-3-large.
-  2. Run a vector search against the Milvus collection with optional
-     metadata filters (industry, doc_type, version, tags).
-  3. Return ranked chunk dicts ready for the RAG pipeline.
+Responsibilities
+────────────────
+  1. Embed the user query using Azure OpenAI text-embedding-3-large (3072-dim).
+     Uses identical Azure config as embedder_rag.py so chunks and queries
+     live in the same vector space — cosine similarity scores are valid.
+  2. Pass both the dense vector AND the raw query text to hybrid_search_chunks
+     in milvus_client_rag, which runs HNSW + BM25 fused by RRFRanker.
+  3. Return ranked chunk dicts to the pipeline.
+
+Azure env variables required  (must match embedder_rag.py exactly)
+───────────────────────────────────────────────────────────────────
+    AZURE_OPENAI_EMB_KEY   — Azure OpenAI API key for embeddings
+    AZURE_EMB_ENDPOINT     — Azure OpenAI endpoint
+    AZURE_EMB_API_VERSION  — API version (2024-12-01-preview)
+    AZURE_EMB_DEPLOYMENT   — deployment name (text-embedding-3-large)
 
 Each returned chunk dict contains:
     chunk_text, doc_id, title, section,
-    industry, doc_type, version, tags,   ← tags is list[str]
+    industry, doc_type, version, tags (list[str]),
     page_id, block_range, score
 """
 
 import os
 import logging
 from typing import Optional
-from openai import OpenAI
+from openai import AzureOpenAI
 from dotenv import load_dotenv
 
 load_dotenv()
 
 logger = logging.getLogger("rag.retrieval.retriever_rag")
 
-EMBED_MODEL = "text-embedding-3-large"
+# ── Azure deployment config — must match embedder_rag.py exactly ─────────────
+EMBED_MODEL = os.getenv("AZURE_EMB_DEPLOYMENT", "text-embedding-3-large")
+EMBED_DIM   = 3072   # text-embedding-3-large output dimension
 
-# ── Lazy OpenAI client ────────────────────────────────────────────────────────
-_openai_client: Optional[OpenAI] = None
+# ── Lazy Azure OpenAI client ──────────────────────────────────────────────────
+_azure_client: Optional[AzureOpenAI] = None
 
 
-def _get_openai_client() -> OpenAI:
-    global _openai_client
-    if _openai_client is None:
-        api_key = os.getenv("AZURE_OPENAI_EMB_KEY")
+def _get_azure_client() -> AzureOpenAI:
+    global _azure_client
+    if _azure_client is None:
+        api_key     = os.getenv("AZURE_OPENAI_EMB_KEY")
+        endpoint    = os.getenv("AZURE_EMB_ENDPOINT")
+        api_version = os.getenv("AZURE_EMB_API_VERSION", "2024-12-01-preview")
+
         if not api_key:
             raise ValueError("AZURE_OPENAI_EMB_KEY is not set in environment / .env")
-        _openai_client = OpenAI(api_key=api_key)
-        logger.info("✅ OpenAI client initialised (model=%s)", EMBED_MODEL)
-    return _openai_client
+        if not endpoint:
+            raise ValueError("AZURE_EMB_ENDPOINT is not set in environment / .env")
+
+        _azure_client = AzureOpenAI(
+            api_key=api_key,
+            azure_endpoint=endpoint,
+            api_version=api_version,
+        )
+        logger.info(
+            "✅ Azure OpenAI retriever client initialised "
+            "(deployment=%s, api_version=%s)",
+            EMBED_MODEL, api_version,
+        )
+    return _azure_client
 
 
 def embed_text(text: str) -> list[float]:
     """
-    Embed a single string using OpenAI text-embedding-3-small.
-    Newlines are replaced with spaces per OpenAI's recommendation.
+    Embed a single string using Azure OpenAI text-embedding-3-large.
+    Newlines replaced with spaces per OpenAI recommendation.
+    Returns a 3072-dimensional float vector.
     """
-    client = _get_openai_client()
-    logger.info("🔢 Embedding query (%d chars)…", len(text))
-
-    response = client.embeddings.create(
+    client = _get_azure_client()
+    logger.info(
+        "🔢 embed_text — %d chars, deployment='%s'",
+        len(text), EMBED_MODEL,
+    )
+    response  = client.embeddings.create(
         model=EMBED_MODEL,
         input=text.replace("\n", " "),
     )
     embedding = response.data[0].embedding
-    logger.info("   ✅ Embedding produced — dim=%d", len(embedding))
+    logger.info("   ✅ Query embedding produced — dim=%d", len(embedding))
     return embedding
 
 
@@ -65,22 +94,18 @@ def retrieve(
     filters: Optional[dict] = None,
 ) -> list[dict]:
     """
-    Main retrieval function.
+    Main retrieval function — hybrid dense + sparse search with RRF fusion.
 
     Steps:
-      1. Embed the query via OpenAI text-embedding-3-small.
-      2. Search the Milvus collection with optional metadata filters.
-      3. Return top_k ranked chunk dicts.
+      1. Embed the query with Azure OpenAI text-embedding-3-large.
+      2. Call hybrid_search_chunks with both the dense vector and the raw
+         query text — Milvus runs HNSW + BM25 and fuses with RRFRanker.
+      3. Return top_k fused-and-ranked chunk dicts.
 
     filters supported keys: industry, doc_type, version, tags
-    (validated/normalised by filters_rag.build_filters before calling here)
-
-    Each returned dict:
-        chunk_text, doc_id, title, section,
-        industry, doc_type, version, tags (list[str]),
-        page_id, block_range, score
+    (pre-validated by filters_rag.build_filters)
     """
-    from rag.retrieval.milvus_client_rag import search_chunks
+    from rag.retrieval.milvus_client_rag import hybrid_search_chunks
 
     logger.info(
         "📥 retrieve — query='%s…'  top_k=%d  filters=%s",
@@ -88,14 +113,16 @@ def retrieve(
     )
 
     query_embedding = embed_text(query)
-    chunks = search_chunks(
+
+    chunks = hybrid_search_chunks(
         query_embedding=query_embedding,
+        query_text=query,
         top_k=top_k,
         filters=filters,
     )
 
     logger.info(
-        "   ✅ retrieve — %d chunks returned  avg_score=%.4f",
+        "   ✅ retrieve — %d chunks  avg_score=%.4f",
         len(chunks),
         sum(c.get("score", 0) for c in chunks) / max(len(chunks), 1),
     )
@@ -104,21 +131,11 @@ def retrieve(
 
 def format_context_for_prompt(chunks: list[dict]) -> str:
     """
-    Format retrieved chunks into a numbered context block ready to be
-    injected into the LLM system prompt.
-
-    Each entry is prefixed with a [N] citation number that the LLM uses
-    inline (e.g. "…as stated in the policy [1]…").
+    Format retrieved chunks into a numbered context block for the LLM.
 
     Format per chunk:
-        [N] <title> → <section>  (<doc_type>  v<version>  tags: <tags>)
+        [N] <title> → <section>  (<doc_type>  v<version>  tags: <tags>  score: <score>)
         <chunk_text>
-
-    Example:
-        [1] Offer Letter Templates → Position Details (Offer Letter Templates  v1.0  tags: HR)
-        Field | Details
-        Job Title | Senior AI Systems Engineer – Defense Intelligence Platforms
-        ...
     """
     if not chunks:
         logger.warning("   ⚠️  format_context_for_prompt: no chunks — returning fallback")
@@ -133,9 +150,8 @@ def format_context_for_prompt(chunks: list[dict]) -> str:
         tags     = chunk.get("tags",     [])
         score    = chunk.get("score",    0)
 
-        # Build citation header line
-        location    = f"{title} → {section}" if section and section != title else title
-        meta_parts  = []
+        location   = f"{title} → {section}" if section and section != title else title
+        meta_parts = []
         if doc_type:
             meta_parts.append(doc_type)
         if version:
@@ -143,11 +159,10 @@ def format_context_for_prompt(chunks: list[dict]) -> str:
         if tags:
             meta_parts.append(f"tags: {', '.join(tags)}")
         meta_parts.append(f"score: {score}")
-        meta_str = "  ".join(meta_parts)
 
-        lines.append(f"[{i}] {location}  ({meta_str})")
+        lines.append(f"[{i}] {location}  ({' '.join(meta_parts)})")
         lines.append(chunk.get("chunk_text", ""))
-        lines.append("")   # blank separator between chunks
+        lines.append("")
 
     logger.info(
         "   ✅ format_context_for_prompt — %d chunks → %d chars",

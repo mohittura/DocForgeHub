@@ -7,35 +7,38 @@ Full flow
 ─────────
     User Query
       ↓
-    Adaptive Router          classify mode (QA / COMPARE / SUMMARIZE / SEARCH)
+    Adaptive Router (LangGraph)   — LLM classifies mode: QA / COMPARE / SUMMARIZE / SEARCH
+      ↓                             Falls back to keyword heuristics if LLM unavailable
+    Corrective RAG (LangGraph)    — retrieve → score → rewrite if weak → re-retrieve
+      ↓                             Each retrieve() runs HNSW + BM25 + RRF in Milvus
+    rerank()                       — top_k cap on already-RRF-ranked list (pass-through)
       ↓
-    Corrective RAG           retrieve → score → rewrite if weak → re-retrieve
+    Context Assembly               — numbered [N] citation format (includes tags)
       ↓
-    Cross-Encoder Rerank     pool (4 × top_k) → final top_k
+    LLM Answer (AzureChatOpenAI)  — grounded answer with inline [N] citations
       ↓
-    Context Assembly         numbered [N] citation format (includes tags)
-      ↓
-    LLM (gpt-4o-mini)        grounded answer with inline [N] citations
-      ↓
-    Response dict            answer + citations + metadata
+    Response dict                  — answer + citations + metadata
 
-Filters supported (matching DocForge Hub Library Notion database columns)
-─────────────────────────────────────────────────────────────────────────
-    industry  — Industry select column   (exact match)
-    doc_type  — Type select column       (exact match)
-    version   — Version rich_text column (exact match)
-    tags      — tags multi_select column (substring match on comma-joined string)
+Azure env variables required
+─────────────────────────────
+    AZURE_OPENAI_LLM_KEY         — Azure OpenAI API key for the LLM
+    AZURE_LLM_ENDPOINT           — Azure OpenAI endpoint
+    AZURE_LLM_API_VERSION        — API version (default: 2024-12-01-preview)
+    AZURE_LLM_DEPLOYMENT_41_MINI — deployment name (gpt-4.1-mini)
 """
 
 import os
 import logging
-from openai import OpenAI
+from typing import Optional
 from dotenv import load_dotenv
+
+from langchain_openai import AzureChatOpenAI
+from langchain_core.messages import SystemMessage, HumanMessage
 
 from rag.pipeline.adaptive_router_rag import classify_query, get_retrieval_params
 from rag.pipeline.corrective_rag_rag  import corrective_retrieve, avg_score
 from rag.pipeline.reranker_rag        import rerank
-from rag.pipeline.prompts_rag         import build_rag_messages
+from rag.pipeline.prompts_rag         import SYSTEM_PROMPT_BY_MODE, RAG_SYSTEM_PROMPT
 from rag.retrieval.retriever_rag      import retrieve, format_context_for_prompt
 from rag.retrieval.filters_rag        import build_filters
 
@@ -43,20 +46,26 @@ load_dotenv()
 
 logger = logging.getLogger("rag.pipeline.pipeline_rag")
 
-LLM_MODEL = "gpt-4o-mini"
+# ── Lazy Azure LLM client ─────────────────────────────────────────────────────
+_llm: Optional[AzureChatOpenAI] = None
 
-_openai_client: OpenAI | None = None
 
-
-def _get_client() -> OpenAI:
-    global _openai_client
-    if _openai_client is None:
-        api_key = os.getenv("OPENAI_API_KEY")
-        if not api_key:
-            raise ValueError("OPENAI_API_KEY not set in environment / .env")
-        _openai_client = OpenAI(api_key=api_key)
-        logger.info("✅ Pipeline OpenAI client initialised (model=%s)", LLM_MODEL)
-    return _openai_client
+def _get_llm() -> AzureChatOpenAI:
+    global _llm
+    if _llm is None:
+        _llm = AzureChatOpenAI(
+            azure_deployment=os.getenv("AZURE_LLM_DEPLOYMENT_41_MINI", "gpt-4.1-mini"),
+            azure_endpoint=os.getenv("AZURE_LLM_ENDPOINT", ""),
+            api_key=os.getenv("AZURE_OPENAI_LLM_KEY", ""),
+            api_version=os.getenv("AZURE_LLM_API_VERSION", "2024-12-01-preview"),
+            temperature=0.2,
+            max_tokens=1024,
+        )
+        logger.info(
+            "✅ Pipeline AzureChatOpenAI initialised (deployment=%s)",
+            os.getenv("AZURE_LLM_DEPLOYMENT_41_MINI", "gpt-4.1-mini"),
+        )
+    return _llm
 
 
 def run_rag_pipeline(
@@ -69,7 +78,7 @@ def run_rag_pipeline(
 
     Parameters
     ──────────
-    query           : the raw user query string
+    query           : raw user query string
     session_history : prior chat turns [{role, content}] from Redis
     raw_filters     : optional filter dict — supported keys:
                         industry, doc_type, version, tags
@@ -78,37 +87,36 @@ def run_rag_pipeline(
     ───────
     {
         answer    : str         — LLM answer with inline [N] citations
-        citations : list[dict]  — one dict per retrieved chunk:
-                                  {index, title, section, doc_type,
+        citations : list[dict]  — {index, title, section, doc_type,
                                    industry, version, tags, page_id, score}
-        chunks    : list[dict]  — raw retrieved chunks (used for Redis caching)
+        chunks    : list[dict]  — raw retrieved chunks (for Redis caching)
         mode      : str         — QA | COMPARE | SUMMARIZE | SEARCH
-        rewritten : str         — query used for retrieval (may differ from input)
-        avg_score : float       — mean cosine similarity of final chunks
+        rewritten : str         — query used for retrieval
+        avg_score : float       — mean RRF score of final chunks
     }
     """
     logger.info(
         "🚀 run_rag_pipeline — query='%s…'  filters=%s",
-        query[:60],
-        raw_filters or {},
+        query[:60], raw_filters or {},
     )
 
-    # ── 1. Validate and clean filters ────────────────────────────────────────
+    # ── 1. Validate filters ───────────────────────────────────────────────────
     filters = build_filters(raw_filters or {})
-    logger.info("   🔧 Filters after validation: %s", filters or "(none)")
+    logger.info("   🔧 Filters: %s", filters or "(none)")
 
-    # ── 2. Classify query mode ────────────────────────────────────────────────
+    # ── 2. Classify query mode (LangGraph router) ─────────────────────────────
     mode     = classify_query(query)
     params   = get_retrieval_params(mode)
     top_k    = params["top_k"]
     llm_mode = params["llm_mode"]
     logger.info("   🗂️  Mode=%s  top_k=%d  llm_mode=%s", mode, top_k, llm_mode)
 
-    # ── 3. Corrective retrieval (fetch 4 × top_k pool for the reranker) ──────
-    pool_size = top_k * 4
+    # ── 3. Corrective retrieval (LangGraph graph) ─────────────────────────────
+    # retrieve() runs HNSW + BM25 + RRFRanker inside Milvus — already fused.
+    # pool_size = 2 × top_k gives corrective RAG enough candidates.
+    pool_size = top_k * 2
 
     def _retrieve_fn(q: str, k: int, f: dict | None) -> list[dict]:
-        """Inner wrapper — corrective_retrieve calls this with its own args."""
         return retrieve(q, top_k=pool_size, filters=f)
 
     chunks, rewritten_query = corrective_retrieve(
@@ -118,54 +126,55 @@ def run_rag_pipeline(
         filters=filters or None,
     )
     logger.info(
-        "   📥 Corrective retrieval done — %d chunks in pool  rewritten=%s",
-        len(chunks),
-        rewritten_query != query,
+        "   📥 Corrective retrieval done — %d chunks  rewritten=%s",
+        len(chunks), rewritten_query != query,
     )
 
-    # ── 4. Cross-encoder rerank: pool → final top_k ───────────────────────────
+    # ── 4. Enforce top_k cap (RRF already ranked; rerank is a pass-through) ───
     chunks      = rerank(query=rewritten_query, chunks=chunks, top_k=top_k)
     final_score = avg_score(chunks)
     logger.info(
-        "   📐 After rerank — %d chunks kept  avg_score=%.4f",
+        "   📐 After top_k cap — %d chunks  avg_score=%.4f",
         len(chunks), final_score,
     )
 
-    # ── 5. Build prompt context ───────────────────────────────────────────────
+    # ── 5. Build prompt context ────────────────────────────────────────────────
     context = format_context_for_prompt(chunks)
     logger.info("   📝 Context assembled — %d chars", len(context))
 
-    # ── 6. LLM call ───────────────────────────────────────────────────────────
-    messages = build_rag_messages(
-        query=rewritten_query,
-        context=context,
-        chat_history=session_history,
-        mode=llm_mode,
-    )
+    # ── 6. LLM answer (AzureChatOpenAI via LangChain) ────────────────────────
+    system_prompt = SYSTEM_PROMPT_BY_MODE.get(llm_mode, RAG_SYSTEM_PROMPT)
+    user_content  = f"Context:\n{context}\n\nQuestion: {rewritten_query}"
+
+    # Compose messages: system + optional history (last 6 turns) + user
+    lc_messages = [SystemMessage(content=system_prompt)]
+    if session_history:
+        for turn in session_history[-6:]:
+            role    = turn.get("role", "user")
+            content = turn.get("content", "")
+            if role == "user":
+                lc_messages.append(HumanMessage(content=content))
+            else:
+                from langchain_core.messages import AIMessage
+                lc_messages.append(AIMessage(content=content))
+    lc_messages.append(HumanMessage(content=user_content))
+
     logger.info(
-        "   🤖 Calling LLM '%s' — %d messages in prompt",
-        LLM_MODEL, len(messages),
+        "   🤖 Calling AzureChatOpenAI (deployment=%s) — %d messages",
+        os.getenv("AZURE_LLM_DEPLOYMENT_41_MINI", "gpt-4.1-mini"),
+        len(lc_messages),
     )
 
     answer = ""
     try:
-        client = _get_client()
-        resp   = client.chat.completions.create(
-            model=LLM_MODEL,
-            messages=messages,
-            max_tokens=1024,
-            temperature=0.2,
-        )
-        answer = resp.choices[0].message.content.strip()
+        response = _get_llm().invoke(lc_messages)
+        answer   = response.content.strip()
         logger.info("   ✅ LLM response received — %d chars", len(answer))
     except Exception as err:
         logger.error("   ❌ LLM call failed: %s", err)
         answer = f"⚠️ I encountered an error generating a response: {err}"
 
     # ── 7. Build citation list ─────────────────────────────────────────────────
-    # tags comes back from search_chunks as list[str] — pass it through as-is
-    # so the UI can display it and the LLM prompt already contains it via
-    # format_context_for_prompt().
     citations = []
     for i, chunk in enumerate(chunks, start=1):
         citations.append({
@@ -175,7 +184,7 @@ def run_rag_pipeline(
             "doc_type": chunk.get("doc_type", ""),
             "industry": chunk.get("industry", ""),
             "version":  chunk.get("version",  ""),
-            "tags":     chunk.get("tags",     []),   # list[str] from multi_select
+            "tags":     chunk.get("tags",     []),
             "page_id":  chunk.get("page_id",  ""),
             "score":    chunk.get("score",    0.0),
         })

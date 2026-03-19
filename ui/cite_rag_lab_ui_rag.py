@@ -269,53 +269,57 @@ def _render_chat_tab():
 
     st.divider()
 
-    # ── Message history rendered with st.chat_message ─────────────────────────
+    # ── Message history in a fixed-height scrollable container ───────────────
+    # Keeping history inside a bounded container means the chat input below it
+    # never scrolls off screen — it stays static at the bottom at all times.
     all_messages = _get_active_messages()
 
-    if not all_messages:
-        st.info("🤖 Citter is ready — ask anything about your document library.")
-    else:
-        for message in all_messages:
-            role          = message["role"]
-            content       = message["content"]
-            citations     = message.get("citations", [])
-            pipeline_meta = message.get("pipeline_meta", {})
+    messages_container = st.container(height=460, border=False)
+    with messages_container:
+        if not all_messages:
+            st.info("🤖 Citter is ready — ask anything about your document library.")
+        else:
+            for message in all_messages:
+                role          = message["role"]
+                content       = message["content"]
+                citations     = message.get("citations", [])
+                pipeline_meta = message.get("pipeline_meta", {})
 
-            avatar = "🤖" if role == "assistant" else "👤"
-            with st.chat_message(role, avatar=avatar):
-                st.markdown(content)
+                avatar = "🤖" if role == "assistant" else "👤"
+                with st.chat_message(role, avatar=avatar):
+                    st.markdown(content)
 
-                # Citations shown as a collapsed expander under bot messages
-                if citations and role == "assistant":
-                    with st.expander(f"📚 {len(citations)} source(s)", expanded=False):
-                        for citation in citations:
-                            title    = citation.get("title", "")
-                            section  = citation.get("section", "")
-                            doc_type = citation.get("doc_type", "")
-                            score    = citation.get("score", 0)
-                            index    = citation.get("index", "")
-                            location = f"{title} → {section}" if section else title
-                            st.markdown(
-                                f"**[{index}]** {location}  `{doc_type}`  score: `{score}`"
-                            )
+                    # Citations shown as a collapsed expander under bot messages
+                    if citations and role == "assistant":
+                        with st.expander(f"📚 {len(citations)} source(s)", expanded=False):
+                            for citation in citations:
+                                title    = citation.get("title", "")
+                                section  = citation.get("section", "")
+                                doc_type = citation.get("doc_type", "")
+                                score    = citation.get("score", 0)
+                                index    = citation.get("index", "")
+                                location = f"{title} → {section}" if section else title
+                                st.markdown(
+                                    f"**[{index}]** {location}  `{doc_type}`  score: `{score}`"
+                                )
 
-                # Pipeline metadata shown as a caption under bot messages
-                if pipeline_meta and role == "assistant":
-                    mode      = pipeline_meta.get("mode", "")
-                    avg_score = pipeline_meta.get("avg_score", "")
-                    rewritten = pipeline_meta.get("rewritten", "")
-                    meta_parts = []
-                    if mode:
-                        meta_parts.append(f"mode: {mode}")
-                    if avg_score:
-                        meta_parts.append(f"score: {avg_score}")
-                    if rewritten:
-                        short_rewrite = (rewritten[:40] + "…") if len(rewritten) > 40 else rewritten
-                        meta_parts.append(f'rewritten: "{short_rewrite}"')
-                    if meta_parts:
-                        st.caption("  ·  ".join(meta_parts))
+                    # Pipeline metadata shown as a caption under bot messages
+                    if pipeline_meta and role == "assistant":
+                        mode      = pipeline_meta.get("mode", "")
+                        avg_score = pipeline_meta.get("avg_score", "")
+                        rewritten = pipeline_meta.get("rewritten", "")
+                        meta_parts = []
+                        if mode:
+                            meta_parts.append(f"mode: {mode}")
+                        if avg_score:
+                            meta_parts.append(f"score: {avg_score}")
+                        if rewritten:
+                            short_rewrite = (rewritten[:40] + "…") if len(rewritten) > 40 else rewritten
+                            meta_parts.append(f'rewritten: "{short_rewrite}"')
+                        if meta_parts:
+                            st.caption("  ·  ".join(meta_parts))
 
-    # ── Chat input — st.chat_input is pinned to the bottom automatically ──────
+    # ── Chat input — outside the scrollable container, always visible ─────────
     user_input = st.chat_input("Ask Citter anything…", key="crl_chat_input_box")
 
     if user_input and user_input.strip():

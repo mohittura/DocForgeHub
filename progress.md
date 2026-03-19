@@ -61,3 +61,5 @@ bug fixed : combined markdown editor was frozen after one section generation, th
 
 
 started the citeraglab project and made the ui plus api helpers
+made the rag api endpoints and files(no content) for the api helpers of the rag pipeline, evaluation, retrieval, ingestion
+BugFix(ui): made the send message section fixed at the bottom and the chats scrollable

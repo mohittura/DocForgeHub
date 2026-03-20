@@ -913,21 +913,24 @@ def render_doc_forge_ui():
                         document_title=publish_title,
                         document_type=publish_title if is_valid_document else "",
                         industry=selected_department if is_valid_department else "General",
-                        version="1.0",
                         tags=[publish_title] if is_valid_document else [],
                     )
                 st.session_state.dfh_is_publishing = False
                 if publish_result and publish_result.get("status") == "ok":
                     page_url = publish_result.get("page_url", "")
                     blocks_pushed = publish_result.get("blocks_pushed", 0)
+                    assigned_version = publish_result.get("version", "1.0")
                     st.session_state.dfh_last_published_url = page_url
                     get_notionpage_urls_from_fastapi.clear()
                     st.success(
-                        f"✅ Published to Notion — {blocks_pushed} blocks written!  "
+                        f"✅ Published to Notion as **v{assigned_version}** — {blocks_pushed} blocks written!  "
                         f"[Open page]({page_url})"
                     )
                     st.balloons()
-                    logger.info("Document published to Notion: %s (%d blocks)", page_url, blocks_pushed)
+                    logger.info(
+                        "Document published to Notion: %s (v%s, %d blocks)",
+                        page_url, assigned_version, blocks_pushed,
+                    )
                     st.rerun()
                     st.rerun()
                 else:

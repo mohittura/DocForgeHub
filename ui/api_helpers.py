@@ -4,10 +4,6 @@ FastAPI endpoint helper functions for the DocForge Hub Streamlit UI.
 These functions wrap HTTP calls to the FastAPI backend. They handle
 request construction, error handling, and logging. They do NOT depend
 on Streamlit at all and can be reused by any Python client.
-
-Caching note: departments, document-types, and notion pages are now cached
-server-side in Redis (see api/redis_cache.py). There is no need for
-@st.cache_data on these helpers — the FastAPI layer handles TTLs.
 """
 
 import logging
@@ -226,11 +222,15 @@ def call_publish_to_notion_endpoint(
     document_title: str,
     document_type: str = "",
     industry: str = "General",
-    version: str = "1.0",
     tags: list | None = None,
     base_url: str = FASTAPI_URL,
 ) -> dict | None:
-    """POST /publish-to-notion — store document as a row in the Notion database."""
+    """POST /publish-to-notion — store document as a row in the Notion database.
+
+    Version is auto-resolved server-side: if a row with the same title already
+    exists in the Notion database, the new row is published as v(N+1).0 without
+    overwriting the old one.
+    """
     logger.info(
         "Calling POST /publish-to-notion — title=%r, type=%r, length=%d chars",
         document_title, document_type, len(markdown_text),
@@ -243,7 +243,6 @@ def call_publish_to_notion_endpoint(
                 "document_title": document_title,
                 "document_type": document_type,
                 "industry": industry,
-                "version": version,
                 "tags": tags or [],
             },
             timeout=120,
@@ -251,9 +250,10 @@ def call_publish_to_notion_endpoint(
         response.raise_for_status()
         result = response.json()
         logger.info(
-            "   -> published — page_id=%s, blocks=%d, url=%s",
+            "   -> published — page_id=%s, blocks=%d, version=%s, url=%s",
             result.get("page_id"),
             result.get("blocks_pushed", 0),
+            result.get("version", "?"),
             result.get("page_url"),
         )
         return result

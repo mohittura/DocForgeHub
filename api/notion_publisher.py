@@ -566,6 +566,102 @@ def publish_markdown_to_notion(
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
+#  Version resolution
+# ═══════════════════════════════════════════════════════════════════════════════
+
+def get_latest_version_for_title(
+    document_title: str,
+    database_id: str,
+    api_key: str,
+) -> float | None:
+    """
+    Query the Notion database for all rows whose Title matches `document_title`
+    and return the highest version number found as a float, or None if no
+    matching rows exist.
+
+    Uses the direct Notion REST API (same pattern as GET /get_all_urls) to
+    bypass notion-client version incompatibilities.
+
+    Version values stored in the database are expected to look like "1.0",
+    "2.0", "3.0" etc. Any row whose Version field cannot be parsed as a float
+    is silently skipped.
+    """
+    import requests as _requests
+
+    def to_dashed(s: str) -> str:
+        s = s.replace("-", "")
+        return f"{s[0:8]}-{s[8:12]}-{s[12:16]}-{s[16:20]}-{s[20:32]}" if len(s) == 32 else s
+
+    clean_db_id = to_dashed(database_id.replace("-", ""))
+    headers = {
+        "Authorization": f"Bearer {api_key}",
+        "Notion-Version": "2022-06-28",
+        "Content-Type": "application/json",
+    }
+
+    # Filter: Title property equals document_title (exact match)
+    body: dict = {
+        "filter": {
+            "property": "Title",
+            "title": {"equals": document_title.strip()},
+        },
+        "page_size": 100,
+    }
+
+    max_version: float | None = None
+    has_more = True
+    next_cursor = None
+
+    while has_more:
+        if next_cursor:
+            body["start_cursor"] = next_cursor
+
+        try:
+            resp = _requests.post(
+                f"https://api.notion.com/v1/databases/{clean_db_id}/query",
+                headers=headers,
+                json=body,
+                timeout=15,
+            )
+            resp.raise_for_status()
+            data = resp.json()
+        except Exception as err:
+            logger.warning("Version lookup failed (will default to 1.0): %s", err)
+            return None
+
+        for page in data.get("results", []):
+            props = page.get("properties", {})
+            version_text = "".join(
+                t.get("plain_text", "")
+                for t in props.get("Version", {}).get("rich_text", [])
+            ).strip()
+            try:
+                v = float(version_text)
+                if max_version is None or v > max_version:
+                    max_version = v
+            except (ValueError, TypeError):
+                pass  # skip rows with non-numeric version
+
+        has_more = data.get("has_more", False)
+        next_cursor = data.get("next_cursor")
+
+    return max_version
+
+
+def _next_version(latest: float | None) -> str:
+    """
+    Given the highest version found (or None), return the next version string.
+
+    None  -> "1.0"   (first publish)
+    1.0   -> "2.0"
+    2.0   -> "3.0"
+    """
+    if latest is None:
+        return "1.0"
+    return f"{int(latest) + 1}.0"
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
 #  Database publish
 # ═══════════════════════════════════════════════════════════════════════════════
 
@@ -574,14 +670,30 @@ def publish_to_notion_database(
     document_title: str,
     document_type: str,
     industry: str,
-    version: str,
     tags: list[str],
     database_id: str,
     notion_client_instance,
+    notion_api_key: str = "",
+    version: str = "",
 ) -> dict:
     """
     Create a new row in the Notion "Lib" database and push the Markdown
     as the page body content.
+
+    Version control
+    ───────────────
+    If `notion_api_key` is provided, the database is queried for existing
+    rows with the same Title. The version is automatically set to:
+      - "1.0"  if no prior rows exist for this title
+      - "{N+1}.0"  where N is the highest version already published
+
+    If `notion_api_key` is empty (e.g. in tests), `version` is used as-is
+    and defaults to "1.0".
+
+    This means publishing the same document type twice produces two rows:
+        Row 1:  Feature Prioritization Framework  |  v1.0
+        Row 2:  Feature Prioritization Framework  |  v2.0
+    Both rows remain in the database — old versions are never overwritten.
 
     Column names (exactly as shown in Notion):
         Title        — title        (the built-in title column)
@@ -600,9 +712,24 @@ def publish_to_notion_database(
     clean_db_id = database_id.strip().replace("-", "")
     clean_title = document_title.strip() or "Untitled Document"
 
+    # ── Auto-resolve version ──────────────────────────────────────────────────
+    if notion_api_key:
+        latest = get_latest_version_for_title(clean_title, clean_db_id, notion_api_key)
+        resolved_version = _next_version(latest)
+        if latest is not None:
+            logger.info(
+                "   📌 Version control: found existing v%.1f → assigning %s",
+                latest, resolved_version,
+            )
+        else:
+            logger.info("   📌 Version control: no prior version found → assigning %s", resolved_version)
+    else:
+        # Fallback: use the caller-supplied version or default to "1.0"
+        resolved_version = version.strip() or "1.0"
+
     logger.info(
         "Publishing '%s' to database %s (type=%s, industry=%s, v=%s)",
-        clean_title, clean_db_id, document_type, industry, version,
+        clean_title, clean_db_id, document_type, industry, resolved_version,
     )
 
     # Only the 5 writable columns — never send Created by / Created time
@@ -617,7 +744,7 @@ def publish_to_notion_database(
             "select": {"name": industry} if industry else {"name": "General"}
         },
         "Version": {
-            "rich_text": [{"type": "text", "text": {"content": (version or "1.0")[:200]}}]
+            "rich_text": [{"type": "text", "text": {"content": resolved_version[:200]}}]
         },
         "tags": {
             "multi_select": [{"name": t.strip()} for t in (tags or []) if t.strip()]
@@ -655,4 +782,5 @@ def publish_to_notion_database(
         "page_id": new_page_id,
         "page_url": raw_url,
         "blocks_pushed": blocks_pushed,
+        "version": resolved_version,
     }

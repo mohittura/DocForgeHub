@@ -248,7 +248,7 @@ def _render_chat_tab():
         st.session_state.crl_filters["industry"] = st.text_input(
             "Industry",
             value=st.session_state.crl_filters.get("industry", ""),
-            placeholder="Industry (e.g. Fintech)",
+            placeholder="Department (e.g. Customer Support)",
             key="crl_filter_industry",
         )
     with filter_col_doctype:

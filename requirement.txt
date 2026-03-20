@@ -46,7 +46,7 @@ httpx==0.28.1
 idna==3.11
 importlib_metadata==8.7.1
 ipykernel==7.2.0
-ipython==9.10.0
+
 ipython_pygments_lexers==1.1.1
 jedi==0.19.2
 Jinja2==3.1.6
@@ -63,11 +63,11 @@ langchain-core==1.2.17
 langchain-groq==1.1.2
 langchain-openai==1.1.10
 langgraph==1.0.8
-langgraph-api==0.7.37
+
 langgraph-checkpoint==4.0.0
 langgraph-cli==0.4.12
 langgraph-prebuilt==1.0.7
-langgraph-runtime-inmem==0.25.0
+
 langgraph-sdk==0.3.5
 langsmith==0.7.1
 Markdown==3.10.2
@@ -82,7 +82,7 @@ narwhals==2.16.0
 nest-asyncio==1.6.0
 notion==0.0.28
 notion-client==2.7.0
-numpy==2.4.2
+
 openai==2.26.0
 opentelemetry-api==1.39.1
 opentelemetry-exporter-otlp-proto-common==1.39.1

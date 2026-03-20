@@ -5,7 +5,7 @@ FastAPI application for the CiteRagLab RAG backend.
 Runs on port 8001 to avoid clashing with DocForgeHub (port 8000).
 
 Start with:
-    uvicorn rag.api.main_rag:app --host 127.0.0.1 --port 8001 --reload
+    uvicorn rag.api.main_rag:app --host 0.0.0.0 --port 8001 --reload
 
 Routes
 ──────
@@ -45,8 +45,8 @@ logging.basicConfig(
 logger = logging.getLogger("rag.api.main_rag")
 
 # ── Internal imports (after sys.path is set) ─────────────────────────────────
-from rag.pipeline.pipeline_rag import run_rag_pipeline
-from rag.pipeline.redis_cache_rag import (
+from rag.pipeline.pipeline_rag        import run_rag_pipeline
+from rag.pipeline.redis_cache_rag     import (
     get_session_history,
     set_session_history,
     delete_session,
@@ -54,8 +54,8 @@ from rag.pipeline.redis_cache_rag import (
     set_retrieval_cache,
     close_rag_redis,
 )
-from rag.retrieval.retriever_rag import retrieve
-from rag.retrieval.filters_rag import build_filters
+from rag.retrieval.retriever_rag      import retrieve
+from rag.retrieval.filters_rag        import build_filters
 from rag.ingestion.ingestion_pipeline_rag import ingest_all_pages, ingest_page
 from rag.evaluation.ragas_runner_rag  import run_ragas_evaluation
 

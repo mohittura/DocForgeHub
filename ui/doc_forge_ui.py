@@ -326,11 +326,16 @@ def render_doc_forge_ui():
                 doc_type = history_item.get("type", "")
                 industry = history_item.get("industry", "")
                 subtitle = " · ".join(filter(None, [doc_type, industry]))
+                subtitle_html = (
+                f'<div style="font-size:0.71rem;color:#999;margin-top:1px;">{subtitle}</div>'
+                if subtitle else ""
+                )
+
                 st.markdown(
                     f"<a href='{url}' target='_blank' style='text-decoration:none;'>"
                     f"<div style='padding:5px 4px;margin-bottom:4px;border-radius:4px;'>"
                     f"<div style='font-size:0.83rem;font-weight:600;color:#e8e8e8;'>{title}</div>"
-                    f"{'<div style=\"font-size:0.71rem;color:#999;margin-top:1px;\">' + subtitle + '</div>' if subtitle else ''}"
+                    f"{subtitle_html}"
                     f"</div></a>",
                     unsafe_allow_html=True,
                 )

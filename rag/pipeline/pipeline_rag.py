@@ -38,7 +38,7 @@ from langchain_core.messages import SystemMessage, HumanMessage
 from rag.pipeline.adaptive_router_rag import classify_query, get_retrieval_params
 from rag.pipeline.corrective_rag_rag  import corrective_retrieve, avg_score
 from rag.pipeline.reranker_rag        import rerank
-from rag.pipeline.prompts_rag         import SYSTEM_PROMPT_BY_MODE, RAG_SYSTEM_PROMPT
+from rag.pipeline.prompts_rag         import SYSTEM_PROMPT_BY_MODE, RAG_SYSTEM_PROMPT, GREETING_RESPONSE, OUT_OF_SCOPE_RESPONSE, OUT_OF_SCOPE_SCORE_THRESHOLD
 from rag.retrieval.retriever_rag      import retrieve, format_context_for_prompt
 from rag.retrieval.filters_rag        import build_filters
 
@@ -111,6 +111,19 @@ def run_rag_pipeline(
     llm_mode = params["llm_mode"]
     logger.info("   🗂️  Mode=%s  top_k=%d  llm_mode=%s", mode, top_k, llm_mode)
 
+    # ── 2a. Short-circuit for greetings / identity queries ────────────────────
+    # No retrieval, no LLM call — return the hardcoded identity card instantly.
+    if mode == "GREETING":
+        logger.info("   👋 GREETING mode — returning identity response, skipping pipeline")
+        return {
+            "answer":    GREETING_RESPONSE,
+            "citations": [],
+            "chunks":    [],
+            "mode":      "GREETING",
+            "rewritten": query,
+            "avg_score": 0.0,
+        }
+
     # ── 3. Corrective retrieval (LangGraph graph) ─────────────────────────────
     # retrieve() runs HNSW + BM25 + RRFRanker inside Milvus — already fused.
     # pool_size = 2 × top_k gives corrective RAG enough candidates.
@@ -137,6 +150,23 @@ def run_rag_pipeline(
         "   📐 After top_k cap — %d chunks  avg_score=%.4f",
         len(chunks), final_score,
     )
+
+    # ── 4b. Score gate — if best chunks are too weak, the topic is not in the
+    #        library. Return a clean response without calling the LLM.
+    if final_score < OUT_OF_SCOPE_SCORE_THRESHOLD:
+        logger.info(
+            "   🚫 Score gate triggered — avg_score=%.4f < threshold=%.2f — "
+            "topic not covered in library",
+            final_score, OUT_OF_SCOPE_SCORE_THRESHOLD,
+        )
+        return {
+            "answer":    OUT_OF_SCOPE_RESPONSE,
+            "citations": [],
+            "chunks":    [],
+            "mode":      mode,
+            "rewritten": rewritten_query,
+            "avg_score": round(final_score, 4),
+        }
 
     # ── 5. Build prompt context ────────────────────────────────────────────────
     context = format_context_for_prompt(chunks)
@@ -178,16 +208,15 @@ def run_rag_pipeline(
     citations = []
     for i, chunk in enumerate(chunks, start=1):
         citations.append({
-            "index":      i,
-            "title":      chunk.get("title",      ""),
-            "section":    chunk.get("section",    ""),
-            "doc_type":   chunk.get("doc_type",   ""),
-            "industry":   chunk.get("industry",   ""),
-            "version":    chunk.get("version",    ""),
-            "tags":       chunk.get("tags",       []),
-            "page_id":    chunk.get("page_id",    ""),
-            "score":      chunk.get("score",      0.0),
-            "chunk_text": chunk.get("chunk_text", ""),   # needed by RAGAS evaluation
+            "index":    i,
+            "title":    chunk.get("title",    ""),
+            "section":  chunk.get("section",  ""),
+            "doc_type": chunk.get("doc_type", ""),
+            "industry": chunk.get("industry", ""),
+            "version":  chunk.get("version",  ""),
+            "tags":     chunk.get("tags",     []),
+            "page_id":  chunk.get("page_id",  ""),
+            "score":    chunk.get("score",    0.0),
         })
     logger.info("   📚 Citations built — %d entries", len(citations))
 

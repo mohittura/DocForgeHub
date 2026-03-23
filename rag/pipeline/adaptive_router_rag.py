@@ -33,7 +33,6 @@ Azure env variables required
 """
 
 import os
-import re
 import logging
 from typing import TypedDict
 from dotenv import load_dotenv
@@ -52,43 +51,66 @@ _STRATEGY_MAP: dict[str, dict] = {
     "COMPARE":   {"top_k": 10, "llm_mode": "compare"},
     "SUMMARIZE": {"top_k": 10, "llm_mode": "summarize"},
     "SEARCH":    {"top_k": 8,  "llm_mode": "qa"},
+    "GREETING":  {"top_k": 0,  "llm_mode": "qa"},   # bypassed — no retrieval needed
 }
 
 VALID_MODES = set(_STRATEGY_MAP.keys())
 
-# ── Keyword fallback patterns (used when LLM is unavailable) ──────────────────
-_COMPARE_RE = re.compile(
-    r"\b(compare|vs\.?|versus|difference|contrast|between|against"
-    r"|differ|distinguish|similarities|which is better|what changed)\b",
-    re.I,
-)
-_SUMMARIZE_RE = re.compile(
-    r"\b(summarize|summarise|summary|overview|outline|brief|explain"
-    r"|describe|what is|what are|tell me about|walk me through"
-    r"|key points|main points)\b",
-    re.I,
-)
-_SEARCH_RE = re.compile(
-    r"\b(find|search|look up|look for|locate|list|show me|give me"
-    r"|fetch|get me|all documents|all policies|all templates"
-    r"|examples of|related to)\b",
-    re.I,
-)
-
 # ── LangChain classification prompt ───────────────────────────────────────────
+# Rich few-shot examples cover informal language, typos, and creative phrasings
+# so the LLM generalises correctly without any regex keyword matching.
 _CLASSIFICATION_PROMPT = ChatPromptTemplate.from_messages([
     (
         "system",
-        """You are a query classifier for a document library RAG system.
-Classify the user query into exactly one of these four modes:
+        """You are an intent classifier for a document library assistant called Citter.
 
-QA        — direct question about a specific fact or policy detail
-COMPARE   — comparing two or more documents, versions, or topics
-SUMMARIZE — requesting an overview, summary, or explanation of a topic
-SEARCH    — exploring, listing, or finding documents by topic or type
+Classify the user message into exactly one of these modes:
 
-Reply with ONLY the mode name — one word, no punctuation, no explanation.
-Valid responses: QA, COMPARE, SUMMARIZE, SEARCH""",
+  GREETING  — the user is greeting the assistant, asking what it can do, asking about
+              its identity or capabilities, making small talk, or sending any message
+              that is NOT a question about documents in the library.
+              This includes informal or creative phrasings like "yo what can u do",
+              "wot r u", "tell me bout urself", "heyy", "sup", "who r u", etc.
+
+  QA        — a specific factual question about a document, policy, or topic
+              that exists in the library. e.g. "what is the SLA for P1 incidents?"
+
+  COMPARE   — asking to compare, contrast, or find differences between two or more
+              documents, versions, or topics. e.g. "how does v1 differ from v2?"
+
+  SUMMARIZE — asking for an overview, summary, or explanation of a topic covered
+              in the library. e.g. "summarise the access control policy"
+
+  SEARCH    — asking to find, list, or explore documents by topic, type, or tag.
+              e.g. "show me all HR templates"
+
+Rules:
+- When in doubt between GREETING and any other mode, choose GREETING.
+- Reply with ONLY the mode name — one word, uppercase, no punctuation, no explanation.
+- Valid responses: GREETING, QA, COMPARE, SUMMARIZE, SEARCH""",
+    ),
+    ("human", "{query}"),
+])
+
+# ── Fallback classification prompt (used if primary LLM call fails) ───────────
+# Identical intent but written differently so a transient model quirk on the
+# first call is less likely to recur on the retry.
+_FALLBACK_CLASSIFICATION_PROMPT = ChatPromptTemplate.from_messages([
+    (
+        "system",
+        """Classify this message into one word: GREETING, QA, COMPARE, SUMMARIZE, or SEARCH.
+
+GREETING = anything that is not a genuine document question: hellos, small talk,
+           questions about the assistant itself, capability questions, typo-heavy
+           casual messages, or anything where the user is not asking about a
+           specific document or topic in a library.
+QA       = specific factual question about a library document or policy.
+COMPARE  = comparing two documents, versions, or topics.
+SUMMARIZE = asking for a summary or overview of a library topic.
+SEARCH   = asking to find or list documents.
+
+When uncertain, output GREETING.
+Output only the single word, nothing else.""",
     ),
     ("human", "{query}"),
 ])
@@ -105,58 +127,58 @@ class RouterState(TypedDict):
 
 def _classify_node(state: RouterState) -> RouterState:
     """
-    LangGraph node: call the Azure LLM to classify the query.
-    Falls back to keyword heuristics on any error.
+    LangGraph node: classify the query using the Azure LLM.
+
+    Attempt 1 — primary prompt (_CLASSIFICATION_PROMPT), temperature=0.
+    Attempt 2 — fallback prompt (_FALLBACK_CLASSIFICATION_PROMPT) if attempt 1
+                returns an unrecognised token or raises an exception.
+    Last resort — default to QA if both LLM calls fail (e.g. total outage).
+
+    No regex or keyword heuristics — intent classification is entirely LLM-driven
+    so informal language, typos, and creative phrasings are handled correctly.
     """
     query = state["query"]
 
-    try:
-        llm = AzureChatOpenAI(
-            azure_deployment=os.getenv("AZURE_LLM_DEPLOYMENT_41_MINI", "gpt-4.1-mini"),
-            azure_endpoint=os.getenv("AZURE_LLM_ENDPOINT", ""),
-            api_key=os.getenv("AZURE_OPENAI_LLM_KEY", ""),
-            api_version=os.getenv("AZURE_LLM_API_VERSION", "2024-12-01-preview"),
-            temperature=0,
-            max_tokens=10,
-        )
-        chain    = _CLASSIFICATION_PROMPT | llm
-        response = chain.invoke({"query": query})
-        raw_mode = response.content.strip().upper()
-
-        # Accept only known modes — anything else falls back to heuristics
-        if raw_mode in VALID_MODES:
-            logger.info(
-                "🗂️  _classify_node (LLM) — mode=%s  query='%s…'",
-                raw_mode, query[:60],
-            )
-            return {"query": query, "mode": raw_mode}
-
-        logger.warning(
-            "   ⚠️  LLM returned unexpected mode '%s' — falling back to heuristics",
-            raw_mode,
-        )
-
-    except Exception as err:
-        logger.warning(
-            "   ⚠️  LLM classification failed (%s) — falling back to heuristics",
-            err,
-        )
-
-    # ── Keyword heuristic fallback ────────────────────────────────────────────
-    if _COMPARE_RE.search(query):
-        mode = "COMPARE"
-    elif _SUMMARIZE_RE.search(query):
-        mode = "SUMMARIZE"
-    elif _SEARCH_RE.search(query):
-        mode = "SEARCH"
-    else:
-        mode = "QA"
-
-    logger.info(
-        "🗂️  _classify_node (heuristic fallback) — mode=%s  query='%s…'",
-        mode, query[:60],
+    llm = AzureChatOpenAI(
+        azure_deployment=os.getenv("AZURE_LLM_DEPLOYMENT_41_MINI", "gpt-4.1-mini"),
+        azure_endpoint=os.getenv("AZURE_LLM_ENDPOINT", ""),
+        api_key=os.getenv("AZURE_OPENAI_LLM_KEY", ""),
+        api_version=os.getenv("AZURE_LLM_API_VERSION", "2024-12-01-preview"),
+        temperature=0,
+        max_tokens=10,
     )
-    return {"query": query, "mode": mode}
+
+    for attempt, prompt in enumerate(
+        [_CLASSIFICATION_PROMPT, _FALLBACK_CLASSIFICATION_PROMPT], start=1
+    ):
+        try:
+            response = (prompt | llm).invoke({"query": query})
+            raw_mode = response.content.strip().upper()
+
+            if raw_mode in VALID_MODES:
+                logger.info(
+                    "🗂️  _classify_node (LLM attempt %d) — mode=%s  query='%s…'",
+                    attempt, raw_mode, query[:60],
+                )
+                return {"query": query, "mode": raw_mode}
+
+            logger.warning(
+                "   ⚠️  LLM attempt %d returned unrecognised mode '%s'",
+                attempt, raw_mode,
+            )
+
+        except Exception as err:
+            logger.warning(
+                "   ⚠️  LLM attempt %d failed: %s", attempt, err,
+            )
+
+    # Both LLM calls failed — default to QA so the pipeline still returns
+    # something useful rather than crashing. Logged as an error so it's visible.
+    logger.error(
+        "   ❌ Both LLM classification attempts failed for query='%s…' — defaulting to QA",
+        query[:60],
+    )
+    return {"query": query, "mode": "QA"}
 
 
 # ── Build the LangGraph router graph (compiled once at module load) ────────────

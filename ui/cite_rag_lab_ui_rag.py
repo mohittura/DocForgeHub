@@ -43,10 +43,21 @@ from api_helpers_rag import (
 
 logger = logging.getLogger("ui.cite_rag_lab_ui_rag")
 
-# Leading substring of the refusal message defined in prompts_rag.py.
-# Used to detect out-of-scope answers and suppress citations / metadata UI
-# elements — showing sources on a refusal is misleading.
-_OUT_OF_SCOPE_PREFIX = "I can only answer questions based on the documents in this library."
+# All leading substrings that identify a refusal / no-context response.
+# Covers every refusal variant defined in prompts_rag.py:
+#   RAG_SYSTEM_PROMPT       — out-of-scope hard refusal
+#   RAG_SYSTEM_PROMPT       — partial context fallback
+#   COMPARE_SYSTEM_PROMPT   — comparison refusal
+#   SUMMARIZE_SYSTEM_PROMPT — summarisation refusal
+_REFUSAL_PREFIXES = (
+    # Score-gate response (pipeline-level, no LLM call)
+    "I wasn't able to find relevant documents in the library for that question.",
+    # Legacy hard-prompt refusals (kept for backwards compat with cached messages)
+    "I can only answer questions based on the documents in this library.",
+    "The available documents do not contain sufficient information",
+    "I can only compare documents that are present in this library",
+    "I can only summarise documents that are present in this library",
+)
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -310,7 +321,10 @@ def _render_chat_tab():
                     # for these since the retrieved chunks were not used in the answer.
                     is_refusal = (
                         role == "assistant"
-                        and content.strip().startswith(_OUT_OF_SCOPE_PREFIX)
+                        and (
+                            content.strip().startswith(_REFUSAL_PREFIXES)
+                            or pipeline_meta.get("mode") == "GREETING"
+                        )
                     )
 
                     # Citations shown as a collapsed expander under bot messages

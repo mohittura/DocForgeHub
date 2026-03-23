@@ -90,10 +90,10 @@ def run_ragas_evaluation(
         from datasets import Dataset
         from ragas import evaluate
         from ragas.metrics import (
-            faithfulness,
-            answer_relevancy,
-            context_precision,
-            context_recall,
+            Faithfulness,
+            AnswerRelevancy,
+            ContextPrecision,
+            ContextRecall,
         )
         logger.info("   ✅ RAGAS and datasets imported successfully")
     except ImportError as err:
@@ -121,12 +121,17 @@ def run_ragas_evaluation(
         return {"error": str(err)}
 
     # ── Build HuggingFace Dataset ─────────────────────────────────────────────
+    # Newer RAGAS expects these specific column names:
+    #   user_input        — the question
+    #   response          — the LLM answer
+    #   retrieved_contexts — list of context strings per question
+    #   reference         — the ground truth answer
     logger.info("   📋 Building evaluation dataset…")
     data = {
-        "question":     questions,
-        "answer":       answers,
-        "contexts":     contexts,
-        "ground_truth": ground_truths,
+        "user_input":          questions,
+        "response":            answers,
+        "retrieved_contexts":  contexts,
+        "reference":           ground_truths,
     }
     try:
         dataset = Dataset.from_dict(data)
@@ -145,16 +150,20 @@ def run_ragas_evaluation(
     )
     try:
         import traceback
+
+        # Instantiate metrics with Azure LLM and embeddings directly.
+        # Newer RAGAS versions require metrics to be initialised with the
+        # judge LLM/embeddings rather than passed separately to evaluate().
+        metrics = [
+            Faithfulness(llm=azure_llm),
+            AnswerRelevancy(llm=azure_llm, embeddings=azure_embeddings),
+            ContextPrecision(llm=azure_llm),
+            ContextRecall(llm=azure_llm),
+        ]
+
         result = evaluate(
             dataset,
-            metrics=[
-                faithfulness,
-                answer_relevancy,
-                context_precision,
-                context_recall,
-            ],
-            llm=azure_llm,
-            embeddings=azure_embeddings,
+            metrics=metrics,
         )
         logger.info("   🔬 Raw RAGAS result type: %s", type(result))
 

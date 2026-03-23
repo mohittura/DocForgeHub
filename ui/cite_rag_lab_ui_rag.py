@@ -43,6 +43,11 @@ from api_helpers_rag import (
 
 logger = logging.getLogger("ui.cite_rag_lab_ui_rag")
 
+# Leading substring of the refusal message defined in prompts_rag.py.
+# Used to detect out-of-scope answers and suppress citations / metadata UI
+# elements — showing sources on a refusal is misleading.
+_OUT_OF_SCOPE_PREFIX = "I can only answer questions based on the documents in this library."
+
 
 # ─────────────────────────────────────────────────────────────────────────────
 #  Session state bootstrap
@@ -301,8 +306,16 @@ def _render_chat_tab():
                 with st.chat_message(role, avatar=avatar):
                     st.markdown(content)
 
+                    # Detect out-of-scope refusals — suppress sources and metadata
+                    # for these since the retrieved chunks were not used in the answer.
+                    is_refusal = (
+                        role == "assistant"
+                        and content.strip().startswith(_OUT_OF_SCOPE_PREFIX)
+                    )
+
                     # Citations shown as a collapsed expander under bot messages
-                    if citations and role == "assistant":
+                    # (hidden on refusals — the context was not used)
+                    if citations and role == "assistant" and not is_refusal:
                         with st.expander(f"📚 {len(citations)} source(s)", expanded=False):
                             for citation in citations:
                                 title    = citation.get("title", "")
@@ -316,7 +329,8 @@ def _render_chat_tab():
                                 )
 
                     # Pipeline metadata shown as a caption under bot messages
-                    if pipeline_meta and role == "assistant":
+                    # (hidden on refusals — mode/score/rewrite are not meaningful)
+                    if pipeline_meta and role == "assistant" and not is_refusal:
                         mode      = pipeline_meta.get("mode", "")
                         avg_score = pipeline_meta.get("avg_score", "")
                         rewritten = pipeline_meta.get("rewritten", "")
@@ -654,6 +668,7 @@ def _render_evaluation_tab():
                 retrieved_contexts.append([
                     citation.get("chunk_text", "")
                     for citation in chat_response.get("citations", [])
+                    if citation.get("chunk_text", "").strip()   # skip empty chunks
                 ])
             else:
                 generated_answers.append("")

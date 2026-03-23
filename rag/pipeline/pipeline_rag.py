@@ -178,15 +178,16 @@ def run_rag_pipeline(
     citations = []
     for i, chunk in enumerate(chunks, start=1):
         citations.append({
-            "index":    i,
-            "title":    chunk.get("title",    ""),
-            "section":  chunk.get("section",  ""),
-            "doc_type": chunk.get("doc_type", ""),
-            "industry": chunk.get("industry", ""),
-            "version":  chunk.get("version",  ""),
-            "tags":     chunk.get("tags",     []),
-            "page_id":  chunk.get("page_id",  ""),
-            "score":    chunk.get("score",    0.0),
+            "index":      i,
+            "title":      chunk.get("title",      ""),
+            "section":    chunk.get("section",    ""),
+            "doc_type":   chunk.get("doc_type",   ""),
+            "industry":   chunk.get("industry",   ""),
+            "version":    chunk.get("version",    ""),
+            "tags":       chunk.get("tags",       []),
+            "page_id":    chunk.get("page_id",    ""),
+            "score":      chunk.get("score",      0.0),
+            "chunk_text": chunk.get("chunk_text", ""),   # needed by RAGAS evaluation
         })
     logger.info("   📚 Citations built — %d entries", len(citations))
 

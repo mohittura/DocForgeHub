@@ -280,6 +280,37 @@ async def run_evaluation(req: EvalRequest):
         "📊 POST /evaluation/run — %d question(s) to evaluate",
         len(req.questions),
     )
+
+    # ── Debug: log exactly what was received ─────────────────────────────────
+    for i, (q, a, ctx, gt) in enumerate(zip(
+        req.questions, req.answers, req.contexts, req.ground_truths
+    )):
+        logger.info("   [%d] question='%s…'", i + 1, q[:80])
+        logger.info("   [%d] answer='%s…' (%d chars)", i + 1, a[:500], len(a))
+        logger.info("   [%d] contexts=%d chunks", i + 1, len(ctx))
+
+        # Warn loudly if all contexts are empty — RAGAS will score 0 on
+        # faithfulness / context_precision / context_recall with empty context.
+        empty_count = sum(1 for c in ctx if not c.strip())
+        if empty_count:
+            logger.warning(
+                "   ⚠️  [%d] %d/%d context chunk(s) are EMPTY — "
+                "check that pipeline_rag.py includes chunk_text in citations",
+                i + 1, empty_count, len(ctx),
+            )
+
+        for j, chunk in enumerate(ctx):
+            preview = chunk[:300].replace("\n", " ")
+            logger.info(
+                "      ↳ chunk[%d]: (%d chars) '%s%s'",
+                j,
+                len(chunk),
+                preview,
+                "..." if len(chunk) > 300 else ""
+            )
+
+        logger.info("   [%d] ground_truth='%s…'", i + 1, gt[:80])
+
     scores = run_ragas_evaluation(
         questions=req.questions,
         answers=req.answers,

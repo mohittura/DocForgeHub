@@ -95,7 +95,12 @@ def _init_crl_session_state():
         st.session_state.crl_search_term = ""
 
     if "crl_filters" not in st.session_state:
-        st.session_state.crl_filters = {"industry": "", "doc_type": "", "version": "", "tags": ""}
+        st.session_state.crl_filters = {"industry": "", "version": ""}
+
+    # Incremented on clear — changing the key forces Streamlit to create
+    # fresh widget instances with no prior state, reliably clearing inputs.
+    if "crl_filter_version_counter" not in st.session_state:
+        st.session_state.crl_filter_version_counter = 0
 
     if "crl_ingest_running" not in st.session_state:
         st.session_state.crl_ingest_running = False
@@ -253,46 +258,30 @@ def _render_chat_tab():
 
     st.subheader(f"CiteRagLab — {session_title}")
 
-    # ── Metadata filter strip ────────────────────────────────────────────────
-    # All four keys match Notion database columns:
-    #   industry → Industry (select)
-    #   doc_type → Type (select)
-    #   version  → Version (rich_text)
-    #   tags     → tags (multi_select) — substring match
-    filter_col_industry, filter_col_doctype, filter_col_version, filter_col_tags, filter_col_clear = st.columns([2, 2, 1, 2, 1])
+    # ── Metadata filter strip (industry + version only) ─────────────────────
+    # Widget keys include a version counter. Incrementing the counter on clear
+    # forces Streamlit to create new widget instances with no cached state —
+    # the only reliable way to programmatically reset text_input values.
+    _fv = st.session_state.crl_filter_version_counter
+    filter_col_industry, filter_col_version, filter_col_clear = st.columns([3, 2, 1])
     with filter_col_industry:
         st.session_state.crl_filters["industry"] = st.text_input(
             "Industry",
-            value=st.session_state.crl_filters.get("industry", ""),
-            placeholder="Department (e.g. Customer Support)",
-            key="crl_filter_industry",
-        )
-    with filter_col_doctype:
-        st.session_state.crl_filters["doc_type"] = st.text_input(
-            "Doc type",
-            value=st.session_state.crl_filters.get("doc_type", ""),
-            placeholder="Doc type (e.g. Policy)",
-            key="crl_filter_doc_type",
+            placeholder="Industry (e.g. Cybersecurity)",
+            key=f"crl_filter_industry_{_fv}",
         )
     with filter_col_version:
         st.session_state.crl_filters["version"] = st.text_input(
             "Version",
-            value=st.session_state.crl_filters.get("version", ""),
-            placeholder="Version",
-            key="crl_filter_version",
-        )
-    with filter_col_tags:
-        st.session_state.crl_filters["tags"] = st.text_input(
-            "Tags",
-            value=st.session_state.crl_filters.get("tags", ""),
-            placeholder="Tag (e.g. HR)",
-            key="crl_filter_tags",
+            placeholder="Version (e.g. 1.0)",
+            key=f"crl_filter_version_{_fv}",
         )
     with filter_col_clear:
         st.write("")   # vertical alignment spacer
-        if st.button("✕ Clear filters", use_container_width=True, key="crl_clear_filters_button"):
+        if st.button("✕ Clear", use_container_width=True, key="crl_clear_filters_button"):
             logger.info("Filters cleared")
-            st.session_state.crl_filters = {"industry": "", "doc_type": "", "version": "", "tags": ""}
+            st.session_state.crl_filters = {"industry": "", "version": ""}
+            st.session_state.crl_filter_version_counter += 1
             st.rerun()
 
     st.divider()
@@ -345,17 +334,19 @@ def _render_chat_tab():
                     # Pipeline metadata shown as a caption under bot messages
                     # (hidden on refusals — mode/score/rewrite are not meaningful)
                     if pipeline_meta and role == "assistant" and not is_refusal:
-                        mode      = pipeline_meta.get("mode", "")
-                        avg_score = pipeline_meta.get("avg_score", "")
-                        rewritten = pipeline_meta.get("rewritten", "")
-                        meta_parts = []
+                        mode         = pipeline_meta.get("mode", "")
+                        avg_score    = pipeline_meta.get("avg_score", "")
+                        rewritten    = pipeline_meta.get("rewritten", "")
+                        turn_number  = pipeline_meta.get("turn", 0)
+                        meta_parts   = []
                         if mode:
                             meta_parts.append(f"mode: {mode}")
                         if avg_score:
                             meta_parts.append(f"score: {avg_score}")
                         if rewritten:
-                            short_rewrite = (rewritten[:40] + "…") if len(rewritten) > 40 else rewritten
-                            meta_parts.append(f'rewritten: "{short_rewrite}"')
+                            meta_parts.append(f'rewritten: "{rewritten}"')
+                        if turn_number and turn_number > 1:
+                            meta_parts.append(f"turn: {turn_number}")
                         if meta_parts:
                             st.caption("  ·  ".join(meta_parts))
 
@@ -365,10 +356,13 @@ def _render_chat_tab():
     if user_input and user_input.strip():
         user_query = user_input.strip()
 
-        # Guard against duplicate submission on rerun
-        if st.session_state.get("crl_last_submitted_query") == user_query:
+        # Guard against duplicate submission on the same rerun cycle.
+        # Key on (session_id, message_count) so the same query text can be
+        # sent again in a later turn without being silently dropped.
+        _submit_key = (active_session_id, len(_get_active_messages()), user_query)
+        if st.session_state.get("crl_last_submit_key") == _submit_key:
             return
-        st.session_state["crl_last_submitted_query"] = user_query
+        st.session_state["crl_last_submit_key"] = _submit_key
 
         logger.info(
             "💬 User message submitted — session_id=%s  query='%s…'",
@@ -378,9 +372,10 @@ def _render_chat_tab():
         # Push user message immediately so it shows in the next render
         _append_message("user", user_query)
 
-        # Only send non-empty filter values to the backend
+        # Only send non-empty filter values to the backend.
+        # .strip() guards against whitespace-only strings left after clearing.
         active_filters = {
-            key: value
+            key: value.strip()
             for key, value in st.session_state.crl_filters.items()
             if value.strip()
         }
@@ -395,10 +390,15 @@ def _render_chat_tab():
         if api_response:
             bot_answer    = api_response.get("answer", "⚠️ No answer returned.")
             citations     = api_response.get("citations", [])
+            # Count prior assistant messages to show turn number in caption
+            _prior_turns = sum(
+                1 for m in _get_active_messages() if m["role"] == "assistant"
+            )
             pipeline_meta = {
                 "mode":      api_response.get("mode", ""),
                 "avg_score": api_response.get("avg_score", ""),
                 "rewritten": api_response.get("rewritten", ""),
+                "turn":      _prior_turns + 1,
             }
             logger.info(
                 "   ✅ Citter answered — mode=%s, avg_score=%s, citations=%d",
@@ -442,7 +442,7 @@ def _render_inspector_tab():
         "with cosine similarity scores."
     )
 
-    inspector_query_col, inspector_topk_col, inspector_industry_col, inspector_doctype_col, inspector_search_col = st.columns([3, 1, 2, 2, 1])
+    inspector_query_col, inspector_topk_col, inspector_industry_col, inspector_search_col = st.columns([3, 1, 2, 1])
     with inspector_query_col:
         inspector_query = st.text_input(
             "Search query",
@@ -463,12 +463,6 @@ def _render_inspector_tab():
             placeholder="Industry (optional)",
             key="crl_inspector_industry",
         )
-    with inspector_doctype_col:
-        inspector_doc_type = st.text_input(
-            "Doc type filter",
-            placeholder="Doc type (optional)",
-            key="crl_inspector_doc_type",
-        )
     with inspector_search_col:
         st.write("")   # vertical alignment spacer
         inspector_search_clicked = st.button(
@@ -480,16 +474,15 @@ def _render_inspector_tab():
 
     if inspector_search_clicked and inspector_query.strip():
         logger.info(
-            "🔍 Inspector search — query='%s…', top_k=%d, industry=%s, doc_type=%s",
+            "🔍 Inspector search — query='%s…', top_k=%d, industry=%s",
             inspector_query[:60], inspector_top_k,
-            inspector_industry or "(any)", inspector_doc_type or "(any)",
+            inspector_industry or "(any)",
         )
         with st.spinner("Searching Milvus…"):
             retrieval_result = call_retrieval_debug(
                 query=inspector_query.strip(),
                 top_k=inspector_top_k,
                 industry=inspector_industry,
-                doc_type=inspector_doc_type,
             )
         if retrieval_result:
             retrieved_chunks = retrieval_result.get("chunks", [])
@@ -540,41 +533,6 @@ def _render_ingest_tab():
         "Milvus Lite persists data locally — no external service needed."
     )
 
-    with st.expander("📄 Ingest a single page", expanded=False):
-        single_page_col_left, single_page_col_right = st.columns(2)
-        with single_page_col_left:
-            single_page_id    = st.text_input("Page ID",  placeholder="Notion page UUID", key="crl_single_page_id")
-            single_page_title = st.text_input("Title",    placeholder="Page title",       key="crl_single_page_title")
-        with single_page_col_right:
-            single_page_industry = st.text_input("Industry", placeholder="General",  key="crl_single_page_industry")
-            single_page_doc_type = st.text_input("Doc type", placeholder="Document", key="crl_single_page_doc_type")
-            single_page_version  = st.text_input("Version",  placeholder="1.0",      key="crl_single_page_version")
-
-        if st.button("▶ Ingest this page", key="crl_ingest_single_page_button", type="primary"):
-            if not single_page_id.strip():
-                st.warning("⚠️ Page ID is required.")
-            else:
-                logger.info(
-                    "📥 Single-page ingest triggered — page_id=%s  title=%r",
-                    single_page_id, single_page_title,
-                )
-                with st.spinner("Ingesting page…"):
-                    ingest_result = call_ingest_notion(
-                        page_id=single_page_id.strip(),
-                        title=single_page_title.strip(),
-                        industry=single_page_industry or "General",
-                        doc_type=single_page_doc_type or "Document",
-                        version=single_page_version or "1.0",
-                    )
-                if ingest_result and ingest_result.get("status") == "ok":
-                    chunks_inserted = ingest_result.get("chunks_inserted", 0)
-                    logger.info("   ✅ Single-page ingest complete — %d chunks inserted", chunks_inserted)
-                    st.success(f"✅ Inserted {chunks_inserted} chunks.")
-                else:
-                    logger.error("   ❌ Single-page ingest failed")
-                    st.error("❌ Ingestion failed — check API logs.")
-
-    st.divider()
     st.markdown("**Full re-ingest** — all pages under `NOTION_ROOT_PAGE_ID`")
     st.warning("⚠️ This may take several minutes depending on the number of pages.", icon="⏱️")
 

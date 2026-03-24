@@ -56,10 +56,17 @@ summarise what is available and note the gap.
 REFINE_QUERY_PROMPT = """The following search query returned weak or irrelevant results from a document library.
 Rewrite it to be more specific and more likely to match real document content.
 
+Use the recent conversation history below to resolve ambiguous pronouns, incomplete
+references, or context-dependent terms (e.g. "it", "that", "the previous one",
+"US-001", "the user story") into their full, explicit meaning before rewriting.
+
 The rewritten query must remain a document-retrieval query — do NOT rewrite it into
 a general knowledge question, a coding request, or anything outside document search.
 
 Return ONLY the rewritten query — no explanation, no quotes, no preamble.
+
+Recent conversation history (most recent last):
+{history}
 
 Original query: {query}
 """

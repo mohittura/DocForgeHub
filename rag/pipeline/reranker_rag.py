@@ -3,17 +3,14 @@ rag/pipeline/reranker_rag.py
 
 Reranker shim for CiteRagLab.
 
-Reranking is now handled natively inside Milvus using RRFRanker, which
-fuses the HNSW dense ranking and the BM25 sparse ranking before results
-ever leave the database.  No cross-encoder model, no sentence-transformers
-dependency, no extra inference step.
+Ranking is handled by Milvus AUTOINDEX + COSINE similarity — results arrive
+already ordered by score before this module is called.  No cross-encoder,
+no sentence-transformers, no extra inference step.
 
-This module is kept for API compatibility — pipeline_rag.py still imports
-from it — but it is now a transparent pass-through that simply slices the
-already-fused list to top_k and logs what it received.
+This module is kept for API compatibility — pipeline_rag.py imports from it
+— but it is a transparent pass-through that enforces the top_k cap and logs.
 
-If you later want to swap RRF for a cross-encoder (e.g. for a domain that
-benefits from deep semantic reranking), replace the body of rerank() here
+To add a cross-encoder reranker later, replace the body of rerank() here
 without touching any other file.
 """
 
@@ -26,20 +23,20 @@ def rerank(query: str, chunks: list[dict], top_k: int = 5) -> list[dict]:
     """
     Return the top_k chunks from the already-RRF-ranked list.
 
-    Milvus's RRFRanker has already fused the dense (HNSW) and sparse (BM25)
-    rankings inside hybrid_search_chunks before this function is called.
-    The list arriving here is therefore already optimally ordered — this
+    Milvus AUTOINDEX + COSINE has already ranked the results inside
+    hybrid_search_chunks before this function is called.
+    The list arriving here is therefore already ordered by score — this
     function simply enforces the top_k cap and logs the outcome.
 
     Parameters
     ──────────
     query  : user query string (kept for interface compatibility)
-    chunks : RRF-ranked chunk list from hybrid_search_chunks via retrieve()
+    chunks : score-ranked chunk list from hybrid_search_chunks via retrieve()
     top_k  : maximum number of chunks to return
 
     Returns
     ───────
-    chunks[:top_k] — the top-ranked chunks after Milvus RRF fusion
+    chunks[:top_k] — the top-ranked chunks from Milvus COSINE search
     """
     if not chunks:
         logger.warning("   ⚠️  rerank: received empty chunk list — returning []")

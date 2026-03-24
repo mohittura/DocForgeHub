@@ -21,7 +21,7 @@ Collection schema  (matches DocForge Hub Library Notion database columns)
 ─────────────────────────────────────────────────────────────────────────
     id          INT64              primary key, auto-generated
     embedding   FLOAT_VECTOR(3072) dense vector — text-embedding-3-large
-    chunk_text  VARCHAR(4096)      extracted text content
+    chunk_text  VARCHAR(8192)      extracted text content
     doc_id      VARCHAR(256)       Notion page UUID
     title       VARCHAR(512)       database Title column
     section     VARCHAR(256)       most recent heading above this chunk
@@ -47,7 +47,7 @@ from dotenv import load_dotenv
 # We inject a minimal mock so it works without setuptools being installed.
 if "pkg_resources" not in sys.modules:
     try:
-        import pkg_resources  # noqa: F401
+        import pkg_resources  # noqa: F401 #type: ignore
     except ModuleNotFoundError:
         from importlib.metadata import version as _meta_version, PackageNotFoundError
 

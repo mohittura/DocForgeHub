@@ -66,14 +66,24 @@ _CLASSIFICATION_PROMPT = ChatPromptTemplate.from_messages([
 
 Classify the user message into exactly one of these modes:
 
-  GREETING  — the user is greeting the assistant, asking what it can do, asking about
-              its identity or capabilities, making small talk, or sending any message
-              that is NOT a question about documents in the library.
-              This includes informal or creative phrasings like "yo what can u do",
-              "wot r u", "tell me bout urself", "heyy", "sup", "who r u", etc.
+  GREETING  — the user is introducing themselves, greeting the assistant, asking
+              what Citter is or what it can do, or making pure small talk with
+              no information-seeking intent.
+              GREETING examples: "hi", "hello", "hey", "who are you", "what can
+              you do", "what are you", "yo what's ur deal", "wot r u", "sup",
+              "tell me about yourself", "heyy", "introduce yourself".
+              NOT GREETING: questions about the conversation history ("what did I
+              ask before?"), follow-up questions ("can you elaborate?"), requests
+              to repeat or clarify a previous answer, or any question that has an
+              information-seeking intent even if phrased conversationally.
 
-  QA        — a specific factual question about a document, policy, or topic
-              that exists in the library. e.g. "what is the SLA for P1 incidents?"
+  QA        — a specific factual question about a document, policy, topic, or the
+              ongoing conversation. Includes follow-up questions, requests to
+              clarify or expand a previous answer, and questions about what was
+              discussed earlier in the chat.
+              QA examples: "what is the SLA for P1 incidents?", "what was my
+              previous question?", "can you explain that further?", "what did you
+              just tell me about X?", "elaborate on point 2".
 
   COMPARE   — asking to compare, contrast, or find differences between two or more
               documents, versions, or topics. e.g. "how does v1 differ from v2?"
@@ -85,7 +95,9 @@ Classify the user message into exactly one of these modes:
               e.g. "show me all HR templates"
 
 Rules:
-- When in doubt between GREETING and any other mode, choose GREETING.
+- When in doubt, choose QA — it is the safest default for any information-seeking message.
+- Only choose GREETING for messages that are purely introductory or small talk with
+  zero information-seeking intent.
 - Reply with ONLY the mode name — one word, uppercase, no punctuation, no explanation.
 - Valid responses: GREETING, QA, COMPARE, SUMMARIZE, SEARCH""",
     ),
@@ -100,16 +112,19 @@ _FALLBACK_CLASSIFICATION_PROMPT = ChatPromptTemplate.from_messages([
         "system",
         """Classify this message into one word: GREETING, QA, COMPARE, SUMMARIZE, or SEARCH.
 
-GREETING = anything that is not a genuine document question: hellos, small talk,
-           questions about the assistant itself, capability questions, typo-heavy
-           casual messages, or anything where the user is not asking about a
-           specific document or topic in a library.
-QA       = specific factual question about a library document or policy.
+GREETING = purely introductory messages or small talk with zero information-seeking
+           intent: hellos, "who are you", "what can you do", "tell me about
+           yourself", casual greetings in any language or spelling.
+           NOT GREETING: questions about previous queries, follow-ups, requests to
+           elaborate, or any message where the user wants information back.
+QA       = any information-seeking question — about documents, policies, the
+           conversation history, previous answers, or requests to clarify/expand.
+           When uncertain between GREETING and QA, choose QA.
 COMPARE  = comparing two documents, versions, or topics.
 SUMMARIZE = asking for a summary or overview of a library topic.
 SEARCH   = asking to find or list documents.
 
-When uncertain, output GREETING.
+When uncertain, output QA.
 Output only the single word, nothing else.""",
     ),
     ("human", "{query}"),

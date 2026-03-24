@@ -99,10 +99,11 @@ def _get_llm() -> AzureChatOpenAI:
 
 class CorrectiveRAGState(TypedDict):
     # Inputs (set before graph invocation)
-    query:       str
-    retrieve_fn: Callable           # (query, top_k, filters) → list[dict]
-    top_k:       int
-    filters:     Optional[dict]
+    query:          str
+    retrieve_fn:    Callable           # (query, top_k, filters) → list[dict]
+    top_k:          int
+    filters:        Optional[dict]
+    session_history: list[dict]        # prior chat turns [{role, content}] for context-aware rewrite
 
     # Filled by nodes
     chunks1:     list[dict]         # first-pass chunks
@@ -150,16 +151,27 @@ def _node_retrieve(state: CorrectiveRAGState) -> dict:
 
 
 def _node_rewrite(state: CorrectiveRAGState) -> dict:
-    """Node: rewrite the query with the Azure LLM via LangChain."""
-    query = state["query"]
+    """Node: rewrite the query using the Azure LLM, with session history for context."""
+    query           = state["query"]
+    session_history = state.get("session_history") or []
+
+    # Build a compact history string from the last 6 turns.
+    # Truncate each turn to 200 chars to keep the prompt concise.
+    history_lines = []
+    for turn in session_history[-6:]:
+        role = turn.get("role", "user").capitalize()
+        text = turn.get("content", "")[:200].replace("\n", " ")
+        history_lines.append(f"{role}: {text}")
+    history_str = "\n".join(history_lines) if history_lines else "(no prior conversation)"
+
     logger.info(
-        "✏️  [node_rewrite] — rewriting query='%s…'",
-        query[:60],
+        "✏️  [node_rewrite] — rewriting query='%s'  history_turns=%d",
+        query, len(history_lines),
     )
 
     try:
         chain     = _REWRITE_PROMPT | _get_llm()
-        response  = chain.invoke({"query": query})
+        response  = chain.invoke({"query": query, "history": history_str})
         rewritten = response.content.strip().strip('"').strip("'")
 
         if not rewritten or rewritten == query:
@@ -169,8 +181,8 @@ def _node_rewrite(state: CorrectiveRAGState) -> dict:
             return {"rewritten": query}
 
         logger.info(
-            "   ✅ [node_rewrite] — original='%s…' → rewritten='%s…'",
-            query[:50], rewritten[:50],
+            "   ✅ [node_rewrite] — original='%s' → rewritten='%s'",
+            query, rewritten,
         )
         return {"rewritten": rewritten}
 
@@ -180,8 +192,6 @@ def _node_rewrite(state: CorrectiveRAGState) -> dict:
             err,
         )
         return {"rewritten": query}
-
-
 def _node_retrieve2(state: CorrectiveRAGState) -> dict:
     """Node: second retrieval pass using the rewritten query."""
     rewritten   = state["rewritten"]
@@ -304,6 +314,7 @@ def corrective_retrieve(
     retrieve_fn: Callable,
     top_k: int = 5,
     filters: Optional[dict] = None,
+    session_history: list[dict] | None = None,
 ) -> tuple[list[dict], str]:
     """
     Run the LangGraph corrective retrieval graph.
@@ -313,10 +324,12 @@ def corrective_retrieve(
 
     Parameters
     ──────────
-    query       : original user query
-    retrieve_fn : callable (query: str, top_k: int, filters: dict|None) → list[dict]
-    top_k       : number of chunks to retrieve per pass
-    filters     : optional Milvus metadata filters
+    query           : original user query
+    retrieve_fn     : callable (query: str, top_k: int, filters: dict|None) → list[dict]
+    top_k           : number of chunks to retrieve per pass
+    filters         : optional Milvus metadata filters
+    session_history : prior chat turns [{role, content}] — used by the rewrite node
+                      to resolve ambiguous references using conversation context
 
     Returns
     ───────
@@ -330,17 +343,18 @@ def corrective_retrieve(
     )
 
     initial_state: CorrectiveRAGState = {
-        "query":        query,
-        "retrieve_fn":  retrieve_fn,
-        "top_k":        top_k,
-        "filters":      filters,
-        "chunks1":      [],
-        "score1":       0.0,
-        "rewritten":    query,
-        "chunks2":      [],
-        "score2":       0.0,
-        "final_chunks": [],
-        "final_query":  query,
+        "query":           query,
+        "retrieve_fn":     retrieve_fn,
+        "top_k":           top_k,
+        "filters":         filters,
+        "session_history": session_history or [],
+        "chunks1":         [],
+        "score1":          0.0,
+        "rewritten":       query,
+        "chunks2":         [],
+        "score2":          0.0,
+        "final_chunks":    [],
+        "final_query":     query,
     }
 
     result = _corrective_graph.invoke(initial_state)

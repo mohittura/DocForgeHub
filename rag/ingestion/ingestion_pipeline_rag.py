@@ -7,8 +7,8 @@ Full flow per page:
     Notion Database row
         → get_page_blocks()    (rate-limited Notion API calls)
         → chunk_page()         (token-aware overlapping chunker)
-        → embed_chunks()       (OpenAI text-embedding-3-small, batched)
-        → insert_chunks()      (Milvus HNSW collection)
+        → embed_chunks()       (Azure OpenAI text-embedding-3-large, batched)
+        → insert_chunks()      (Milvus AUTOINDEX + COSINE collection)
 
 Rate limiting
 ─────────────

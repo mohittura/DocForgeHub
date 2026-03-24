@@ -137,6 +137,7 @@ def run_rag_pipeline(
         retrieve_fn=_retrieve_fn,
         top_k=top_k,
         filters=filters or None,
+        session_history=session_history or [],
     )
     logger.info(
         "   📥 Corrective retrieval done — %d chunks  rewritten=%s",

@@ -9,7 +9,7 @@ Responsibilities
      Uses identical Azure config as embedder_rag.py so chunks and queries
      live in the same vector space — cosine similarity scores are valid.
   2. Pass both the dense vector AND the raw query text to hybrid_search_chunks
-     in milvus_client_rag, which runs HNSW + BM25 fused by RRFRanker.
+     in milvus_client_rag, which runs dense-only AUTOINDEX + COSINE (milvus-lite).
   3. Return ranked chunk dicts to the pipeline.
 
 Azure env variables required  (must match embedder_rag.py exactly)
@@ -94,13 +94,13 @@ def retrieve(
     filters: Optional[dict] = None,
 ) -> list[dict]:
     """
-    Main retrieval function — hybrid dense + sparse search with RRF fusion.
+    Main retrieval function — dense vector search with COSINE similarity.
 
     Steps:
       1. Embed the query with Azure OpenAI text-embedding-3-large.
-      2. Call hybrid_search_chunks with both the dense vector and the raw
-         query text — Milvus runs HNSW + BM25 and fuses with RRFRanker.
-      3. Return top_k fused-and-ranked chunk dicts.
+      2. Call hybrid_search_chunks with the dense vector and the raw query text.
+         Milvus runs AUTOINDEX + COSINE (milvus-lite: dense only).
+      3. Return top_k ranked chunk dicts.
 
     filters supported keys: industry, doc_type, version, tags
     (pre-validated by filters_rag.build_filters)

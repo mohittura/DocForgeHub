@@ -157,9 +157,14 @@ def _node_rewrite(state: CorrectiveRAGState) -> dict:
 
     # Build a compact history string from the last 6 turns.
     # Truncate each turn to 200 chars to keep the prompt concise.
+    # IMPORTANT: only include user turns — prior AI answers contain content
+    # from old topics which would misdirect the rewritten query when the
+    # user shifts topic mid-session.
     history_lines = []
     for turn in session_history[-6:]:
         role = turn.get("role", "user").capitalize()
+        if role != "User":
+            continue   # skip AI turns — they carry stale topic content
         text = turn.get("content", "")[:200].replace("\n", " ")
         history_lines.append(f"{role}: {text}")
     history_str = "\n".join(history_lines) if history_lines else "(no prior conversation)"

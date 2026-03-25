@@ -175,19 +175,40 @@ def run_rag_pipeline(
 
     # ── 6. LLM answer (AzureChatOpenAI via LangChain) ────────────────────────
     system_prompt = SYSTEM_PROMPT_BY_MODE.get(llm_mode, RAG_SYSTEM_PROMPT)
-    user_content  = f"Context:\n{context}\n\nQuestion: {rewritten_query}"
 
-    # Compose messages: system + optional history (last 6 turns) + user
+    # Build a stripped-down history that only carries user questions,
+    # NOT prior assistant answers.
+    #
+    # Why: prior assistant answers contain content from old topics. When the
+    # user shifts topic mid-session the LLM anchors on those old AI turns and
+    # hallucinates instead of reading the freshly retrieved context blocks.
+    # Keeping only user turns preserves conversational thread awareness
+    # (so the LLM understands references like "what about X instead?") without
+    # poisoning the answer with stale AI-generated content.
+    #
+    # The retrieved context blocks in `user_content` are the ONLY source of
+    # factual truth — the system prompt enforces this explicitly.
     lc_messages = [SystemMessage(content=system_prompt)]
     if session_history:
-        for turn in session_history[-6:]:
+        from langchain_core.messages import AIMessage
+        prior_turns = session_history[-6:]   # last 3 exchanges max
+        for turn in prior_turns:
             role    = turn.get("role", "user")
             content = turn.get("content", "")
             if role == "user":
                 lc_messages.append(HumanMessage(content=content))
             else:
-                from langchain_core.messages import AIMessage
-                lc_messages.append(AIMessage(content=content))
+                # Replace the prior assistant answer with a neutral placeholder.
+                # This keeps the turn-pair structure intact (so the LLM knows
+                # a response was given) without injecting old factual content
+                # that could contaminate the current answer.
+                lc_messages.append(AIMessage(content="[Previous answer — see retrieved context below for current facts.]"))
+
+    user_content = (
+        f"Retrieved context (authoritative source — answer from this only):\n"
+        f"{context}\n\n"
+        f"Question: {rewritten_query}"
+    )
     lc_messages.append(HumanMessage(content=user_content))
 
     logger.info(

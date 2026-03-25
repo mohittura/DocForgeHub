@@ -58,6 +58,7 @@ from rag.retrieval.retriever_rag      import retrieve
 from rag.retrieval.filters_rag        import build_filters
 from rag.ingestion.ingestion_pipeline_rag import ingest_all_pages, ingest_page
 from rag.evaluation.ragas_runner_rag  import run_ragas_evaluation
+from rag.api.statecase_routes_rag     import router as statecase_router
 
 
 # ── Lifespan ─────────────────────────────────────────────────────────────────
@@ -89,6 +90,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# ── StateCase ticketing sub-service ───────────────────────────────────────────
+app.include_router(statecase_router)
 
 
 # ── Pydantic request models ───────────────────────────────────────────────────
@@ -332,4 +336,4 @@ async def run_evaluation(req: EvalRequest):
 async def health():
     """Simple liveness probe."""
     logger.info("💚 GET /health — OK")
-    return {"status": "ok", "service": "CiteRagLab", "port": 8001}
+    return {"status": "ok", "service": "CiteRagLab + StateCase", "port": 8001}

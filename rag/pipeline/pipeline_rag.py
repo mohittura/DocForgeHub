@@ -218,6 +218,7 @@ def run_rag_pipeline(
             "tags":     chunk.get("tags",     []),
             "page_id":  chunk.get("page_id",  ""),
             "score":    chunk.get("score",    0.0),
+            "chunk_text": chunk.get("chunk_text", ""),
         })
     logger.info("   📚 Citations built — %d entries", len(citations))
 

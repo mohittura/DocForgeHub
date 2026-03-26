@@ -215,24 +215,49 @@ def update_support_ticket(
     Only provide the fields you want to change — leave others blank.
 
     Args:
-        notion_page_id: The Notion page ID of the ticket (from list_support_tickets).
-        status:         New status: Not started | In progress | Done (Notion Status options).
+        notion_page_id: The Notion page UUID of the ticket. If you only know
+                        the ticket title or SC-XXXX ID, pass that — this tool
+                        will look up the correct UUID automatically.
+        status:         New status. Must be exactly one of:
+                        "Not started" | "In progress" | "Done"
         assigned_owner: New assignee name or team.
         priority:       New priority: Low | Medium | High | Critical.
         description:    Updated short description.
 
     Returns the updated ticket dict with success=True, or success=False + error.
     """
-    from rag.pipeline.statecase_notion_rag import update_ticket
+    from rag.pipeline.statecase_notion_rag import update_ticket, find_ticket_by_title
+    import re
 
     logger.info(
         "🔧 [tool:update_support_ticket] page_id=%s  status=%s  owner=%s  priority=%s",
         notion_page_id, status or "(unchanged)", assigned_owner or "(unchanged)", priority or "(unchanged)",
     )
 
+    # ── Resolve non-UUID identifiers to the actual Notion page UUID ────────────
+    # The LLM often supplies the ticket title or SC-XXXX ID instead of a UUID.
+    # Detect this and look up the real page_id before calling the API.
+    _UUID_RE = re.compile(
+        r"^[0-9a-f]{8}-?[0-9a-f]{4}-?[0-9a-f]{4}-?[0-9a-f]{4}-?[0-9a-f]{12}$",
+        re.IGNORECASE,
+    )
+    resolved_page_id = notion_page_id
+    if not _UUID_RE.match(notion_page_id.replace("-", "")):
+        logger.info(
+            "   ℹ️  '%s' is not a UUID — looking up ticket by title/ID…",
+            notion_page_id,
+        )
+        ticket = find_ticket_by_title(notion_page_id)
+        if not ticket:
+            msg = f"Could not find a ticket matching '{notion_page_id}'. Please check the ticket ID or title."
+            logger.error("   ❌ [tool:update_support_ticket] %s", msg)
+            return {"success": False, "error": msg}
+        resolved_page_id = ticket["notion_page_id"]
+        logger.info("   ✅ Resolved to page_id=%s", resolved_page_id)
+
     try:
         ticket = update_ticket(
-            notion_page_id=notion_page_id,
+            notion_page_id=resolved_page_id,
             status=status or None,
             assigned_owner=assigned_owner or None,
             priority=priority or None,
@@ -262,7 +287,7 @@ def list_support_tickets(
 
     Args:
         status_filter: Filter by status. Leave blank for all tickets.
-                       Valid values: Not started | In progress | Done
+                       Valid values: "Not started" | "In progress" | "Done"
         limit:         Maximum number of tickets to return (default 20, max 100).
 
     Returns a dict with:

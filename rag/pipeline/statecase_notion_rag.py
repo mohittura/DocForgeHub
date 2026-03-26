@@ -375,9 +375,10 @@ def list_tickets(
 
     body: dict = {"page_size": min(limit, 100), "sorts": [{"timestamp": "created_time", "direction": "descending"}]}
     if status_filter:
+        # Status is a Notion "status" property type — must use {"status": ...} not {"select": ...}
         body["filter"] = {
             "property": "Status",
-            "select":   {"equals": status_filter},
+            "status":   {"equals": status_filter},
         }
 
     logger.info(
@@ -438,3 +439,43 @@ def _find_by_dedup(dedup: str) -> dict | None:
     except Exception as err:
         logger.warning("⚠️  _find_by_dedup search failed: %s", err)
         return None
+
+
+def find_ticket_by_title(search_term: str) -> dict | None:
+    """
+    Search for a ticket by its Question (title) text or Ticket ID (e.g. "SC-0012").
+
+    Used by update_support_ticket tool when the LLM supplies a human-readable
+    name instead of a raw Notion page UUID.
+
+    Returns the ticket dict (including notion_page_id) or None if not found.
+    """
+    client = _get_client()
+    db_id  = _normalise_db_id(STATECASE_DB_ID)
+
+    # Try SC-XXXX Ticket ID match first, then partial Question title match
+    for filter_body in [
+        {"property": "Ticket ID", "rich_text": {"contains": search_term}},
+        {"property": "Question",  "title":     {"contains": search_term}},
+    ]:
+        body = {"filter": filter_body, "page_size": 1}
+        try:
+            resp = _notion_call(
+                client.request,
+                path=f"databases/{db_id}/query",
+                method="POST",
+                body=body,
+            )
+            results = resp.get("results", [])
+            if results:
+                ticket = _page_to_ticket(results[0])
+                logger.info(
+                    "🔍 find_ticket_by_title('%s') → ticket_id=%s  page_id=%s",
+                    search_term, ticket["ticket_id"], ticket["notion_page_id"],
+                )
+                return ticket
+        except Exception as err:
+            logger.warning("⚠️  find_ticket_by_title search failed: %s", err)
+
+    logger.info("🔍 find_ticket_by_title('%s') → not found", search_term)
+    return None

@@ -58,7 +58,7 @@ _REFUSAL_PREFIXES = (
 )
 
 PRIORITY_OPTIONS = ["Low", "Medium", "High", "Critical"]
-STATUS_OPTIONS   = ["Open", "In Progress", "Resolved", "Closed"]
+STATUS_OPTIONS   = ["Not started", "In progress", "Done"]
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -296,7 +296,7 @@ def _render_chat_tab():
                         t_id  = ticket_info.get("ticket_id", "")
                         t_pri = ticket_info.get("priority", "")
                         t_url = ticket_info.get("url", "")
-                        badge_text = f"🎫 **{t_id}** · Priority: {t_pri} · Status: Open"
+                        badge_text = f"🎫 {t_id} · Priority: {t_pri} · Status: {ticket_info.get('status', 'Not started')}"
                         if t_url:
                             badge_text += f" · [View in Notion]({t_url})"
                         st.info(badge_text)
@@ -468,9 +468,9 @@ def _render_tickets_tab():
             all_loaded = st.session_state.sc_ticket_list
             m1, m2, m3, m4 = st.columns(4)
             m1.metric("Total",       len(all_loaded))
-            m2.metric("Open",        sum(1 for t in all_loaded if t.get("status") == "Open"))
-            m3.metric("In Progress", sum(1 for t in all_loaded if t.get("status") == "In Progress"))
-            m4.metric("Resolved",    sum(1 for t in all_loaded if t.get("status") in ("Resolved","Closed")))
+            m2.metric("Not started", sum(1 for t in all_loaded if t.get("status") == "Not started"))
+            m3.metric("In progress", sum(1 for t in all_loaded if t.get("status") == "In progress"))
+            m4.metric("Done",        sum(1 for t in all_loaded if t.get("status") == "Done"))
 
             st.divider()
 
@@ -480,7 +480,7 @@ def _render_tickets_tab():
                 desc      = ticket.get("description",    "—")
                 question  = ticket.get("question",       "")
                 priority  = ticket.get("priority",       "Medium")
-                status    = ticket.get("status",         "Open")
+                status    = ticket.get("status",         "Not started")
                 owner     = ticket.get("assigned_owner", "Unassigned")
                 sources   = ticket.get("attempted_sources", "")
                 page_id   = ticket.get("notion_page_id", "")
@@ -489,10 +489,10 @@ def _render_tickets_tab():
 
                 # Priority colour badge
                 priority_icon = {"Low": "🟢", "Medium": "🟡", "High": "🟠", "Critical": "🔴"}.get(priority, "⚪")
-                status_icon   = {"Open": "📬", "In Progress": "🔄", "Resolved": "✅", "Closed": "🔒"}.get(status, "📬")
+                status_icon   = {"Not started": "📬", "In progress": "🔄", "Done": "✅"}.get(status, "📬")
 
                 with st.expander(
-                    f"{status_icon} **{tid}** — {desc[:70]}{'…' if len(desc)>70 else ''}  "
+                    f"{status_icon} {tid} — {desc[:70]}{'…' if len(desc)>70 else ''}  "
                     f"{priority_icon} {priority}",
                     expanded=False,
                 ):

@@ -314,11 +314,12 @@ def _sync_run(coro):
         return None
 
 
-def _build_memory_context(memory: dict) -> str:
+def _build_memory_context(memory: dict, session_id: str = "") -> str:
     """Format memory dict into a readable context string for the system prompt."""
-    if not memory:
-        return "(no prior context)"
     lines = []
+    # Always expose the real session_id so the LLM passes it correctly to tools
+    if session_id:
+        lines.append(f"- Current session_id: {session_id}  ← ALWAYS use this exact value when calling create_support_ticket")
     if memory.get("last_question"):
         lines.append(f"- Last question: {memory['last_question'][:120]}")
     if memory.get("pending_ticket_context"):
@@ -394,9 +395,9 @@ def _node_agent(state: StateCaseAgentState) -> dict:
     trace_id     = state["trace_id"]
     messages     = state.get("messages", [])
 
-    # Build system message with current memory context
+    # Build system message with current memory context (includes real session_id)
     system_msg = SystemMessage(
-        content=_SYSTEM_PROMPT.format(memory_context=_build_memory_context(memory))
+        content=_SYSTEM_PROMPT.format(memory_context=_build_memory_context(memory, session_id))
     )
 
     logger.info(

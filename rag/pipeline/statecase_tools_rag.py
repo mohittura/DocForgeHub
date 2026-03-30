@@ -110,19 +110,47 @@ def rag_search(
 
     avg_score  = result.get("avg_score", 0.0)
     answerable = avg_score >= 0.30
+    citations  = result.get("citations", [])
+
+    # Collect all retrieved chunk titles for the "Attempted Sources" Notion field.
+    # Citations only contains chunks that PASSED the relevance threshold, so for
+    # unanswerable queries it is always empty — that is why sources showed "None".
+    # We pull titles from the raw "chunks" list (all Milvus hits before filtering)
+    # and fall back to citations if the pipeline didn't surface raw chunks.
+    raw_chunks = result.get("chunks", [])
+    if raw_chunks:
+        attempted_sources = sorted({c.get("title","").strip() for c in raw_chunks if c.get("title","").strip()})
+    elif citations:
+        attempted_sources = sorted({c.get("title","").strip() for c in citations if c.get("title","").strip()})
+    else:
+        # Score gate fired — pipeline returned empty chunks AND empty citations.
+        # Call the retriever directly so we still get the titles of what was tried.
+        try:
+            from rag.retrieval.retriever_rag import retrieve
+            from rag.retrieval.filters_rag   import build_filters
+            _f = build_filters(raw_filters) if raw_filters else None
+            attempted_sources = sorted({
+                c.get("title","").strip()
+                for c in retrieve(query, top_k=5, filters=_f)
+                if c.get("title","").strip()
+            })
+        except Exception as exc:
+            logger.warning("attempted_sources fallback failed: %s", exc)
+            attempted_sources = []
 
     logger.info(
-        "   ✅ [tool:rag_search] score=%.4f  answerable=%s  citations=%d",
-        avg_score, answerable, len(result.get("citations", [])),
+        "   ✅ [tool:rag_search] score=%.4f  answerable=%s  citations=%d  attempted_sources=%d",
+        avg_score, answerable, len(citations), len(attempted_sources),
     )
 
     return {
-        "answer":     result.get("answer", ""),
-        "citations":  result.get("citations", []),
-        "avg_score":  avg_score,
-        "mode":       result.get("mode", "QA"),
-        "rewritten":  result.get("rewritten", query),
-        "answerable": answerable,
+        "answer":            result.get("answer", ""),
+        "citations":         citations,
+        "avg_score":         avg_score,
+        "mode":              result.get("mode", "QA"),
+        "rewritten":         result.get("rewritten", query),
+        "answerable":        answerable,
+        "attempted_sources": attempted_sources,  # all chunk titles tried, even below threshold
     }
 
 

@@ -110,9 +110,15 @@ def _notion_call(api_fn, **kwargs):
 
 # ── Dedup key ─────────────────────────────────────────────────────────────────
 def _dedup_key(session_id: str, question: str) -> str:
-    """SHA-256 fingerprint of (session_id, question) — used for idempotency."""
-    raw = f"{session_id}::{question.strip().lower()}"
-    return hashlib.sha256(raw.encode()).hexdigest()[:16]
+    """
+    Idempotency hash for ticket creation.
+
+    Hashes QUESTION CONTENT ONLY (lowercased + stripped).
+    session_id is intentionally excluded so the same question raised from a
+    different session (new tab, new user) is still caught as a duplicate.
+    session_id is still written to User Info for traceability.
+    """
+    return hashlib.sha256(question.strip().lower().encode()).hexdigest()[:16]
 
 
 # ── Ticket ID counter ─────────────────────────────────────────────────────────
@@ -243,13 +249,18 @@ def create_ticket(
 
     # ── Idempotency check ─────────────────────────────────────────────────────
     if check_duplicate:
+        # Layer 1: exact question-hash match (fast, hits Redis + Notion User Info)
         existing = _find_by_dedup(dedup)
         if existing:
-            logger.info(
-                "♻️  Duplicate ticket detected (dedup=%s) — returning existing ticket_id=%s",
-                dedup, existing["ticket_id"],
-            )
+            logger.info("♻️  Dedup hit (hash) — returning existing ticket_id=%s", existing["ticket_id"])
             return existing
+
+        # Layer 2: title similarity — catches same question from a different session
+        # whose hash differs only because the question was phrased slightly differently
+        similar = find_ticket_by_title(question[:120])
+        if similar:
+            logger.info("♻️  Dedup hit (title match) — returning existing ticket_id=%s", similar["ticket_id"])
+            return similar
 
     ticket_id = _get_next_ticket_id()
     sources_str = ", ".join(attempted_sources) if attempted_sources else "None"

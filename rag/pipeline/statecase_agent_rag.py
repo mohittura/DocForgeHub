@@ -250,6 +250,8 @@ You can call MULTIPLE tools in a single turn. For example:
 6. ALWAYS be concise and well-structured in responses.
 7. If a tool returns success=false, explain the error clearly and suggest next steps.
 8. Use markdown formatting: **bold** for key terms, bullet lists, ## headings for long answers.
+9. If the user query is not related to documents or tickets (e.g. "
+what is 3+4(5*32) -32 * 0.5?") → dont answer these types of questions. dont do basic math either. instead, say "I'm here to help with questions about our documents and support tickets. For other questions, you might want to try a different assistant or a search engine!".
 """
 
 # ── Lazy LLM with tools bound ─────────────────────────────────────────────────
@@ -302,33 +304,55 @@ class StateCaseAgentState(TypedDict):
 # ═══════════════════════════════════════════════════════════════════════════════
 
 def _sync_run(coro):
-    """Run an async coroutine from a sync context."""
+    """
+    Run an async coroutine from a sync context.
+    Always uses a fresh thread — avoids 'no current event loop' in Python 3.10+.
+    """
     try:
-        loop = asyncio.get_event_loop()
-        if loop.is_running():
-            with concurrent.futures.ThreadPoolExecutor() as pool:
-                return pool.submit(asyncio.run, coro).result(timeout=8)
-        return loop.run_until_complete(coro)
+        with concurrent.futures.ThreadPoolExecutor(max_workers=1) as pool:
+            return pool.submit(asyncio.run, coro).result(timeout=8)
     except Exception as err:
         logger.warning("⚠️  _sync_run error: %s", err)
         return None
 
 
+def _sync_redis_set(key: str, value: str, ex: int) -> None:
+    """
+    Write a Redis key with the sync client.
+    Used in _node_save_mem to avoid 'Event loop is closed' — the async
+    singleton gets bound to a thread loop opened by _sync_run, which closes
+    when that thread exits. The sync client has no such issue.
+    """
+    try:
+        import redis as _redis_sync
+        r = _redis_sync.from_url(
+            os.getenv("REDIS_URL", "redis://localhost:6379"),
+            socket_connect_timeout=2,
+            decode_responses=True,
+        )
+        r.set(key, value, ex=ex)
+        logger.info("💾 statecase memory saved (sync) key=%s", key)
+    except Exception as err:
+        logger.warning("⚠️  _sync_redis_set error key=%s: %s", key, err)
+
+
 def _build_memory_context(memory: dict, session_id: str = "") -> str:
     """Format memory dict into a readable context string for the system prompt."""
     lines = []
-    # Always expose the real session_id so the LLM passes it correctly to tools
     if session_id:
         lines.append(f"- Current session_id: {session_id}  ← ALWAYS use this exact value when calling create_support_ticket")
     if memory.get("last_question"):
-        lines.append(f"- Last question: {memory['last_question'][:120]}")
+        lines.append(f"- Last question asked: {memory['last_question'][:120]}")
+    if memory.get("last_answer_summary"):
+        lines.append(f"- Summary of last answer given: {memory['last_answer_summary'][:150]}")
     if memory.get("pending_ticket_context"):
         p = memory["pending_ticket_context"]
+        src = ", ".join(p.get("attempted_sources", [])) or "(none)"
         lines.append(
             f"- PENDING TICKET OFFER: You previously offered to create a ticket for: "
             f"'{p.get('question','')[:120]}'. "
-            f"If the user says yes, call create_support_ticket with this question "
-            f"and attempted_sources='{','.join(p.get('attempted_sources',[]))}'."
+            f"Attempted sources: {src}. "
+            f"If the user says yes → call create_support_ticket with this question and attempted_sources='{src}'."
         )
     return "\n".join(lines) if lines else "(no prior context)"
 
@@ -378,18 +402,6 @@ async def _node_load_mem(state: StateCaseAgentState) -> dict:
 
 
 def _node_agent(state: StateCaseAgentState) -> dict:
-    """
-    Core agent node — calls the LLM with tools bound.
-
-    Injects:
-      - System prompt with memory context (pending ticket, last question)
-      - Full message history (including prior tool results)
-      - Prepended session history from Redis for multi-turn RAG context
-
-    The LLM returns either:
-      - tool_calls  → ToolNode will execute them, then loop back here
-      - content     → final text response; we exit the loop
-    """
     session_id   = state["session_id"]
     memory       = state.get("memory", {})
     trace_id     = state["trace_id"]
@@ -400,13 +412,44 @@ def _node_agent(state: StateCaseAgentState) -> dict:
         content=_SYSTEM_PROMPT.format(memory_context=_build_memory_context(memory, session_id))
     )
 
+    # ── Inject prior session history for multi-turn memory ────────────────────
+    # We load the last N turns from Redis and prepend them as HumanMessage /
+    # AIMessage pairs so the LLM knows what was said earlier in this session.
+    #
+    # Context-rot guard: AI turns are wrapped with a note that they are prior
+    # conversation history — NOT verified facts or source-of-truth.  This lets
+    # the agent remember what it said ("summarise it" works) while preventing it
+    # from treating its own previous answers as document ground truth.
+    #
+    # Topic-shift safety: we only inject the last 6 turns (3 user + 3 assistant).
+    # Older history stays in Redis but is not sent to the LLM, so stale context
+    # from a previous topic does not bleed into the current answer.
+    history_msgs: list[BaseMessage] = []
+    try:
+        raw_history = _sync_run(get_session_history(session_id)) or []
+        recent = raw_history[-6:]  # last 3 user + 3 assistant turns
+        for turn in recent:
+            role    = turn.get("role", "")
+            content = turn.get("content", "").strip()
+            if not content:
+                continue
+            if role == "user":
+                history_msgs.append(HumanMessage(content=content))
+            elif role == "assistant":
+                # Wrap AI turns to prevent context rot
+                history_msgs.append(AIMessage(
+                    content=f"[Prior answer — treat as conversation context only, not as document source-of-truth]\n{content}"
+                ))
+    except Exception as err:
+        logger.warning("⚠️  [%s] could not load session history: %s", trace_id, err)
+
     logger.info(
-        "🤖 [%s] agent — session=%s  messages=%d  has_pending=%s",
-        trace_id, session_id, len(messages),
+        "🤖 [%s] agent — session=%s  history_turns=%d  current_msgs=%d  has_pending=%s",
+        trace_id, session_id, len(history_msgs), len(messages),
         bool(memory.get("pending_ticket_context")),
     )
 
-    response = _get_llm_with_tools().invoke([system_msg] + messages)
+    response = _get_llm_with_tools().invoke([system_msg] + history_msgs + messages)
 
     tool_calls = getattr(response, "tool_calls", [])
     logger.info(
@@ -416,15 +459,10 @@ def _node_agent(state: StateCaseAgentState) -> dict:
     for tc in tool_calls:
         logger.info("      🔧 tool_call: %s(%s)", tc["name"], str(tc["args"])[:120])
 
-    # Update memory based on tool calls being made this turn
     updated_memory = dict(memory)
-
-    # If the LLM is calling rag_search, track the query as last_question
     for tc in tool_calls:
         if tc["name"] == "rag_search":
             updated_memory["last_question"] = tc["args"].get("query", "")
-
-    # If LLM is calling create_support_ticket, clear any pending context
     for tc in tool_calls:
         if tc["name"] == "create_support_ticket":
             updated_memory.pop("pending_ticket_context", None)
@@ -452,10 +490,10 @@ def _node_update_memory_after_tools(state: StateCaseAgentState) -> dict:
 
     if rag_result:
         if not rag_result.get("answerable", True):
-            # Store pending context so next turn can act on a yes/no
-            citations = rag_result.get("citations", [])
-            attempted = list({c.get("title","") for c in citations if c.get("title")}) or ["(none)"]
-            # Get the query from the most recent rag_search tool call
+            # Use the attempted_sources list the rag_search tool now returns.
+            # This contains all Milvus chunk titles retrieved, including those
+            # below the relevance threshold — so it's never empty.
+            attempted = rag_result.get("attempted_sources", []) or ["(none)"]
             last_question = memory.get("last_question", "")
             memory["pending_ticket_context"] = {
                 "question":          last_question,
@@ -465,13 +503,15 @@ def _node_update_memory_after_tools(state: StateCaseAgentState) -> dict:
                 "priority":          state.get("ticket_priority", "Medium"),
                 "owner":             state.get("ticket_owner", "Unassigned"),
             }
-            logger.info(
-                "🤔 [%s] rag_search unanswerable — pending_ticket_context stored", trace_id
-            )
+            logger.info("🤔 [%s] rag_search unanswerable — pending_ticket_context stored (sources=%s)", trace_id, attempted)
         else:
-            # Answered — clear any stale pending context
             memory.pop("pending_ticket_context", None)
-            logger.info("✅ [%s] rag_search answerable — pending context cleared", trace_id)
+            # Store a short summary of the answer so the agent can reference it
+            # on follow-ups ("summarise it") without storing the full answer
+            # (which caused context rot when the full text was used as ground truth)
+            answer_text = rag_result.get("answer", "")
+            memory["last_answer_summary"] = answer_text[:150].rstrip() + ("…" if len(answer_text) > 150 else "")
+            logger.info("✅ [%s] rag_search answerable — pending context cleared, summary stored", trace_id)
 
     if ticket_result and ticket_result.get("success"):
         memory.pop("pending_ticket_context", None)
@@ -520,17 +560,9 @@ async def _node_save_mem(state: StateCaseAgentState) -> dict:
         }
 
     # ── Persist memory to Redis ────────────────────────────────────────────────
-    try:
-        from rag.pipeline.redis_cache_rag import _get_client as _get_redis
-        redis = await _get_redis()
-        if redis:
-            await redis.set(
-                f"statecase:memory:{session_id}",
-                json.dumps(memory),
-                ex=86400,
-            )
-    except Exception as err:
-        logger.warning("⚠️  [%s] save_mem memory error: %s", trace_id, err)
+    # Use sync client: the async singleton may be bound to a closed event loop
+    # if _sync_run was called earlier this turn (it creates and closes thread loops).
+    _sync_redis_set(f"statecase:memory:{session_id}", json.dumps(memory), ex=86400)
 
     # ── Append to session history for multi-turn RAG context ──────────────────
     try:

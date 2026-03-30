@@ -239,31 +239,31 @@ def _render_chat_tab():
         if agent_mode:
             st.success("🎫 Auto-ticket ON", icon=None)
 
-    # ── Filters ───────────────────────────────────────────────────────────────
-    _fv = st.session_state.crl_filter_version_counter
-    fc1, fc2, fc3 = st.columns([3, 2, 1])
-    with fc1:
-        st.session_state.crl_filters["industry"] = st.text_input(
-            "Industry", placeholder="Industry (e.g. Cybersecurity)",
-            key=f"crl_filter_industry_{_fv}",
-        )
-    with fc2:
-        st.session_state.crl_filters["version"] = st.text_input(
-            "Version", placeholder="Version (e.g. 1.0)",
-            key=f"crl_filter_version_{_fv}",
-        )
-    with fc3:
-        st.write("")
-        if st.button("✕ Clear", use_container_width=True, key="crl_clear_filters_button"):
-            st.session_state.crl_filters = {"industry": "", "version": ""}
-            st.session_state.crl_filter_version_counter += 1
-            st.rerun()
-
-    st.divider()
+    # ── Filters — only shown in bare RAG mode (hidden when agent/auto-ticket ON) ──
+    if not agent_mode:
+        _fv = st.session_state.crl_filter_version_counter
+        fc1, fc2, fc3 = st.columns([3, 2, 1])
+        with fc1:
+            st.session_state.crl_filters["industry"] = st.text_input(
+                "Industry", placeholder="Industry (e.g. Cybersecurity)",
+                key=f"crl_filter_industry_{_fv}",
+            )
+        with fc2:
+            st.session_state.crl_filters["version"] = st.text_input(
+                "Version", placeholder="Version (e.g. 1.0)",
+                key=f"crl_filter_version_{_fv}",
+            )
+        with fc3:
+            st.write("")
+            if st.button("✕ Clear", use_container_width=True, key="crl_clear_filters_button"):
+                st.session_state.crl_filters = {"industry": "", "version": ""}
+                st.session_state.crl_filter_version_counter += 1
+                st.rerun()
+        st.divider()
 
     # ── Message history ────────────────────────────────────────────────────────
     all_messages      = _get_active_messages()
-    messages_container = st.container(height=430, border=False)
+    messages_container = st.container(height=560, border=False)
 
     with messages_container:
         if not all_messages:

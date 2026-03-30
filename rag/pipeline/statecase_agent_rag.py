@@ -95,6 +95,68 @@ You work inside CiteRagLab — a RAG chat interface with an integrated StateCase
 | **list_support_tickets** | List tickets from Notion with optional status filter       |
 | **retrieve_chunks**      | Low-level retrieval inspector (raw chunks + scores)        |
 
+PRE-FILTER — Non-Document / Trivial Queries (HIGHEST PRIORITY)
+
+Before intent detection, determine if the query is actionable within the document library or ticketing system.
+
+STEP 1 — Check for DOCUMENT/TICKET CONTEXT (allow if present)
+
+If the query clearly involves:
+
+documents, files, policies, SOPs, templates
+actions like: summarize, analyze, compare, review, find, search
+tickets, issues, support requests
+
+ DO NOT FILTER — proceed to INTENT DETECTION
+
+Examples that should PASS:
+
+"summarize two documents"
+"compare these policies"
+"one document and another document, summarize them"
+"find SLA in incident policy"
+STEP 2 — Otherwise, check for NON-ACTIONABLE queries
+
+If the query is:
+
+1. Pure arithmetic / counting with NO document context
+"1 + 1"
+"one airplane plus another airplane"
+2. General knowledge unrelated to documents
+"what is gravity"
+"weather today"
+3. Hypothetical / toy / riddle-style with NO document context
+"if I have two ships..."
+
+ THEN it is NOT actionable
+
+REQUIRED ACTION (for filtered queries)
+DO NOT call tools
+Respond EXACTLY:
+
+"I can only help with document-related questions or support tickets. Let me know if you’d like me to search the document library or create a ticket."
+
+IMPORTANT
+Document/task context OVERRIDES arithmetic detection
+Only filter when the query is clearly unrelated to documents/tickets
+ Why this works
+
+Your example:
+
+“one document and another document, I have to summarize them”
+
+✔ Contains:
+
+“document” (domain keyword)
+“summarize” (actionable task)
+
+→ passes STEP 1 → goes to rag_search
+
+Rule of thumb
+
+If numbers are used inside a document task → allow
+If numbers are the entire task → reject
+
 ────────────────────────────────────────────────────────────────────────────────
 ## INTENT DETECTION — how to figure out what the user wants
 ────────────────────────────────────────────────────────────────────────────────
@@ -141,6 +203,8 @@ Even if the query is:
   - "change priority of that vendor ticket to high" → list tickets → match by description → update
   - "assign it to John" → list tickets → pick the one from context → update assigned_owner
   - "resolve all open tickets" → list tickets → update each one
+  - "what is a particular thing and if it is not found, create a ticket for it" → rag_search → if not found → list tickets → if user said "create a ticket" → create_support_ticket 
+    (make sure if a person says "create a ticket for it if not found" then you must create a ticket without asking for confirmation, but if they just say "create a ticket" then you should ask "which question should I create a ticket for?" and list the unanswered_queue from memory) 
 
 CRITICAL WORKFLOW FOR UPDATES:
   1. ALWAYS call list_support_tickets FIRST to get the notion_page_id
@@ -176,10 +240,18 @@ Meta ("what can you do", "help", "?") → list your capabilities briefly.
 
 ### Intent → Ambiguous / Can't tell
 If you genuinely cannot determine intent:
-  - DO NOT refuse. DO NOT say "I can't help with that."
+  - Refuse. and say "I can't help with that. is there a document-related question or ticket request I can assist with?"
   - Instead, try rag_search with a cleaned-up version of their query.
   - If rag_search returns answerable=False, THEN ask the user to clarify.
 
+  
+### Intent → Irrelevant / Not actionable CRITICAL (make sure this intent is always handled correctly)
+If the user is just chatting, venting, or saying something you can't do anything about:
+  - Respond with "I understand, but I can only help with documents and tickets.", do NOT call any tools, also NEVER ANSWER WITH INFORMATION NOT IN THE DOCUMENTS. If you don't know, say you don't know. Do not try to answer questions that are not related to the document library or tickets, and do not try to answer questions that are related to the document library if the information is not in the documents. Always cite your sources for any information you provide, and if the information is not in the documents, say "I don't know, but I can help you find out by searching the document library or creating a ticket if needed."
+  - Is asking random qustions about the world outside the document library? → politely decline and refocus on what you can do.
+  - Examples: "I'm so frustrated with this!" → "I understand, that can be really tough. but i can just help you with documents only, if there is anything related to the document library or tickets just let me know!"
+  - "What's the weather?" → "I can't help with that, but if you have any questions about our documents or need to create a ticket, I'm here to assist!"
+  - "there is one ship and then another one ship, hpw many ships are there?" → "I can't help with that, but if you have any questions about our documents or need to create a ticket, I'm here to assist!"
 ────────────────────────────────────────────────────────────────────────────────
 ## TOOL CALL WORKFLOWS (step-by-step)
 ────────────────────────────────────────────────────────────────────────────────
@@ -193,11 +265,16 @@ If you genuinely cannot determine intent:
    Store the question in pending context. Wait for next turn.
 
 ### Workflow B — Create a ticket
-1. If there's pending_ticket_context in memory → use it for the question/sources.
-2. If the user is explicitly requesting a new ticket → use their current message.
-3. Always provide: question (required), session_id (required), description (derive from question if blank), priority (default Medium unless user specified).
-4. Call create_support_ticket.
-5. Report: ticket ID, priority, status, and Notion URL if available.
+1. Check MEMORY CONTEXT above:
+   a. "CONFIRMED TICKET" present → call create_support_ticket IMMEDIATELY.
+   b. "QUESTIONS WITH NO LIBRARY ANSWER" has 2+ entries + user says "create a ticket"
+      without specifying → show the numbered list, ask which one (number/keyword/'all').
+      Do NOT create yet. Wait.
+   c. List has exactly 1 entry → ask "Should I raise a ticket for: '[question]'?"
+   d. User picks → match from list → call create_support_ticket.
+   e. User says "all" → create tickets for all items in the list.
+2. Always provide: question, session_id (from memory), description (auto-derive), priority (default Medium).
+3. Call create_support_ticket. Report: ticket ID, priority, status, Notion URL.
 
 ### Workflow C — Update a ticket (NEVER SKIP STEP 1)
 1. Call list_support_tickets (no filter, limit=100) to get ALL tickets.
@@ -250,8 +327,6 @@ You can call MULTIPLE tools in a single turn. For example:
 6. ALWAYS be concise and well-structured in responses.
 7. If a tool returns success=false, explain the error clearly and suggest next steps.
 8. Use markdown formatting: **bold** for key terms, bullet lists, ## headings for long answers.
-9. If the user query is not related to documents or tickets (e.g. "
-what is 3+4(5*32) -32 * 0.5?") → dont answer these types of questions. dont do basic math either. instead, say "I'm here to help with questions about our documents and support tickets. For other questions, you might want to try a different assistant or a search engine!".
 """
 
 # ── Lazy LLM with tools bound ─────────────────────────────────────────────────
@@ -304,10 +379,7 @@ class StateCaseAgentState(TypedDict):
 # ═══════════════════════════════════════════════════════════════════════════════
 
 def _sync_run(coro):
-    """
-    Run an async coroutine from a sync context.
-    Always uses a fresh thread — avoids 'no current event loop' in Python 3.10+.
-    """
+    """Run async from sync — always threads to avoid event-loop errors."""
     try:
         with concurrent.futures.ThreadPoolExecutor(max_workers=1) as pool:
             return pool.submit(asyncio.run, coro).result(timeout=8)
@@ -316,24 +388,24 @@ def _sync_run(coro):
         return None
 
 
+def _get_sync_redis():
+    import redis as _r
+    return _r.from_url(os.getenv("REDIS_URL", "redis://localhost:6379"),
+                       socket_connect_timeout=2, decode_responses=True)
+
 def _sync_redis_set(key: str, value: str, ex: int) -> None:
-    """
-    Write a Redis key with the sync client.
-    Used in _node_save_mem to avoid 'Event loop is closed' — the async
-    singleton gets bound to a thread loop opened by _sync_run, which closes
-    when that thread exits. The sync client has no such issue.
-    """
     try:
-        import redis as _redis_sync
-        r = _redis_sync.from_url(
-            os.getenv("REDIS_URL", "redis://localhost:6379"),
-            socket_connect_timeout=2,
-            decode_responses=True,
-        )
-        r.set(key, value, ex=ex)
-        logger.info("💾 statecase memory saved (sync) key=%s", key)
+        _get_sync_redis().set(key, value, ex=ex)
+        logger.info("💾 sync SET key=%s", key)
     except Exception as err:
         logger.warning("⚠️  _sync_redis_set error key=%s: %s", key, err)
+
+def _sync_redis_get(key: str):
+    try:
+        return _get_sync_redis().get(key)
+    except Exception as err:
+        logger.warning("⚠️  _sync_redis_get error key=%s: %s", key, err)
+        return None
 
 
 def _build_memory_context(memory: dict, session_id: str = "") -> str:
@@ -426,9 +498,9 @@ def _node_agent(state: StateCaseAgentState) -> dict:
     # from a previous topic does not bleed into the current answer.
     history_msgs: list[BaseMessage] = []
     try:
-        raw_history = _sync_run(get_session_history(session_id)) or []
-        recent = raw_history[-6:]  # last 3 user + 3 assistant turns
-        for turn in recent:
+        raw = _sync_redis_get(f"rag:session:{session_id}")
+        raw_history = json.loads(raw) if raw else []
+        for turn in raw_history[-6:]:
             role    = turn.get("role", "")
             content = turn.get("content", "").strip()
             if not content:
@@ -462,8 +534,10 @@ def _node_agent(state: StateCaseAgentState) -> dict:
     updated_memory = dict(memory)
     for tc in tool_calls:
         if tc["name"] == "rag_search":
-            updated_memory["last_question"] = tc["args"].get("query", "")
-    for tc in tool_calls:
+            q = tc["args"].get("query", "")
+            updated_memory["last_question"] = q
+            if not updated_memory.get("first_question") and q:
+                updated_memory["first_question"] = q
         if tc["name"] == "create_support_ticket":
             updated_memory.pop("pending_ticket_context", None)
 
@@ -489,37 +563,55 @@ def _node_update_memory_after_tools(state: StateCaseAgentState) -> dict:
     ticket_result = _extract_tool_result(messages, "create_support_ticket")
 
     if rag_result:
-        if not rag_result.get("answerable", True):
-            # Use the attempted_sources list the rag_search tool now returns.
-            # This contains all Milvus chunk titles retrieved, including those
-            # below the relevance threshold — so it's never empty.
-            attempted = rag_result.get("attempted_sources", []) or ["(none)"]
-            last_question = memory.get("last_question", "")
-            memory["pending_ticket_context"] = {
-                "question":          last_question,
-                "session_id":        session_id,
-                "attempted_sources": attempted,
-                "trace_id":          trace_id,
-                "priority":          state.get("ticket_priority", "Medium"),
-                "owner":             state.get("ticket_owner", "Unassigned"),
-            }
-            logger.info("🤔 [%s] rag_search unanswerable — pending_ticket_context stored (sources=%s)", trace_id, attempted)
+        attempted     = rag_result.get("attempted_sources", []) or ["(none)"]
+        last_question = memory.get("last_question", "")
+        answer_lower  = rag_result.get("answer", "").lower()
+
+        _no_info = (
+            "does not contain", "do not contain", "not contain",
+            "no specific information", "no information", "not found",
+            "no mention", "not addressed", "not covered", "not available",
+            "couldn't find", "could not find", "no relevant",
+            "not explicitly", "does not address", "do not address",
+            "no details", "not include", "not specified",
+        )
+        is_unanswerable = (
+            not rag_result.get("answerable", True)
+            or any(p in answer_lower for p in _no_info)
+        )
+
+        if is_unanswerable and last_question:
+            if not memory.get("first_question"):
+                memory["first_question"] = last_question
+            queue   = memory.get("unanswered_queue", [])
+            already = any(q["question"] == last_question for q in queue)
+            if not already:
+                queue.append({
+                    "question":          last_question,
+                    "attempted_sources": attempted,
+                    "priority":          state.get("ticket_priority", "Medium"),
+                    "owner":             state.get("ticket_owner", "Unassigned"),
+                })
+            memory["unanswered_queue"] = queue
+            logger.info("🤔 [%s] no-info → unanswered_queue=%d '%s'",
+                        trace_id, len(queue), last_question[:60])
         else:
             memory.pop("pending_ticket_context", None)
-            # Store a short summary of the answer so the agent can reference it
-            # on follow-ups ("summarise it") without storing the full answer
-            # (which caused context rot when the full text was used as ground truth)
-            answer_text = rag_result.get("answer", "")
-            memory["last_answer_summary"] = answer_text[:150].rstrip() + ("…" if len(answer_text) > 150 else "")
-            logger.info("✅ [%s] rag_search answerable — pending context cleared, summary stored", trace_id)
-
+            ans = rag_result.get("answer", "")
+            memory["last_answer_summary"] = ans[:150] + ("…" if len(ans) > 150 else "")
+            logger.info("✅ [%s] answered — summary stored", trace_id)
     if ticket_result and ticket_result.get("success"):
         memory.pop("pending_ticket_context", None)
         memory["last_ticket_id"] = ticket_result.get("ticket_id", "")
-        logger.info(
-            "🎫 [%s] ticket created — id=%s", trace_id, memory["last_ticket_id"]
-        )
-
+        created_q = ticket_result.get("question", "")
+        if created_q:
+            memory["unanswered_queue"] = [
+                q for q in memory.get("unanswered_queue", [])
+                if q["question"] != created_q
+            ]
+        logger.info("🎫 [%s] ticket=%s  queue_remaining=%d",
+                    trace_id, memory["last_ticket_id"],
+                    len(memory.get("unanswered_queue", [])))
     return {"memory": memory}
 
 
@@ -559,9 +651,7 @@ async def _node_save_mem(state: StateCaseAgentState) -> dict:
             "rewritten": rag_result.get("rewritten", ""),
         }
 
-    # ── Persist memory to Redis ────────────────────────────────────────────────
-    # Use sync client: the async singleton may be bound to a closed event loop
-    # if _sync_run was called earlier this turn (it creates and closes thread loops).
+    # ── Persist memory (sync — avoids closed-loop error) ────────────────────
     _sync_redis_set(f"statecase:memory:{session_id}", json.dumps(memory), ex=86400)
 
     # ── Append to session history for multi-turn RAG context ──────────────────

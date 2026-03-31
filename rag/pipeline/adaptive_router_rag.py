@@ -98,6 +98,8 @@ Rules:
 - When in doubt, choose QA — it is the safest default for any information-seeking message.
 - Only choose GREETING for messages that are purely introductory or small talk with
   zero information-seeking intent.
+- Never answer out of scope — if the user is asking for something that can't be answered from the documents in the library, it's still a QA intent,
+  not a GREETING or SEARCH or anything else.  The RAG pipeline will handle out-of-scope questions with a specific response.
 - Reply with ONLY the mode name — one word, uppercase, no punctuation, no explanation.
 - Valid responses: GREETING, QA, COMPARE, SUMMARIZE, SEARCH""",
     ),

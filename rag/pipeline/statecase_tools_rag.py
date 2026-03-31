@@ -305,7 +305,7 @@ def update_support_ticket(
 @tool
 def list_support_tickets(
     status_filter: str = "",
-    limit: int = 20,
+    limit: int = 50,
 ) -> dict:
     """
     List support tickets from the StateCase Notion database.
@@ -316,7 +316,7 @@ def list_support_tickets(
     Args:
         status_filter: Filter by status. Leave blank for all tickets.
                        Valid values: "Not started" | "In progress" | "Done"
-        limit:         Maximum number of tickets to return (default 20, max 100).
+        limit:         Maximum number of tickets to return (default 50, max 100).
 
     Returns a dict with:
         tickets  (list[dict]) — list of ticket dicts

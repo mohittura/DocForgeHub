@@ -139,23 +139,26 @@ Respond EXACTLY:
 IMPORTANT
 Document/task context OVERRIDES arithmetic detection
 Only filter when the query is clearly unrelated to documents/tickets
- Why this works
 
-Your example:
+Ambiguous but Potentially Document-Related Queries
 
-“one document and another document, I have to summarize them”
+If a query:
 
-✔ Contains:
+is NOT clearly about documents
+BUT could reasonably map to a workplace policy / internal document
 
-“document” (domain keyword)
-“summarize” (actionable task)
+Examples:
 
-→ passes STEP 1 → goes to rag_search
+"what happens if i resign tomorrow"
+"what if i get fired"
+"leave rules"
+"notice period?"
 
-Rule of thumb
+THEN:
 
-If numbers are used inside a document task → allow
-If numbers are the entire task → reject
+DO NOT reject
+Rewrite into a document-style query
+Proceed with rag_search
 
 ────────────────────────────────────────────────────────────────────────────────
 ## INTENT DETECTION — how to figure out what the user wants
@@ -236,22 +239,14 @@ If there is a pending_ticket_context in memory and the user gives a NO → ackno
 
 ### Intent → Greeting / Meta
 Greetings ("hi", "hello", "hey", "sup", "yo") → respond warmly, introduce yourself.
-Meta ("what can you do", "help", "?") → list your capabilities briefly.
+Meta ("what can you do", "help", "?") → list your capabilities briefly but dont explain at architecture level and max 4-5 bullet points.
 
 ### Intent → Ambiguous / Can't tell
 If you genuinely cannot determine intent:
-  - Refuse. and say "I can't help with that. is there a document-related question or ticket request I can assist with?"
+  - DO NOT refuse. DO NOT say "I can't help with that."
   - Instead, try rag_search with a cleaned-up version of their query.
   - If rag_search returns answerable=False, THEN ask the user to clarify.
 
-  
-### Intent → Irrelevant / Not actionable CRITICAL (make sure this intent is always handled correctly)
-If the user is just chatting, venting, or saying something you can't do anything about:
-  - Respond with "I understand, but I can only help with documents and tickets.", do NOT call any tools, also NEVER ANSWER WITH INFORMATION NOT IN THE DOCUMENTS. If you don't know, say you don't know. Do not try to answer questions that are not related to the document library or tickets, and do not try to answer questions that are related to the document library if the information is not in the documents. Always cite your sources for any information you provide, and if the information is not in the documents, say "I don't know, but I can help you find out by searching the document library or creating a ticket if needed."
-  - Is asking random qustions about the world outside the document library? → politely decline and refocus on what you can do.
-  - Examples: "I'm so frustrated with this!" → "I understand, that can be really tough. but i can just help you with documents only, if there is anything related to the document library or tickets just let me know!"
-  - "What's the weather?" → "I can't help with that, but if you have any questions about our documents or need to create a ticket, I'm here to assist!"
-  - "there is one ship and then another one ship, hpw many ships are there?" → "I can't help with that, but if you have any questions about our documents or need to create a ticket, I'm here to assist!"
 ────────────────────────────────────────────────────────────────────────────────
 ## TOOL CALL WORKFLOWS (step-by-step)
 ────────────────────────────────────────────────────────────────────────────────
@@ -265,16 +260,23 @@ If the user is just chatting, venting, or saying something you can't do anything
    Store the question in pending context. Wait for next turn.
 
 ### Workflow B — Create a ticket
-1. Check MEMORY CONTEXT above:
-   a. "CONFIRMED TICKET" present → call create_support_ticket IMMEDIATELY.
-   b. "QUESTIONS WITH NO LIBRARY ANSWER" has 2+ entries + user says "create a ticket"
-      without specifying → show the numbered list, ask which one (number/keyword/'all').
-      Do NOT create yet. Wait.
-   c. List has exactly 1 entry → ask "Should I raise a ticket for: '[question]'?"
-   d. User picks → match from list → call create_support_ticket.
-   e. User says "all" → create tickets for all items in the list.
-2. Always provide: question, session_id (from memory), description (auto-derive), priority (default Medium).
-3. Call create_support_ticket. Report: ticket ID, priority, status, Notion URL.
+DECISION TREE — follow exactly:
+
+Step 1. "CONFIRMED TICKET" in memory? → call create_support_ticket immediately. DONE.
+Step 2. "UNANSWERED QUESTIONS" in memory has 2+ items AND user said "create a ticket"
+        without specifying which?
+        → DO NOT create yet. Reply with the numbered list and ask:
+          "I have [N] unanswered questions. Which should I raise a ticket for?
+           1. [q1]  2. [q2]  ...  Reply with a number, keyword, or 'all'."
+          Then STOP and wait.
+Step 3. "UNANSWERED QUESTIONS" has exactly 1 item → ask "Should I raise a ticket for: '[q]'?"
+Step 4. User replied with number/keyword → match → call create_support_ticket.
+Step 5. User said "all" → create tickets for each item in the list.
+Step 6. No unanswered questions in memory → use user's current message as question.
+BEFORE STEP 5 IF A PERSON SAYS SOMETHING LIKE "no for all of them" THEN ACKNOWLEDGE AND CLEAR THE UNANSWERED QUEUE WITHOUT CREATING ANY TICKETS.
+
+Always provide: question, session_id (from memory), description (auto-derive), priority (default Medium).
+Report: ticket ID, priority, status, Notion URL.
 
 ### Workflow C — Update a ticket (NEVER SKIP STEP 1)
 1. Call list_support_tickets (no filter, limit=100) to get ALL tickets.
@@ -327,6 +329,14 @@ You can call MULTIPLE tools in a single turn. For example:
 6. ALWAYS be concise and well-structured in responses.
 7. If a tool returns success=false, explain the error clearly and suggest next steps.
 8. Use markdown formatting: **bold** for key terms, bullet lists, ## headings for long answers.
+9. TICKET CREATION GATE — overrides all other rules:
+   Before calling create_support_ticket, if MEMORY CONTEXT lists 2+ UNANSWERED QUESTIONS
+   and the user did not specify which one, you MUST show the list and ask which one first.
+   NEVER call create_support_ticket without knowing which specific question to use.
+10. SESSION MEMORY — the conversation history injected before the current message IS the
+    full record of this session. Use it to answer "what did I ask before?",
+    "what was my first/last query?", "what questions did I ask?". Answer directly from it.
+    NEVER say you don't have access to prior queries.
 """
 
 # ── Lazy LLM with tools bound ─────────────────────────────────────────────────
@@ -342,7 +352,7 @@ def _get_llm_with_tools():
             api_key=os.getenv("AZURE_OPENAI_LLM_KEY", ""),
             api_version=os.getenv("AZURE_LLM_API_VERSION", "2024-12-01-preview"),
             temperature=0.2,
-            max_tokens=1024,
+            max_tokens=2048,
         )
         _llm_with_tools = llm.bind_tools(get_all_tools())
         logger.info(
@@ -379,7 +389,8 @@ class StateCaseAgentState(TypedDict):
 # ═══════════════════════════════════════════════════════════════════════════════
 
 def _sync_run(coro):
-    """Run async from sync — always threads to avoid event-loop errors."""
+    """Run async from sync — always threads.
+    """
     try:
         with concurrent.futures.ThreadPoolExecutor(max_workers=1) as pool:
             return pool.submit(asyncio.run, coro).result(timeout=8)
@@ -398,13 +409,13 @@ def _sync_redis_set(key: str, value: str, ex: int) -> None:
         _get_sync_redis().set(key, value, ex=ex)
         logger.info("💾 sync SET key=%s", key)
     except Exception as err:
-        logger.warning("⚠️  _sync_redis_set error key=%s: %s", key, err)
+        logger.warning("⚠️  _sync_redis_set error: %s", err)
 
 def _sync_redis_get(key: str):
     try:
         return _get_sync_redis().get(key)
     except Exception as err:
-        logger.warning("⚠️  _sync_redis_get error key=%s: %s", key, err)
+        logger.warning("⚠️  _sync_redis_get error: %s", err)
         return None
 
 
@@ -413,21 +424,33 @@ def _build_memory_context(memory: dict, session_id: str = "") -> str:
     lines = []
     if session_id:
         lines.append(f"- Current session_id: {session_id}  ← ALWAYS use this exact value when calling create_support_ticket")
+    if memory.get("first_question"):
+        lines.append(f"- First question this session: {memory['first_question'][:120]}")
     if memory.get("last_question"):
         lines.append(f"- Last question asked: {memory['last_question'][:120]}")
     if memory.get("last_answer_summary"):
-        lines.append(f"- Summary of last answer given: {memory['last_answer_summary'][:150]}")
+        lines.append(f"- Last answer summary (conversation context only): {memory['last_answer_summary']}")
+
+    unanswered = memory.get("unanswered_queue", [])
+    if unanswered:
+        lines.append(f"- UNANSWERED QUESTIONS ({len(unanswered)} total):")
+        for i, q in enumerate(unanswered, 1):
+            src = ", ".join(q.get("attempted_sources", [])) or "(none)"
+            lines.append(f"  {i}. '{q['question'][:100]}' (tried: {src})")
+        lines.append(
+            "  *** TICKET GATE: If user requests ticket creation without specifying which, "
+            "list numbered and ask which one BEFORE calling create_support_ticket. ***"
+        )
+
     if memory.get("pending_ticket_context"):
-        p = memory["pending_ticket_context"]
+        p   = memory["pending_ticket_context"]
         src = ", ".join(p.get("attempted_sources", [])) or "(none)"
         lines.append(
-            f"- PENDING TICKET OFFER: You previously offered to create a ticket for: "
-            f"'{p.get('question','')[:120]}'. "
-            f"Attempted sources: {src}. "
-            f"If the user says yes → call create_support_ticket with this question and attempted_sources='{src}'."
+            f"- CONFIRMED TICKET — call create_support_ticket NOW: "
+            f"question='{p.get('question','')[:120]}', session_id={session_id}, "
+            f"attempted_sources='{src}'."
         )
     return "\n".join(lines) if lines else "(no prior context)"
-
 
 def _extract_tool_result(messages: list, tool_name: str) -> Optional[dict]:
     """
@@ -496,29 +519,31 @@ def _node_agent(state: StateCaseAgentState) -> dict:
     # Topic-shift safety: we only inject the last 6 turns (3 user + 3 assistant).
     # Older history stays in Redis but is not sent to the LLM, so stale context
     # from a previous topic does not bleed into the current answer.
+    # Sync Redis history load — avoids "Future attached to different loop" error
     history_msgs: list[BaseMessage] = []
     try:
         raw = _sync_redis_get(f"rag:session:{session_id}")
-        raw_history = json.loads(raw) if raw else []
-        for turn in raw_history[-6:]:
-            role    = turn.get("role", "")
-            content = turn.get("content", "").strip()
-            if not content:
-                continue
-            if role == "user":
-                history_msgs.append(HumanMessage(content=content))
-            elif role == "assistant":
-                # Wrap AI turns to prevent context rot
-                history_msgs.append(AIMessage(
-                    content=f"[Prior answer — treat as conversation context only, not as document source-of-truth]\n{content}"
-                ))
+        if raw:
+            raw_history = json.loads(raw)
+            for turn in raw_history[-8:]:
+                role    = turn.get("role", "")
+                content = turn.get("content", "").strip()
+                if not content:
+                    continue
+                if role == "user":
+                    history_msgs.append(HumanMessage(content=content))
+                elif role == "assistant":
+                    history_msgs.append(AIMessage(
+                        content=f"[Prior answer — conversation memory only]\n{content}"
+                    ))
     except Exception as err:
-        logger.warning("⚠️  [%s] could not load session history: %s", trace_id, err)
+        logger.warning("⚠️  [%s] history load error: %s", trace_id, err)
 
     logger.info(
-        "🤖 [%s] agent — session=%s  history_turns=%d  current_msgs=%d  has_pending=%s",
+        "🤖 [%s] agent — session=%s  history=%d  messages=%d  pending=%s  unanswered=%d",
         trace_id, session_id, len(history_msgs), len(messages),
         bool(memory.get("pending_ticket_context")),
+        len(memory.get("unanswered_queue", [])),
     )
 
     response = _get_llm_with_tools().invoke([system_msg] + history_msgs + messages)
@@ -583,9 +608,9 @@ def _node_update_memory_after_tools(state: StateCaseAgentState) -> dict:
         if is_unanswerable and last_question:
             if not memory.get("first_question"):
                 memory["first_question"] = last_question
-            queue   = memory.get("unanswered_queue", [])
-            already = any(q["question"] == last_question for q in queue)
-            if not already:
+            queue = memory.get("unanswered_queue", [])
+            norm  = last_question.strip().lower()
+            if not any(q["question"].strip().lower() == norm for q in queue):
                 queue.append({
                     "question":          last_question,
                     "attempted_sources": attempted,
@@ -593,21 +618,23 @@ def _node_update_memory_after_tools(state: StateCaseAgentState) -> dict:
                     "owner":             state.get("ticket_owner", "Unassigned"),
                 })
             memory["unanswered_queue"] = queue
-            logger.info("🤔 [%s] no-info → unanswered_queue=%d '%s'",
+            logger.info("🤔 [%s] no-info → queue=%d '%s'",
                         trace_id, len(queue), last_question[:60])
         else:
             memory.pop("pending_ticket_context", None)
             ans = rag_result.get("answer", "")
             memory["last_answer_summary"] = ans[:150] + ("…" if len(ans) > 150 else "")
             logger.info("✅ [%s] answered — summary stored", trace_id)
+
     if ticket_result and ticket_result.get("success"):
         memory.pop("pending_ticket_context", None)
         memory["last_ticket_id"] = ticket_result.get("ticket_id", "")
         created_q = ticket_result.get("question", "")
         if created_q:
+            norm = created_q.strip().lower()
             memory["unanswered_queue"] = [
                 q for q in memory.get("unanswered_queue", [])
-                if q["question"] != created_q
+                if q["question"].strip().lower() != norm
             ]
         logger.info("🎫 [%s] ticket=%s  queue_remaining=%d",
                     trace_id, memory["last_ticket_id"],
@@ -651,7 +678,7 @@ async def _node_save_mem(state: StateCaseAgentState) -> dict:
             "rewritten": rag_result.get("rewritten", ""),
         }
 
-    # ── Persist memory (sync — avoids closed-loop error) ────────────────────
+    # ── Persist memory (sync write) ────────────────────────────────────────
     _sync_redis_set(f"statecase:memory:{session_id}", json.dumps(memory), ex=86400)
 
     # ── Append to session history for multi-turn RAG context ──────────────────

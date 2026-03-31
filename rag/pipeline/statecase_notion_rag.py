@@ -255,12 +255,19 @@ def create_ticket(
             logger.info("♻️  Dedup hit (hash) — returning existing ticket_id=%s", existing["ticket_id"])
             return existing
 
-        # Layer 2: title similarity — catches same question from a different session
-        # whose hash differs only because the question was phrased slightly differently
+        # Layer 2: title substring match (Notion contains filter)
         similar = find_ticket_by_title(question[:120])
         if similar:
             logger.info("♻️  Dedup hit (title match) — returning existing ticket_id=%s", similar["ticket_id"])
             return similar
+
+        # Layer 3: key-term Notion search — searches ALL tickets, no 50-ticket
+        # ceiling, no false positives from generic words. Extracts 2-3 distinctive
+        # words from the question and requires ≥2 to match an existing ticket.
+        key_match = _find_by_key_terms(question)
+        if key_match:
+            logger.info("♻️  Dedup hit (key terms) — returning existing ticket_id=%s", key_match["ticket_id"])
+            return key_match
 
     ticket_id = _get_next_ticket_id()
     sources_str = ", ".join(attempted_sources) if attempted_sources else "None"
@@ -420,6 +427,103 @@ def _normalise_db_id(raw_id: str) -> str:
     if len(clean) == 32:
         return f"{clean[0:8]}-{clean[8:12]}-{clean[12:16]}-{clean[16:20]}-{clean[20:32]}"
     return raw_id
+
+
+def _extract_key_terms(question: str) -> list[str]:
+    """
+    Extract up to 3 specific/distinctive words from a question for dedup matching.
+
+    Strips two layers of stopwords:
+    1. Common English function words
+    2. Domain-generic HR/policy words that appear in nearly every question
+       (policy, company, employee, workplace, etc.) — these cause false positives
+
+    Sorts by length descending (longer = more specific), returns top 3.
+
+    Examples:
+      "policy for unlawful termination of an employee" → ["termination", "unlawful"]
+      "Lack of policy for unlawful termination involving management misconduct"
+                                                       → ["termination", "management", "misconduct"]
+      "what is the shoes policy in the company"        → ["shoes"]
+      "what is the pet policy of the company"          → []    ← no specific terms
+    """
+    _STOPWORDS = {
+        # Common function words
+        "what", "is", "the", "a", "an", "of", "for", "in", "on", "at", "to",
+        "and", "or", "are", "does", "do", "my", "our", "about", "can", "we",
+        "how", "this", "that", "with", "its", "i", "by", "be", "was", "were",
+        "has", "have", "had", "it", "if", "any", "all", "from", "get", "give",
+        "will", "would", "could", "should", "who", "when", "where", "which",
+        "there", "their", "they", "them", "than", "then", "into", "also",
+        "lack", "need", "want", "make", "just", "more", "some", "such",
+        # Domain-generic HR words — present in almost every question, not distinctive
+        "policy", "company", "employee", "employees", "workplace", "office",
+        "work", "working", "human", "resources", "procedure", "process",
+        "rules", "rule", "regulation", "guidelines", "guideline",
+    }
+    words = [
+        w.strip("?.,!:-") for w in question.lower().split()
+        if w.strip("?.,!:-") not in _STOPWORDS and len(w.strip("?.,!:-")) > 3
+    ]
+    words.sort(key=len, reverse=True)
+    return words[:3]
+
+
+def _find_by_key_terms(question: str) -> dict | None:
+    """
+    Layer 3 dedup: search Notion for each specific key term from the question.
+
+    Why this beats word-overlap and the 50-ticket limit:
+    - Searches Notion directly → covers ALL tickets, not just recent 50
+    - Uses only specific terms (stopwords + domain-generic words removed)
+      → "shoes policy" and "pet policy" share no specific terms → no false positive
+    - Threshold: ≥ 1 shared specific term → enough because specific terms like
+      "termination", "misconduct", "bereavement" are highly distinctive
+      e.g. "policy for unlawful termination" and "unlawful termination involving
+      management misconduct" share "termination" → correctly flagged as duplicate
+    """
+    terms = _extract_key_terms(question)
+    if not terms:
+        return None
+
+    new_terms = set(terms)
+    client    = _get_client()
+    db_id     = _normalise_db_id(STATECASE_DB_ID)
+    seen_ids  = set()
+    candidates: list[dict] = []
+
+    for term in terms:
+        body = {
+            "filter": {"property": "Question", "title": {"contains": term}},
+            "page_size": 10,
+        }
+        try:
+            resp = _notion_call(
+                client.request,
+                path=f"databases/{db_id}/query",
+                method="POST",
+                body=body,
+            )
+            for page in resp.get("results", []):
+                pid = page["id"]
+                if pid not in seen_ids:
+                    seen_ids.add(pid)
+                    candidates.append(_page_to_ticket(page))
+        except Exception as err:
+            logger.warning("⚠️  _find_by_key_terms term='%s': %s", term, err)
+
+    # ≥1 shared specific term = duplicate (specific terms are highly distinctive)
+    for ticket in candidates:
+        existing_terms = set(_extract_key_terms(ticket.get("question", "")))
+        shared = new_terms & existing_terms
+        if len(shared) >= 1:
+            logger.info(
+                "♻️  Key-term dedup hit (shared=%s) — new='%s…' existing='%s…'",
+                shared, question[:60], ticket.get("question", "")[:60],
+            )
+            return ticket
+
+    return None
 
 
 def _find_by_dedup(dedup: str) -> dict | None:

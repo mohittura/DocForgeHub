@@ -113,25 +113,65 @@ ui/
 
 Before reading the code, you need to understand these terms:
 
-**Embedding / Vector:** A list of ~3000 floating-point numbers that represents the semantic meaning of a piece of text. Two texts that mean similar things will have vectors that are close to each other in mathematical space. This is how we find relevant documents — not by keyword matching but by meaning.
+**Embedding / Vector:** A list of ~3000 floating-point numbers (specifically 3072 from `text-embedding-3-large`) that represents the semantic meaning of a piece of text using dense vector space. Two texts that mean similar things will have vectors that are close to each other in mathematical space. This is how we find relevant documents — not by keyword matching but by semantic meaning. Azure OpenAI's `text-embedding-3-large` produces **3072-dimensional vectors** using a proprietary neural network that maps text to a high-dimensional space where semantically similar documents cluster together.
 
-**COSINE similarity:** A number between -1 and 1 that measures how similar two vectors are. 1.0 = identical meaning, 0.0 = unrelated, -1.0 = opposite meaning. A score above 0.65 in this system means good relevance; below 0.30 means the question is probably not covered by the documents.
+**COSINE similarity:** A number between -1 and 1 that measures how similar two vectors are. Formula: `cos(θ) = (A · B) / (||A|| × ||B||)` where A and B are vectors. In this system: 1.0 = identical meaning, 0.65+ = good relevance (trigger retrieval), 0.30-0.65 = weak relevance (trigger corrective RAG rewrite), below 0.30 = topic not in library (score gate triggers out-of-scope response without LLM call). Milvus uses COSINE as the distance metric, automatically returning pre-sorted results by descending score.
 
-**Chunk:** A piece of a document — typically 300-500 tokens (roughly 300-400 words). Documents are split into chunks because LLMs have limited context windows, and because one chunk about "bereavement leave" is more useful than dumping an entire 20-page HR policy.
+**Chunk:** A piece of a document — typically 400 tokens (soft target, 500 token hard cap, ~300-400 words). Documents are split into chunks because:
+  1. LLMs have limited context windows (GPT-4.1-mini has 128K token window but effective context = ~8K for retrieval)
+  2. One focused chunk about "bereavement leave policy" is more useful than dumping an entire 20-page HR policy
+  3. Smaller chunks have stronger semantic signal — a 2000-token chunk about "HR policy" scores well for ANY HR question regardless of specificity
+  4. Chunks with 60-token overlap (last ~3-4 sentences of previous chunk seeded into next) prevent context loss at boundaries
+  5. Chunks are embedded independently so retrieval operates at chunk granularity (returns top-k chunks, not full pages)
 
-**Milvus / Milvus Lite:** A vector database. Like a SQL database but instead of searching by WHERE clause, you search by "give me the top 5 chunks whose vectors are closest to this query vector". Milvus Lite runs entirely in-process — no server, no Docker, just a file on disk.
+**Milvus / Milvus Lite:** A vector database — like a SQL database but instead of `WHERE field = value` queries, you do semantic similarity search: "give me the top 5 chunks whose vectors are closest to this query vector". Architecture:
+  - **Milvus Lite:** Single-process in-memory database backed by a file at `./rag_data/milvus.db`. No server, no Docker, no external dependencies. Supports AUTOINDEX and COSINE similarity. Limitations: no HNSW index (only AUTOINDEX), no sparse vectors, no BM25 hybrid search.
+  - **Full Milvus (server):** Requires Docker/K8s, supports HNSW index (faster for billions of vectors), distributed across machines, production-grade. Migration is a single env var change (`MILVUS_URI=http://server:19530`).
+  - **Collection schema** in this system: `notion_documents` with 12 fields (embedding, chunk_text, doc_id, title, section, industry, doc_type, version, tags, page_id, block_range, id). AUTOINDEX automatically selects optimal index type per hardware.
 
-**LangChain:** A Python library for building LLM applications. Provides `AzureChatOpenAI` (LLM client), `ChatPromptTemplate` (prompt builder), `@tool` (function decorator), `AIMessage`/`HumanMessage`/`SystemMessage` (message types).
+**LangChain:** A Python SDK library for building LLM applications. Provides:
+  - `AzureChatOpenAI(azure_deployment=..., api_key=...)` — wrapper around Azure OpenAI API with automatic exponential backoff on 429
+  - `ChatPromptTemplate.from_messages(...)` — safe templating; substitutes `{var_name}` at invoke time (prevents prompt injection)
+  - `@tool` decorator — function decorated with `@tool(name="...", description="...")` becomes callable by the LLM via `bind_tools()`
+  - `AIMessage`, `HumanMessage`, `SystemMessage`, `ToolMessage` — message types; LLM sees them in order to understand conversation history
+  - `BaseModel` (Pydantic) — used for structured tool schemas (`@tool` auto-generates Pydantic schema from function signature)
+  - `add_messages` reducer — in LangGraph, combines message lists (appends rather than replaces)
 
-**LangGraph:** A library for building stateful, multi-step LLM workflows as directed graphs. You define nodes (Python functions) and edges (which node runs after which), and LangGraph executes them in order, passing a shared state dict between nodes. Used for the adaptive router, corrective RAG loop, and the StateCase agent.
+**LangGraph:** A library for building stateful, multi-step LLM workflows as **directed acyclic graphs (DAGs)**.  Core concepts:
+  - **State:** A `TypedDict` shared across all nodes; each node receives state, mutates it, returns new state
+  - **Nodes:** Python functions `(state: StateType) -> StateType` or dict. Each node runs once per iteration
+  - **Edges:** Define which node runs next: unconditional (`→ node_name`) or conditional (`→ node_name if condition else other_node`)
+  - **Graph:** Compiled with `StateGraph(StateType).add_node(...).add_edge(...).compile()`
+  - **Execution:** `graph.invoke(initial_state)` runs nodes in topological order, with automatic state merging
+  - **Tool-calling loop:** `agent → tools` edge is conditional: if LLM returned tool_calls, route to ToolNode; else route to END
+  - **Use here:** Adaptive router (1 node), corrective RAG (5 nodes, conditional edges), StateCase agent (5 nodes with tool loop)
+  - **Why LangGraph not plain functions?** Graphs are composable, serialisable, and support streaming/async patterns. A routing graph can be embedded as a sub-graph in a larger workflow without rewriting.
 
-**ToolNode / bind_tools:** LangChain/LangGraph mechanism for letting the LLM call Python functions. `llm.bind_tools(tools)` tells the LLM what functions exist (via Pydantic schema). If the LLM's response contains a `tool_calls` field, `ToolNode` automatically dispatches those calls to the right function.
+**ToolNode / bind_tools:** LangChain/LangGraph mechanism for letting the LLM call Python functions:
+  - `bind_tools(tools)` on the LLM object tells it: "here are X tools you can call, here's their schemas (from Pydantic), pick one or none"
+  - LLM response includes `tool_calls: [{"name": "tool_name", "args": {...}}]` if it decided to call something
+  - `ToolNode(tools_dict)` is a graph node that: reads `AIMessage.tool_calls` from state, dispatches each call to the function, wraps results in `ToolMessage`, appends all to state.messages
+  - Why tools instead of routing? The LLM's language understanding solves ambiguity (understand "yes", "yeah", "affirmative" as confirmation without enum parsing). Tools compose — bind 5 tools to any LLM, same tool interface works for different agents.
 
-**RAG (Retrieval-Augmented Generation):** The full pattern: retrieve relevant text → inject into LLM prompt → LLM generates a grounded answer from that text rather than from its training data.
+**RAG (Retrieval-Augmented Generation):** The core pattern: retrieve relevant text → inject into LLM prompt → LLM generates a grounded answer from that text rather than from its training data. Advantages:
+  1. **Freshness:** Documents changed yesterday? Retrieval queries new chunks today. No model retraining needed.
+  2. **Grounding:** Answer is cited with exact chunk IDs. User can verify correctness, spot hallucinations.
+  3. **Cost:** Larger documents don't require 10x larger context window — only retrieve top-k relevant chunks.
+  4. **Scope:** Two gates prevent hallucination: (1) greetings short-circuit (0 retrieval calls), (2) low-scoring retrievals return "not found" without LLM call. No fuzzy "I don't know" from the LLM.
 
-**Redis:** An in-memory key-value store. Used here for: caching retrieval results (so the same query doesn't hit Milvus+Azure repeatedly), storing session history (so the LLM remembers what was discussed), and counting Notion API calls for rate limiting.
+This system implements **advanced RAG** (not basic RAG):
+  - **Adaptive routing:** Query mode affects pool_size (QA=5, COMPARE=10, etc.)
+  - **Corrective RAG:** Score-based retrieval → rewrite if weak → re-retrieve → pick best
+  - **Multi-turn memory:** Session history influences query rewriting (resolves pronouns, context references)
+  - **Semantic filtering:** Metadata filters (industry, version, doc_type) applied AFTER retrieval (not before) to avoid filtering out relevant docs
 
-**Session / Session ID:** A short string (e.g. `"86e7f692"`) that identifies one conversation. All messages in one conversation share the same session ID. Session history is stored in Redis keyed by this ID.
+**Redis:** An in-memory key-value store with TTL support. Used here for:
+  1. **Retrieval cache** (`rag:retrieval:{sha256[:16]}`): Caches top-k chunks per (query, filters). Same query from any user skips Azure embedding + Milvus search. TTL 10 min.
+  2. **Session history** (`rag:session:{session_id}`): Last 6 user turns accumulated as JSON. Injected into LLM context for multi-turn awareness. TTL 24h. Persists across separate HTTP requests (Streamlit reruns clear nothing from Redis).
+  3. **StateCase agent memory** (`statecase:memory:{session_id}`): `{last_question, last_ticket_id, pending_ticket_context}` persists across StateCase agent turns. TTL 24h.
+  4. **Ticket counter** (`statecase:ticket_counter`): Atomic `INCR` returns next integer. Permanent (no TTL). Generates `SC-{n:04d}` IDs.
+  5. **Rate limiter** (`rag:notion:reads`): Atomic counter of Notion API calls in current 60-second window. TTL auto-resets counter each minute.
+  - **Graceful fallback:** Every Redis operation wrapped with try/except. If Redis unavailable (e.g., socket timeout after 2s), that operation returns None/[] and pipeline continues. Retrieval happens every time (no cache), session history lost between requests (single-turn mode), agent memory resets each turn.
 
 ---
 
@@ -1545,19 +1585,44 @@ def _get_next_ticket_id() -> str:
 
 **Why timestamp fallback:** If Redis is down, we still need a unique ID. A Unix timestamp modulo 100000 gives a 5-digit number that is unique within a ~27-hour window. It's not sequential but it's functional.
 
-#### Deduplication
+#### Deduplication — three-layer strategy
 
+Before creating a ticket, `create_ticket()` performs three successive dedup checks:
+
+**Layer 1: Exact question-hash match (fast)**
 ```python
 def _dedup_key(session_id: str, question: str) -> str:
     raw = f"{session_id}::{question.strip().lower()}"
     return hashlib.sha256(raw.encode()).hexdigest()[:16]
+
+existing = _find_by_dedup(dedup)
+if existing:
+    return {**existing, "is_duplicate": True}
 ```
+Queries Notion for a ticket whose `User Info` field contains the dedup hash. Fast because it relies on Notion's index. Catches: same user, same question asked twice (network retry, double-click).
 
-Before creating a ticket, `create_ticket()` calls `_find_by_dedup(dedup)` which searches Notion for any ticket whose `User Info` field contains `"dedup:{key}"`. If found, it returns the existing ticket instead of creating a new one.
+**Layer 2: Title substring match (catches rephrasing)**
+```python
+similar = find_ticket_by_title(question[:120])
+if similar:
+    return {**similar, "is_duplicate": True}
+```
+Searches tickets by question title using Notion's contains filter. Catches: same user asking "what is the SLA?" then later asking "SLA?".
 
-**Why this matters:** A user might click "yes create ticket" twice, or the network might retry a failed request. Without dedup, each click would create a duplicate ticket. The dedup key is stored in `User Info` as plain text so it survives across HTTP requests.
+**Layer 3: Key-term search (semantic)**
+```python
+def _find_by_key_terms(question: str) -> dict | None:
+    # Extract 2-3 distinctive words (skip common words like "the", "is", "a")
+    # Search Notion for ALL tickets containing >= 2 of these terms
+    key_match = _find_by_key_terms(question)
+    if key_match:
+        return {**key_match, "is_duplicate": True}
+```
+Extracts 2-3 distinctive words from the question, searches all tickets (no 50-ticket ceiling), returns a match if >= 2 terms match. Catches: "what's the SLA for P1?" vs existing "SLA rules" (both mention "SLA").
 
-**Why `strip().lower()` on the question:** Trailing whitespace or capitalisation differences between "what is the SLA?" and "What is the SLA? " should not produce different dedup keys.
+**Why three layers:** Layer 1 is instant (hash lookup). Layer 2 catches minor rephrasing. Layer 3 catches semantic similarity. Together they reduce false negatives (creating duplicate tickets) while keeping false positives low (not creating a legitimate second ticket).
+
+**Why `is_duplicate: True/False` in response:** The LLM uses this to decide the user message. If `is_duplicate=True`, respond "A ticket for this question already exists ([ID]). No new ticket was created." If `is_duplicate=False`, respond "✅ Ticket created: [ID]".
 
 #### `find_ticket_by_title()` — resolving names to UUIDs
 
@@ -1616,16 +1681,25 @@ The LLM sees: "there is a function called `rag_search` that takes `query` (requi
 def rag_search(query: str, session_id: str, industry: str = "", doc_type: str = "", version: str = "") -> dict:
     # ... calls run_rag_pipeline internally
     answerable = avg_score >= 0.30
+    
+    # Collect attempted sources (document titles tried during retrieval)
+    raw_chunks = result.get("chunks", [])
+    attempted_sources = sorted({c.get("title","").strip() for c in raw_chunks 
+                                if c.get("title","").strip()})
+    
     return {
-        "answer":     result.get("answer", ""),
-        "citations":  result.get("citations", []),
-        "avg_score":  avg_score,
-        "mode":       result.get("mode", "QA"),
-        "answerable": answerable,   # ← the key the agent uses to decide on ticketing
+        "answer":              result.get("answer", ""),
+        "citations":           result.get("citations", []),
+        "avg_score":           avg_score,
+        "mode":                result.get("mode", "QA"),
+        "answerable":          answerable,   # ← the key the agent uses for ticketing decision
+        "attempted_sources":   attempted_sources,  # ← document titles tried during retrieval
     }
 ```
 
 **Why `answerable` is a separate boolean:** The system prompt instructs the LLM: "if `answerable=False`, offer to create a ticket". Having an explicit boolean is clearer than asking the LLM to interpret `avg_score < 0.30`. The LLM doesn't need to do math — it just reads a boolean.
+
+**Why `attempted_sources`:** When `answerable=False`, the agent stores `pending_ticket_context` including `attempted_sources`. The system prompt later shows the user: "I searched [source1], [source2], [source3] but couldn't find an answer." This explains which documents were tried, reducing user confusion and avoiding repeated searches of the same stale sources.
 
 #### `update_support_ticket` tool — the UUID resolution fix
 
@@ -1682,12 +1756,21 @@ class StateCaseAgentState(TypedDict):
     ticket_owner:        str
     messages:            Annotated[list[BaseMessage], add_messages]  # ← special reducer
     memory:              dict     # persisted to Redis between requests
+                                 # contains: pending_ticket_context, unanswered_queue,
+                                 # last_question, last_ticket_id, last_answer_summary
     trace_id:            str
     final_response:      str      # extracted in save_mem
     final_citations:     list
     final_pipeline_meta: dict
     final_ticket:        Optional[dict]
 ```
+
+**Memory dict contents:**
+- `pending_ticket_context`: Set when `rag_search` returns `answerable=False`. Contains `{question, attempted_sources}`. Cleared when user confirms ticket creation or when the next search succeeds.
+- `unanswered_queue`: List of `{question}` dicts accumulated across turns when user says "create a ticket for [multiple questions]". Cleared when tickets are created for all items.
+- `last_question`: The most recent question asked (populated by rag_search tool call).
+- `last_ticket_id`: The ID of the most recently created ticket (e.g. "SC-0042").
+- `last_answer_summary`: First 150 chars of the last successful RAG answer.
 
 **Why `Annotated[list[BaseMessage], add_messages]`:** LangGraph state is normally replaced on each update (`state["x"] = new_value`). For `messages`, we want to append, not replace. The `add_messages` reducer tells LangGraph: when a node returns `{"messages": [new_msg]}`, append `new_msg` to the existing list rather than replacing it. This is how the agent loop accumulates tool call/result pairs across multiple node executions.
 
@@ -1757,48 +1840,101 @@ def _build_memory_context(memory: dict) -> str:
 
 **Why include the full instruction in the memory context:** When the agent sees "yes" from the user, it needs to know: (1) that a ticket was previously offered, (2) what question it was for, (3) which tool to call. Including all three pieces of information in the system prompt — rather than just a flag — allows the LLM to act correctly without additional reasoning.
 
-#### `_node_update_memory_after_tools` — reading tool results
+#### `_node_update_memory_after_tools` — reading tool results and managing ticket queue
 
 ```python
 def _node_update_memory_after_tools(state):
     messages = state.get("messages", [])
     memory = dict(state.get("memory", {}))
     
-    rag_result = _extract_tool_result(messages, "rag_search")
-    ticket_result = _extract_tool_result(messages, "create_support_ticket")
-    
-    if rag_result:
-        if not rag_result.get("answerable", True):
-            # Store pending context for next turn
-            memory["pending_ticket_context"] = {
-                "question": memory.get("last_question", ""),
-                "attempted_sources": [...],
-                ...
-            }
-        else:
-            memory.pop("pending_ticket_context", None)   # clear on success
-    
-    if ticket_result and ticket_result.get("success"):
+    # Process ALL ticket creations this turn (handles "all" case with multiple tickets)
+    all_ticket_pairs = _extract_all_tool_calls_and_results(messages, "create_support_ticket")
+    successful_tickets = [(p["args"], p["result"]) for p in all_ticket_pairs
+                          if p["result"].get("success")]
+    if successful_tickets:
         memory.pop("pending_ticket_context", None)
-        memory["last_ticket_id"] = ticket_result.get("ticket_id", "")
+        memory["last_ticket_id"] = successful_tickets[-1][1].get("ticket_id", "")
+        
+        queue = memory.get("unanswered_queue", [])
+        
+        # If tickets created >= queue size, entire queue is cleared (user said "all")
+        if len(successful_tickets) >= len(queue):
+            memory["unanswered_queue"] = []
+        else:
+            # Partial creation — remove matched questions using word-overlap scoring
+            created_norms = [args.get("question", "").strip().lower()
+                             for args, _ in successful_tickets]
+            
+            def _is_matched(q_text: str) -> bool:
+                qn = q_text.strip().lower()
+                for cn in created_norms:
+                    if cn in qn or qn in cn:  # exact or substring
+                        return True
+                    qw, cw = set(qn.split()), set(cn.split())
+                    shorter = min(len(qw), len(cw))
+                    if shorter > 0 and len(qw & cw) / shorter >= 0.5:
+                        return True
+                return False
+            
+            memory["unanswered_queue"] = [q for q in queue if not _is_matched(q["question"])]
     
     return {"memory": memory}
 ```
 
 **Why a separate node for memory update (instead of doing it in agent):** The agent node runs before tools execute. It can track what tool calls are being made but not their results. By the time `update_mem` runs, the `ToolNode` has already executed all tool calls and their results are in `state["messages"]` as `ToolMessage` objects. This is why memory update must be a separate node after the tool node.
 
-#### `_extract_tool_result()` — finding tool outputs in messages
+**Why `unanswered_queue` and word-overlap matching:** When user says "create tickets for all", the agent makes multiple `create_support_ticket` calls in one turn. The update_mem node matches which queue items were successfully ticketed using word-overlap scoring (≥50% shared words) to handle LLM rephrasing. If tickets created ≥ queue size, the entire queue is cleared (user said "all").
+
+#### `_extract_tool_result()` — finding the most recent tool output
 
 ```python
 def _extract_tool_result(messages: list, tool_name: str) -> Optional[dict]:
+    """Find the most recent ToolMessage for a given tool name."""
     for msg in reversed(messages):
-        if isinstance(msg, ToolMessage):
-            if getattr(msg, "name", "") == tool_name:
+        if isinstance(msg, ToolMessage) and getattr(msg, "name", "") == tool_name:
+            try:
                 return json.loads(msg.content)
+            except Exception:
+                return {"raw": msg.content}
     return None
 ```
 
 **Why reversed:** The most recent call of a given tool is the relevant one. If `rag_search` was called multiple times (unlikely but possible), we want the latest result.
+
+#### `_extract_all_tool_calls_and_results()` — handling multiple tool calls in one turn
+
+```python
+def _extract_all_tool_calls_and_results(messages: list, tool_name: str) -> list[dict]:
+    """
+    Return ALL (args, result) pairs for a given tool across the message list.
+    Used to clean up unanswered_queue when multiple tickets are created
+    in one turn (e.g. user says "all").
+    """
+    # Collect all tool_calls from AIMessages
+    call_args_list = []
+    for msg in messages:
+        if isinstance(msg, AIMessage):
+            for tc in getattr(msg, "tool_calls", []):
+                if tc.get("name") == tool_name:
+                    call_args_list.append(tc.get("args", {}))
+    
+    # Collect all results from ToolMessages
+    results = []
+    for msg in messages:
+        if isinstance(msg, ToolMessage) and getattr(msg, "name", "") == tool_name:
+            try:
+                results.append(json.loads(msg.content))
+            except Exception:
+                results.append({})
+    
+    # Zip together: (call_args, result) pairs in order
+    pairs = []
+    for args, result in zip(call_args_list, results):
+        pairs.append({"args": args, "result": result})
+    return pairs
+```
+
+**Why this function exists:** When user says "create tickets for all [unanswered questions]", the agent dispatches multiple `create_support_ticket` calls in one turn. The ToolNode executes all of them and collects results. This function reconstructs (call_args, result) pairs so `update_mem` can match which queue items were successfully ticketed.
 
 #### `_should_continue()` — the routing function
 

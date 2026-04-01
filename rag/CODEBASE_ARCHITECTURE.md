@@ -2,31 +2,32 @@
 
 ## Executive Summary
 
-**CiteRagLab** is an enterprise RAG (Retrieval-Augmented Generation) system that lets employees query a company's Notion document library in natural language and receive cited, grounded answers. It is built on a multi-stage LangGraph pipeline, Azure OpenAI embeddings and GPT-4.1-mini, Milvus Lite as the vector store, and Redis for session memory and retrieval caching.
+**CiteRagLab** is an enterprise **Retrieval-Augmented Generation (RAG)** system that lets employees query a company's Notion document library in natural language and receive cited, grounded answers. It is built on a multi-stage LangGraph pipeline with Azure OpenAI (GPT-4.1-mini for answering, text-embedding-3-large for semantic search), Milvus Lite as the local vector store, and Redis for optional session memory and retrieval caching.
 
-**StateCase** is a LangGraph tool-calling ticketing agent that sits on top of CiteRagLab. When the RAG system cannot answer a question (low retrieval score), StateCase offers to raise a support ticket in a Notion database, tracks ticket lifecycle (create / update / list), and manages the yes/no confirmation flow across conversation turns using Redis-persisted memory.
+**StateCase** is a **LangGraph tool-calling agent** that sits on top of CiteRagLab. When the RAG system cannot answer a question (low retrieval score), StateCase offers to raise a support ticket in a Notion database, tracks ticket lifecycle (create / update / list), and manages the yes/no confirmation flow across conversation turns using Redis-persisted memory.
 
-Both systems share a single FastAPI backend on port 8001, a single Redis instance, and a single Streamlit UI.
+Both systems share a single FastAPI backend (port 8001), an optional Redis instance, and a single Streamlit UI (port 8501).
 
 ---
 
 ### Core Capabilities
 
 **CiteRagLab**
-- **Adaptive routing**: LangGraph classifies every query into QA / COMPARE / SUMMARIZE / SEARCH / GREETING and adjusts retrieval pool size and response format accordingly
-- **Corrective RAG**: if the first retrieval pass scores below 0.65, the query is automatically rewritten using conversation history and re-retrieved; the better-scoring result is kept
-- **Grounded citations**: every answer carries numbered `[N]` inline citations linking to the exact Notion page, section, document type, version, and score
-- **Score gate**: avg COSINE score < 0.30 triggers an out-of-scope response without calling the LLM — zero hallucination on uncovered topics
-- **Multi-turn memory**: session history stored in Redis per session; last 6 prior user turns injected into the LLM context for follow-up question awareness
-- **RAGAS evaluation**: built-in evaluation tab measuring faithfulness, answer relevancy, context precision, and context recall using Azure OpenAI as the judge
+- **Adaptive routing**: LangGraph classifies every query into QA / COMPARE / SUMMARIZE / SEARCH / GREETING and adjusts retrieval pool size and response format accordingly. Falls back to heuristics if the LLM is unavailable.
+- **Corrective RAG**: if the first retrieval pass scores below 0.65, the query is automatically rewritten using conversation history and re-retrieved; the better-scoring result is kept. Prevents weak retrievals from poisoning the answer.
+- **Grounded citations**: every answer carries numbered `[N]` inline citations linking to the exact Notion page, section, document type, version, and COSINE similarity score. Answers are never hallucinated — they must be grounded in retrieved documents.
+- **Score gate**: if avg COSINE score < 0.30 (configurable), the topic is out-of-scope and a clean "not found" response is returned without calling the LLM. Zero hallucination on uncovered topics.
+- **Multi-turn memory**: session history stored in Redis per session (or in-memory if Redis unavailable); last 6 prior user turns injected into the LLM context for follow-up question awareness.
+- **RAGAS evaluation**: built-in evaluation tab measuring faithfulness, answer relevancy, context precision, and context recall using Azure OpenAI as the judge.
 
 **StateCase**
-- **Tool-calling agent**: five `@tool`-decorated functions bound to GPT-4.1-mini via `bind_tools()`; the LLM decides which tool to call based on user intent — no hard-coded routing
-- **Confirmation flow**: when RAG cannot answer, the agent stores `pending_ticket_context` in Redis and asks the user "shall I raise a ticket?" — ticket is created only on explicit confirmation
-- **Idempotent ticket creation**: SHA-256 dedup key stored in Notion `User Info` field; duplicate creation attempts return the existing ticket
-- **Sequential ticket ID**: atomic Redis `INCR` on `statecase:ticket_counter` generates `SC-0001`, `SC-0002`, … with no race conditions
-- **UUID auto-resolution**: if the LLM passes a ticket title instead of a Notion page UUID when updating, `find_ticket_by_title()` resolves it automatically
-- **Ticket board UI**: separate Streamlit tab with status/priority/owner inline editing, summary metrics, and a manual ticket creation form
+- **Tool-calling agent**: five `@tool`-decorated functions bound to GPT-4.1-mini via `bind_tools()`; the LLM decides which tool to call based on user intent. No hard-coded routing — the LLM orchestrates the flow.
+- **Multi-turn confirmation flow**: when RAG cannot answer, the agent stores `pending_ticket_context` in Redis and asks the user "shall I raise a ticket?" For multiple unanswered questions, accumulates them in `unanswered_queue` and asks the user to pick one or create for "all". Tickets are created only on explicit confirmation.
+- **Three-layer deduplication**: Layer 1 (exact hash match) prevents double-clicks. Layer 2 (title substring) catches minor rephrasing. Layer 3 (key-term search) catches semantic duplicates. Returns `is_duplicate: true/false` flag so LLM can notify user if ticket already existed.
+- **Sequential ticket ID**: atomic Redis `INCR` on `statecase:ticket_counter` generates `SC-0001`, `SC-0002`, … with no race conditions.
+- **Multi-ticket creation**: when user says "create tickets for all [questions]", the LLM dispatches multiple `create_support_ticket` calls in one turn. The `update_mem` node uses word-overlap scoring to match which queue items were successfully ticketed, even if the LLM rephrased the questions slightly.
+- **UUID auto-resolution**: if the LLM passes a ticket title instead of a Notion page UUID when updating, `find_ticket_by_title()` resolves it automatically. Reduces friction.
+- **Ticket board UI**: separate Streamlit tab with status/priority/owner inline editing, summary metrics, and a manual ticket creation form.
 
 ---
 

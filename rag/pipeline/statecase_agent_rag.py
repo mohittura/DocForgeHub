@@ -239,7 +239,7 @@ If there is a pending_ticket_context in memory and the user gives a NO → ackno
 
 ### Intent → Greeting / Meta
 Greetings ("hi", "hello", "hey", "sup", "yo") → respond warmly, introduce yourself.
-Meta ("what can you do", "help", "?") → list your capabilities briefly but dont explain at architecture level and max 4-5 bullet points.
+Meta ("what can you do", "help", "?") → list your capabilities briefly.
 
 ### Intent → Ambiguous / Can't tell
 If you genuinely cannot determine intent:
@@ -276,8 +276,9 @@ Step 6. No unanswered questions in memory → use user's current message as ques
 BEFORE STEP 5 IF A PERSON SAYS SOMETHING LIKE "no for all of them" THEN ACKNOWLEDGE AND CLEAR THE UNANSWERED QUEUE WITHOUT CREATING ANY TICKETS.
 
 Always provide: question, session_id (from memory), description (auto-derive), priority (default Medium).
-Report: ticket ID, priority, status, Notion URL.
-
+After calling create_support_ticket, check the result:
+- is_duplicate=False → "✅ Ticket [ID] created successfully. [URL]"
+- is_duplicate=True  → "A ticket for this question already exists ([ID]). No new ticket was created. [URL]"
 ### Workflow C — Update a ticket (NEVER SKIP STEP 1)
 1. Call list_support_tickets (no filter, limit=100) to get ALL tickets.
 2. From the results, find the ticket the user is referring to:
@@ -453,19 +454,43 @@ def _build_memory_context(memory: dict, session_id: str = "") -> str:
     return "\n".join(lines) if lines else "(no prior context)"
 
 def _extract_tool_result(messages: list, tool_name: str) -> Optional[dict]:
-    """
-    Find the most recent ToolMessage for a given tool name and parse its content.
-    Returns None if not found or not parseable as JSON.
-    """
+    """Find the most recent ToolMessage for a given tool name."""
     for msg in reversed(messages):
-        if isinstance(msg, ToolMessage):
-            # ToolMessage.name holds the tool that was called
-            if getattr(msg, "name", "") == tool_name:
-                try:
-                    return json.loads(msg.content)
-                except Exception:
-                    return {"raw": msg.content}
+        if isinstance(msg, ToolMessage) and getattr(msg, "name", "") == tool_name:
+            try:
+                return json.loads(msg.content)
+            except Exception:
+                return {"raw": msg.content}
     return None
+
+
+def _extract_all_tool_calls_and_results(messages: list, tool_name: str) -> list[dict]:
+    """
+    Return ALL (args, result) pairs for a given tool across the message list.
+    Used to clean up the unanswered_queue when multiple tickets are created
+    in one turn (e.g. user says "all").
+    """
+    # Build a parallel list of (AIMessage tool_call args, ToolMessage result)
+    pairs = []
+    # Collect all AIMessages that have tool_calls for this tool
+    call_args_list = []
+    for msg in messages:
+        if isinstance(msg, AIMessage):
+            for tc in getattr(msg, "tool_calls", []):
+                if tc.get("name") == tool_name:
+                    call_args_list.append(tc.get("args", {}))
+    # Collect all ToolMessages for this tool
+    results = []
+    for msg in messages:
+        if isinstance(msg, ToolMessage) and getattr(msg, "name", "") == tool_name:
+            try:
+                results.append(json.loads(msg.content))
+            except Exception:
+                results.append({})
+    # Zip them together (order matches — LangGraph preserves call order)
+    for args, result in zip(call_args_list, results):
+        pairs.append({"args": args, "result": result})
+    return pairs
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -626,19 +651,52 @@ def _node_update_memory_after_tools(state: StateCaseAgentState) -> dict:
             memory["last_answer_summary"] = ans[:150] + ("…" if len(ans) > 150 else "")
             logger.info("✅ [%s] answered — summary stored", trace_id)
 
-    if ticket_result and ticket_result.get("success"):
+    # Process ALL ticket creations this turn (handles "all" case with multiple tickets)
+    all_ticket_pairs = _extract_all_tool_calls_and_results(messages, "create_support_ticket")
+    successful_tickets = [(p["args"], p["result"]) for p in all_ticket_pairs
+                          if p["result"].get("success")]
+    if successful_tickets:
         memory.pop("pending_ticket_context", None)
-        memory["last_ticket_id"] = ticket_result.get("ticket_id", "")
-        created_q = ticket_result.get("question", "")
-        if created_q:
-            norm = created_q.strip().lower()
+        memory["last_ticket_id"] = successful_tickets[-1][1].get("ticket_id", "")
+
+        queue = memory.get("unanswered_queue", [])
+
+        # If the number of tickets created >= queue size, the user said "all" —
+        # clear the entire queue rather than trying to match individual questions.
+        if len(successful_tickets) >= len(queue):
+            memory["unanswered_queue"] = []
+            logger.info("🎫 [%s] %d ticket(s) created (all) — queue cleared",
+                        trace_id, len(successful_tickets))
+        else:
+            # Partial creation — remove matched questions using word-overlap scoring.
+            # Exact/substring match first; fall back to ≥50% word overlap to handle
+            # cases where the LLM rephrased the question slightly.
+            created_norms = [args.get("question", "").strip().lower()
+                             for args, _ in successful_tickets
+                             if args.get("question", "").strip()]
+
+            def _words(s):
+                return set(s.lower().split())
+
+            def _is_matched(q_text: str) -> bool:
+                qn = q_text.strip().lower()
+                for cn in created_norms:
+                    # Exact or substring
+                    if cn in qn or qn in cn:
+                        return True
+                    # Word overlap ≥ 50% of the shorter string's words
+                    qw, cw = _words(qn), _words(cn)
+                    shorter = min(len(qw), len(cw))
+                    if shorter > 0 and len(qw & cw) / shorter >= 0.5:
+                        return True
+                return False
+
             memory["unanswered_queue"] = [
-                q for q in memory.get("unanswered_queue", [])
-                if q["question"].strip().lower() != norm
+                q for q in queue if not _is_matched(q["question"])
             ]
-        logger.info("🎫 [%s] ticket=%s  queue_remaining=%d",
-                    trace_id, memory["last_ticket_id"],
-                    len(memory.get("unanswered_queue", [])))
+            logger.info("🎫 [%s] %d ticket(s) created — last=%s  queue_remaining=%d",
+                        trace_id, len(successful_tickets), memory["last_ticket_id"],
+                        len(memory.get("unanswered_queue", [])))
     return {"memory": memory}
 
 

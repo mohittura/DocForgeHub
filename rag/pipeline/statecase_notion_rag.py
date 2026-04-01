@@ -253,13 +253,13 @@ def create_ticket(
         existing = _find_by_dedup(dedup)
         if existing:
             logger.info("♻️  Dedup hit (hash) — returning existing ticket_id=%s", existing["ticket_id"])
-            return existing
+            return {**existing, "is_duplicate": True}
 
         # Layer 2: title substring match (Notion contains filter)
         similar = find_ticket_by_title(question[:120])
         if similar:
             logger.info("♻️  Dedup hit (title match) — returning existing ticket_id=%s", similar["ticket_id"])
-            return similar
+            return {**similar, "is_duplicate": True}
 
         # Layer 3: key-term Notion search — searches ALL tickets, no 50-ticket
         # ceiling, no false positives from generic words. Extracts 2-3 distinctive
@@ -267,7 +267,7 @@ def create_ticket(
         key_match = _find_by_key_terms(question)
         if key_match:
             logger.info("♻️  Dedup hit (key terms) — returning existing ticket_id=%s", key_match["ticket_id"])
-            return key_match
+            return {**key_match, "is_duplicate": True}
 
     ticket_id = _get_next_ticket_id()
     sources_str = ", ".join(attempted_sources) if attempted_sources else "None"
@@ -303,7 +303,7 @@ def create_ticket(
             "   ✅ Ticket created — ticket_id=%s  notion_page_id=%s",
             ticket["ticket_id"], ticket["notion_page_id"],
         )
-        return ticket
+        return {**ticket, "is_duplicate": False}
     except Exception as err:
         logger.error("   ❌ create_ticket failed: %s", err)
         raise

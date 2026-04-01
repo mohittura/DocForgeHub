@@ -118,25 +118,8 @@ def rag_search(
     # We pull titles from the raw "chunks" list (all Milvus hits before filtering)
     # and fall back to citations if the pipeline didn't surface raw chunks.
     raw_chunks = result.get("chunks", [])
-    if raw_chunks:
-        attempted_sources = sorted({c.get("title","").strip() for c in raw_chunks if c.get("title","").strip()})
-    elif citations:
-        attempted_sources = sorted({c.get("title","").strip() for c in citations if c.get("title","").strip()})
-    else:
-        # Score gate fired — pipeline returned empty chunks AND empty citations.
-        # Call the retriever directly so we still get the titles of what was tried.
-        try:
-            from rag.retrieval.retriever_rag import retrieve
-            from rag.retrieval.filters_rag   import build_filters
-            _f = build_filters(raw_filters) if raw_filters else None
-            attempted_sources = sorted({
-                c.get("title","").strip()
-                for c in retrieve(query, top_k=5, filters=_f)
-                if c.get("title","").strip()
-            })
-        except Exception as exc:
-            logger.warning("attempted_sources fallback failed: %s", exc)
-            attempted_sources = []
+    title_pool = raw_chunks if raw_chunks else citations
+    attempted_sources = sorted({c.get("title", "").strip() for c in title_pool if c.get("title", "").strip()})
 
     logger.info(
         "   ✅ [tool:rag_search] score=%.4f  answerable=%s  citations=%d  attempted_sources=%d",
@@ -194,7 +177,10 @@ def create_support_ticket(
         notion_page_id  (str)  — Notion page UUID for updates
         status          (str)  — always "Not started" on creation
         url             (str)  — direct Notion URL for the ticket
-        success         (bool) — True if ticket was created successfully
+        success         (bool) — True if ticket was created or already exists
+        is_duplicate    (bool) — True if this ticket already existed (dedup hit).
+                                 If True, tell the user the ticket already exists
+                                 and show the existing URL — do NOT say "created".
     """
     from rag.pipeline.statecase_notion_rag import create_ticket
 
@@ -215,7 +201,9 @@ def create_support_ticket(
             attempted_sources=sources_list or None,
             user_info=user_info,
         )
-        logger.info("   ✅ [tool:create_support_ticket] ticket_id=%s", ticket.get("ticket_id"))
+        is_dup = ticket.get("is_duplicate", False)
+        logger.info("   ✅ [tool:create_support_ticket] ticket_id=%s  is_duplicate=%s",
+                     ticket.get("ticket_id"), is_dup)
         return {**ticket, "success": True}
     except Exception as err:
         logger.error("   ❌ [tool:create_support_ticket] error: %s", err)

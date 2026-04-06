@@ -1,3 +1,20 @@
+"""
+agent.prompts — LLM prompt templates for document generation.
+
+Templates:
+  - SYSTEM_PROMPT_TEMPLATE: Senior SaaS doc specialist (main generation)
+  - SECTION_ONLY_PROMPT_TEMPLATE: Single-section generation with Q&A context
+  - TABLE_ONLY_PROMPT_TEMPLATE: Structured data table generation
+  - GAP_FILLER_PROMPT_TEMPLATE: Missing section content generation
+  - QUALITY_REVIEW_PROMPT_TEMPLATE: Final document tone/clarity review
+
+Builders:
+  - build_system_prompt(department, doc_type, schema, qa): Format main prompt
+  - build_section_only_prompt(section_title, required_fields, qa): Section-specific
+  - build_table_only_prompt(columns, data): Table generation
+  - build_gap_filler_prompt(gap_list, context): Gap filling
+  - build_quality_review_prompt(document): Quality review
+"""
 SYSTEM_PROMPT_TEMPLATE = """\
 You are a **senior SaaS document specialist** with 15+ years of experience creating audit-ready, \
 executive-level business documents for Fortune 500 SaaS organizations.
@@ -475,6 +492,8 @@ def build_quality_review_prompt(
     generated_document: str,
 ) -> str:
     """Build the prompt for LLM-based quality review."""
+
+
     return QUALITY_REVIEW_PROMPT.format(
         department=department,
         document_type=document_type,

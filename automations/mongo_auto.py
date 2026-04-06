@@ -4,6 +4,8 @@ from typing import Dict, Any, List
 from datetime import datetime
 from pymongo import MongoClient, ASCENDING, errors
 from pathlib import Path
+import sys
+import traceback
 
 
 class DepartmentBasedMongoDBIntegration:
@@ -525,7 +527,8 @@ class DepartmentBasedMongoDBIntegration:
 
 def main():
     """Main entry point for batch upload"""
-    import sys
+
+
     
     print(f"\n{'='*70}")
     print("DEPARTMENT-BASED MONGODB INTEGRATION")
@@ -604,7 +607,6 @@ def main():
     except Exception as e:
         print(f"\n❌ Error: {e}")
         print("   Make sure MongoDB is running and accessible")
-        import traceback
         traceback.print_exc()
         sys.exit(1)
 

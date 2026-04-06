@@ -1,6 +1,19 @@
-import os
-from motor.motor_asyncio import AsyncIOMotorClient #pymongo driver to connect to databases.
+"""
+api.db — Async MongoDB client singleton using Motor.
+
+Provides:
+  - get_client(): AsyncIOMotorClient singleton
+  - get_db(): Database instance ("document_automation")
+  - close_client(): Async cleanup on shutdown
+
+Connection string via MONGODB_CONNECTION_STRING env var.
+Used across all modules for document_qas, questions, and generated documents collections.
+"""
+
 from dotenv import load_dotenv
+from motor.motor_asyncio import AsyncIOMotorClient #pymongo driver to connect to databases.
+import os
+
 
 load_dotenv()
 

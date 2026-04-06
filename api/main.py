@@ -1,3 +1,19 @@
+"""
+api.main — FastAPI backend for DocForgeHub and CiteRagLab.
+
+Provides REST endpoints for:
+  - Document generation and QA extraction (DocForgeHub)
+  - RAG retrieval and chat (CiteRagLab)
+  - Ticket tracking and management (StateCase)
+  - Notion integration (sync, publish, query)
+
+Key routes:
+  - POST /generate-document: Generate documents using agent
+  - GET /departments: List available departments
+  - POST /chat: CiteRagLab chat endpoint
+  - POST /ingest: Upload documents to vector DB
+  - POST /tickets: Create/update StateCase tickets
+"""
 import os
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, Query, HTTPException

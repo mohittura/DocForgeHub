@@ -1,3 +1,24 @@
+"""
+agent.agent_graph — LangGraph-based document generation agent.
+
+5-node orchestration pipeline:
+  1. node_generate: LLM generates content from Q&A + system prompts
+  2. node_validate: Validates structure, detects gaps, tables
+  3. node_handle_gaps: Fills missing sections with gap-filler LLM
+  4. node_quality_check: Final pass on tone, clarity, completeness
+  5. node_return_draft: Format and return final document
+
+Key functions:
+  - run_agent(): Full document generation pipeline
+  - generate_single_section(): Single section generation (for gaps)
+  - analyze_gaps_only(): Gap detection without full generation
+  - execute_graph(): Low-level graph execution
+
+Configuration:
+  - Primary LLM: Azure OpenAI (AZURE_LLM_DEPLOYMENT_41_MINI)
+  - Gap-filling LLM: ChatGroq (groq-3.5-sonnet or fallback)
+  - Model-specific prompt builders for tables, sections, quality review
+"""
 import os
 import json
 import logging

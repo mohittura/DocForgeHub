@@ -46,6 +46,7 @@ from datetime import datetime, timezone
 from notion_client import Client
 from notion_client.errors import APIResponseError
 from dotenv import load_dotenv
+from nltk.corpus import stopwords
 
 load_dotenv()
 
@@ -433,37 +434,56 @@ def _extract_key_terms(question: str) -> list[str]:
     """
     Extract up to 3 specific/distinctive words from a question for dedup matching.
 
-    Strips two layers of stopwords:
-    1. Common English function words
-    2. Domain-generic HR/policy words that appear in nearly every question
-       (policy, company, employee, workplace, etc.) — these cause false positives
+    Strategy: Remove stopwords + filter by length (>4 chars).
+    Longer words tend to be more specific (e.g., "termination" vs "policy").
 
-    Sorts by length descending (longer = more specific), returns top 3.
+    Uses:
+    1. Common English stopwords (via nltk if available, else fallback list)
+    2. Domain-specific HR/policy words (company, policy, employee, etc.)
+    3. Length filter (words > 4 chars are more likely to be specific)
+
+    Sorts by length descending, returns top 3.
 
     Examples:
       "policy for unlawful termination of an employee" → ["termination", "unlawful"]
       "Lack of policy for unlawful termination involving management misconduct"
                                                        → ["termination", "management", "misconduct"]
       "what is the shoes policy in the company"        → ["shoes"]
-      "what is the pet policy of the company"          → []    ← no specific terms
+      "what is the pet policy of the company"          → ["policy"]  ← no specific terms left
     """
-    _STOPWORDS = {
-        # Common function words
-        "what", "is", "the", "a", "an", "of", "for", "in", "on", "at", "to",
-        "and", "or", "are", "does", "do", "my", "our", "about", "can", "we",
-        "how", "this", "that", "with", "its", "i", "by", "be", "was", "were",
-        "has", "have", "had", "it", "if", "any", "all", "from", "get", "give",
-        "will", "would", "could", "should", "who", "when", "where", "which",
-        "there", "their", "they", "them", "than", "then", "into", "also",
-        "lack", "need", "want", "make", "just", "more", "some", "such",
-        # Domain-generic HR words — present in almost every question, not distinctive
+    # Try to load NLTK stopwords; fallback to minimal list if not available
+    try:
+        
+        _common_stopwords = set(stopwords.words('english'))
+    except (ImportError, LookupError):
+        # Minimal fallback stopword list
+        _common_stopwords = {
+            "what", "is", "the", "a", "an", "of", "for", "in", "on", "at", "to",
+            "and", "or", "are", "does", "do", "my", "our", "about", "can", "we",
+            "how", "this", "that", "with", "its", "i", "by", "be", "was", "were",
+            "has", "have", "had", "it", "if", "any", "all", "from", "get", "give",
+            "will", "would", "could", "should", "who", "when", "where", "which",
+            "there", "their", "they", "them", "than", "then", "into", "also",
+        }
+
+    # Domain-specific HR/policy words that are too generic to be distinctive
+    _domain_stopwords = {
         "policy", "company", "employee", "employees", "workplace", "office",
         "work", "working", "human", "resources", "procedure", "process",
         "rules", "rule", "regulation", "guidelines", "guideline",
+        "premises", "area", "building", "location", "place", "room", "floor",
+        "site", "space", "zone", "section", "department", "team",
+        "related", "concern", "matter", "issue", "question", "asked",
+        "allow", "allowed", "permission", "permit", "require", "required",
+        "applicable", "apply", "applies",
     }
+
+    combined_stopwords = _common_stopwords | _domain_stopwords
+
+    # Extract words > 4 chars (longer words tend to be more specific)
     words = [
         w.strip("?.,!:-") for w in question.lower().split()
-        if w.strip("?.,!:-") not in _STOPWORDS and len(w.strip("?.,!:-")) > 3
+        if w.strip("?.,!:-") not in combined_stopwords and len(w.strip("?.,!:-")) > 4
     ]
     words.sort(key=len, reverse=True)
     return words[:3]
@@ -471,16 +491,16 @@ def _extract_key_terms(question: str) -> list[str]:
 
 def _find_by_key_terms(question: str) -> dict | None:
     """
-    Layer 3 dedup: search Notion for each specific key term from the question.
+    Layer 3 dedup: search Notion for matching specific key terms from the question.
 
     Why this beats word-overlap and the 50-ticket limit:
     - Searches Notion directly → covers ALL tickets, not just recent 50
     - Uses only specific terms (stopwords + domain-generic words removed)
-      → "shoes policy" and "pet policy" share no specific terms → no false positive
-    - Threshold: ≥ 1 shared specific term → enough because specific terms like
-      "termination", "misconduct", "bereavement" are highly distinctive
-      e.g. "policy for unlawful termination" and "unlawful termination involving
-      management misconduct" share "termination" → correctly flagged as duplicate
+      → avoids false positives from words like "related", "premises", "policy"
+    - Threshold: ≥ 2 shared specific terms → conservative to avoid false positives
+      e.g. "unlawful termination policy" and "unlawful termination procedures"
+      share ["termination", "unlawful"] → correctly flagged as duplicate
+      BUT "tiffin box policy" and "toy policy" share nothing → NOT a duplicate
     """
     terms = _extract_key_terms(question)
     if not terms:
@@ -512,11 +532,13 @@ def _find_by_key_terms(question: str) -> dict | None:
         except Exception as err:
             logger.warning("⚠️  _find_by_key_terms term='%s': %s", term, err)
 
-    # ≥1 shared specific term = duplicate (specific terms are highly distinctive)
+    # ≥2 shared specific terms = duplicate (conservative threshold to avoid false positives)
+    # Even with expanded stopwords, requiring 2+ matches ensures we only catch
+    # truly related questions, not just ones sharing a generic noun like "shoes" or "dress code"
     for ticket in candidates:
         existing_terms = set(_extract_key_terms(ticket.get("question", "")))
         shared = new_terms & existing_terms
-        if len(shared) >= 1:
+        if len(shared) >= 2:
             logger.info(
                 "♻️  Key-term dedup hit (shared=%s) — new='%s…' existing='%s…'",
                 shared, question[:60], ticket.get("question", "")[:60],

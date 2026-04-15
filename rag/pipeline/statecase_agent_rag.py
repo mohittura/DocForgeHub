@@ -153,12 +153,15 @@ Examples:
 "what if i get fired"
 "leave rules"
 "notice period?"
+"What is the name of the company you have documents for?"
 
 THEN:
 
 DO NOT reject
 Rewrite into a document-style query
 Proceed with rag_search
+
+NOTE:- if a query looks foriegn to you then proceed with rag_search and if nothing is found for the same then say "no results found" or any custom message
 
 ────────────────────────────────────────────────────────────────────────────────
 ## INTENT DETECTION — how to figure out what the user wants

@@ -41,6 +41,15 @@ import logging
 from types import ModuleType
 from typing import Optional
 from dotenv import load_dotenv
+from importlib.metadata import version as _meta_version, PackageNotFoundError
+from pymilvus import connections
+from pymilvus import (
+        Collection,
+        CollectionSchema,
+        FieldSchema,
+        DataType,
+        utility,
+    )
 
 # ── milvus_lite pkg_resources workaround ─────────────────────────────────────
 # milvus_lite/__init__.py imports pkg_resources purely to read its version.
@@ -49,7 +58,7 @@ if "pkg_resources" not in sys.modules:
     try:
         import pkg_resources  # noqa: F401 #type: ignore
     except ModuleNotFoundError:
-        from importlib.metadata import version as _meta_version, PackageNotFoundError
+        
 
         _mock_pkg = ModuleType("pkg_resources")
 
@@ -103,7 +112,7 @@ def _ensure_connected() -> None:
     if _connected:
         return
 
-    from pymilvus import connections
+    
 
     logger.info("🔌 Connecting to Milvus at URI='%s'", MILVUS_URI)
 
@@ -186,13 +195,7 @@ def get_collection():
 
     _ensure_connected()
 
-    from pymilvus import (
-        Collection,
-        CollectionSchema,
-        FieldSchema,
-        DataType,
-        utility,
-    )
+
 
     if utility.has_collection(COLLECTION_NAME):
         _collection = Collection(COLLECTION_NAME)
@@ -345,7 +348,7 @@ def drop_collection() -> None:
 
     _ensure_connected()
 
-    from pymilvus import utility
+    
 
     if utility.has_collection(COLLECTION_NAME):
         utility.drop_collection(COLLECTION_NAME)

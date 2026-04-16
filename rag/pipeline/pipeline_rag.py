@@ -41,6 +41,7 @@ from rag.pipeline.reranker_rag        import rerank
 from rag.pipeline.prompts_rag         import SYSTEM_PROMPT_BY_MODE, RAG_SYSTEM_PROMPT, GREETING_RESPONSE, OUT_OF_SCOPE_RESPONSE, OUT_OF_SCOPE_SCORE_THRESHOLD
 from rag.retrieval.retriever_rag      import retrieve, format_context_for_prompt
 from rag.retrieval.filters_rag        import build_filters
+from langchain_core.messages import AIMessage
 
 load_dotenv()
 
@@ -190,7 +191,7 @@ def run_rag_pipeline(
     # factual truth — the system prompt enforces this explicitly.
     lc_messages = [SystemMessage(content=system_prompt)]
     if session_history:
-        from langchain_core.messages import AIMessage
+        
         prior_turns = session_history[-6:]   # last 3 exchanges max
         for turn in prior_turns:
             role    = turn.get("role", "user")

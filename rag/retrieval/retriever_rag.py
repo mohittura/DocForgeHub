@@ -30,6 +30,7 @@ import logging
 from typing import Optional
 from openai import AzureOpenAI
 from dotenv import load_dotenv
+from rag.retrieval.milvus_client_rag import hybrid_search_chunks
 
 load_dotenv()
 
@@ -105,7 +106,7 @@ def retrieve(
     filters supported keys: industry, doc_type, version, tags
     (pre-validated by filters_rag.build_filters)
     """
-    from rag.retrieval.milvus_client_rag import hybrid_search_chunks
+    
 
     logger.info(
         "📥 retrieve — query='%s…'  top_k=%d  filters=%s",

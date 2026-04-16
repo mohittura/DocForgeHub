@@ -46,7 +46,10 @@ from datetime import datetime, timezone
 from notion_client import Client
 from notion_client.errors import APIResponseError
 from dotenv import load_dotenv
-from nltk.corpus import stopwords
+import nltk
+from nltk.corpus import stopwords 
+nltk.download('stopwords')
+import redis
 
 load_dotenv()
 
@@ -130,7 +133,7 @@ def _get_next_ticket_id() -> str:
     is unavailable.
     """
     try:
-        import redis
+        
         r = redis.from_url(os.getenv("REDIS_URL", "redis://localhost:6379"), socket_connect_timeout=2)
         n = r.incr("statecase:ticket_counter")
         return f"SC-{int(n):04d}"

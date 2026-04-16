@@ -22,6 +22,9 @@ Install deps:
 import os
 import logging
 from dotenv import load_dotenv
+from langchain_openai import AzureOpenAIEmbeddings
+from langchain_openai import AzureChatOpenAI
+import traceback
 
 load_dotenv()
 
@@ -30,7 +33,7 @@ logger = logging.getLogger("rag.evaluation.ragas_runner_rag")
 
 def _build_azure_llm():
     """Build a LangChain AzureChatOpenAI instance for RAGAS to use as its judge."""
-    from langchain_openai import AzureChatOpenAI
+    
     return AzureChatOpenAI(
         azure_deployment=os.getenv("AZURE_LLM_DEPLOYMENT_41_MINI", "gpt-4.1-mini"),
         azure_endpoint=os.getenv("AZURE_LLM_ENDPOINT", ""),
@@ -42,7 +45,7 @@ def _build_azure_llm():
 
 def _build_azure_embeddings():
     """Build a LangChain AzureOpenAIEmbeddings instance for RAGAS to use."""
-    from langchain_openai import AzureOpenAIEmbeddings
+    
     return AzureOpenAIEmbeddings(
         azure_deployment=os.getenv("AZURE_EMB_DEPLOYMENT", "text-embedding-3-large"),
         azure_endpoint=os.getenv("AZURE_EMB_ENDPOINT", ""),
@@ -149,7 +152,7 @@ def run_ragas_evaluation(
         "(faithfulness, relevancy, precision, recall)…"
     )
     try:
-        import traceback
+        
 
         # Instantiate metrics with Azure LLM and embeddings directly.
         # Newer RAGAS versions require metrics to be initialised with the

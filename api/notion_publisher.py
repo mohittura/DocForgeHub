@@ -33,6 +33,8 @@ import logging
 import re
 import time
 from typing import Any
+from notion_client.errors import APIResponseError
+import requests as _requests
 
 logger = logging.getLogger("docforge.notion_publisher")
 
@@ -430,7 +432,7 @@ def _append_blocks_with_backoff(
     Append `children` to `block_id` with exponential back-off on 429.
     Raises the underlying exception after MAX_RETRIES failures.
     """
-    from notion_client.errors import APIResponseError
+    
 
     for attempt in range(MAX_RETRIES):
         try:
@@ -586,7 +588,7 @@ def get_latest_version_for_title(
     "2.0", "3.0" etc. Any row whose Version field cannot be parsed as a float
     is silently skipped.
     """
-    import requests as _requests
+    
 
     def to_dashed(s: str) -> str:
         s = s.replace("-", "")

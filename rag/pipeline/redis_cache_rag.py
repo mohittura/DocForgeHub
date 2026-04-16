@@ -23,7 +23,7 @@ import hashlib
 import logging
 import os
 from typing import Any, Optional
-
+import redis.asyncio as aioredis
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -48,7 +48,7 @@ async def _get_client():
     if _client is not None:
         return _client
     try:
-        import redis.asyncio as aioredis
+        
         c = aioredis.from_url(
             REDIS_URL,
             decode_responses=True,

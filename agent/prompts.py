@@ -254,7 +254,8 @@ Return a Markdown list in this exact format:
 [Your suggested content — 2-4 professional sentences]
 
 If ALL schema sections are already well-covered by the Q&A, return exactly:
-"All sections are adequately covered."
+"All sections are adequately covered.
+Do not generate any additional content which is not part of the schema and not repeat any existing content."
 """
 
 

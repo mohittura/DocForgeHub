@@ -23,6 +23,11 @@ import logging
 from typing import Optional
 from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel, Field
+from rag.pipeline.statecase_agent_rag import run_statecase_agent
+from rag.pipeline.statecase_notion_rag import create_ticket
+from rag.pipeline.statecase_notion_rag import list_tickets
+from rag.pipeline.statecase_notion_rag import get_ticket
+from rag.pipeline.statecase_notion_rag import update_ticket
 
 logger = logging.getLogger("rag.api.statecase_routes_rag")
 
@@ -74,7 +79,7 @@ async def statecase_chat(req: StateCaseChatRequest):
         req.session_id, req.message[:60], req.filters or {},
     )
 
-    from rag.pipeline.statecase_agent_rag import run_statecase_agent
+    
 
     try:
         result = await run_statecase_agent(
@@ -121,7 +126,7 @@ async def create_ticket_endpoint(req: CreateTicketRequest):
         req.session_id, req.question[:60], req.priority,
     )
 
-    from rag.pipeline.statecase_notion_rag import create_ticket
+    
 
     try:
         ticket = create_ticket(
@@ -159,7 +164,7 @@ async def list_tickets_endpoint(
         status or "(all)", limit,
     )
 
-    from rag.pipeline.statecase_notion_rag import list_tickets
+    
 
     try:
         tickets = list_tickets(status_filter=status, limit=limit)
@@ -176,7 +181,7 @@ async def get_ticket_endpoint(notion_page_id: str):
     """Fetch a single ticket by its Notion page ID."""
     logger.info("🎫 GET /statecase/tickets/%s", notion_page_id)
 
-    from rag.pipeline.statecase_notion_rag import get_ticket
+    
 
     try:
         ticket = get_ticket(notion_page_id)
@@ -199,7 +204,7 @@ async def update_ticket_endpoint(notion_page_id: str, req: UpdateTicketRequest):
         notion_page_id, req.status, req.assigned_owner, req.priority,
     )
 
-    from rag.pipeline.statecase_notion_rag import update_ticket
+    
 
     try:
         ticket = update_ticket(

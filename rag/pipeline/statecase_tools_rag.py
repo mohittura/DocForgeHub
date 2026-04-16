@@ -42,6 +42,15 @@ Usage in the agent
 import logging
 from typing import Optional
 from langchain_core.tools import tool
+from rag.pipeline.pipeline_rag   import run_rag_pipeline
+from rag.pipeline.redis_cache_rag import get_session_history
+import asyncio, concurrent.futures
+from rag.pipeline.statecase_notion_rag import create_ticket
+from rag.pipeline.statecase_notion_rag import update_ticket, find_ticket_by_title
+import re
+from rag.pipeline.statecase_notion_rag import list_tickets
+from rag.retrieval.retriever_rag import retrieve, embed_text
+from rag.retrieval.filters_rag   import build_filters
 
 logger = logging.getLogger("rag.pipeline.statecase_tools_rag")
 
@@ -79,9 +88,7 @@ def rag_search(
         rewritten   (str)        — query after corrective RAG rewrite (if any)
         answerable  (bool)       — True if score >= 0.30 (document was found)
     """
-    from rag.pipeline.pipeline_rag   import run_rag_pipeline
-    from rag.pipeline.redis_cache_rag import get_session_history
-    import asyncio, concurrent.futures
+
 
     logger.info("🔧 [tool:rag_search] query='%s…'  session=%s", query[:60], session_id)
 
@@ -182,7 +189,7 @@ def create_support_ticket(
                                  If True, tell the user the ticket already exists
                                  and show the existing URL — do NOT say "created".
     """
-    from rag.pipeline.statecase_notion_rag import create_ticket
+    
 
     sources_list = [s.strip() for s in attempted_sources.split(",") if s.strip()] if attempted_sources else []
 
@@ -242,8 +249,7 @@ def update_support_ticket(
 
     Returns the updated ticket dict with success=True, or success=False + error.
     """
-    from rag.pipeline.statecase_notion_rag import update_ticket, find_ticket_by_title
-    import re
+    
 
     logger.info(
         "🔧 [tool:update_support_ticket] page_id=%s  status=%s  owner=%s  priority=%s",
@@ -311,7 +317,7 @@ def list_support_tickets(
         count    (int)        — number of tickets returned
         success  (bool)
     """
-    from rag.pipeline.statecase_notion_rag import list_tickets
+    
 
     logger.info(
         "🔧 [tool:list_support_tickets] status_filter=%s  limit=%d",
@@ -362,8 +368,7 @@ def retrieve_chunks(
         avg_score (float)
         success   (bool)
     """
-    from rag.retrieval.retriever_rag import retrieve, embed_text
-    from rag.retrieval.filters_rag   import build_filters
+
 
     logger.info(
         "🔧 [tool:retrieve_chunks] query='%s…'  top_k=%d", query[:60], top_k,

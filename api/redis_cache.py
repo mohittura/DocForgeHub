@@ -18,6 +18,7 @@ import json
 import logging
 import os
 from typing import Any
+import redis.asyncio as aioredis  # pip install redis
 
 logger = logging.getLogger("api.redis_cache")
 
@@ -34,7 +35,7 @@ async def _get_client():
     if _redis_client is not None:
         return _redis_client
     try:
-        import redis.asyncio as aioredis  # pip install redis
+        
         client = aioredis.from_url(REDIS_URL, decode_responses=True, socket_connect_timeout=2)
         await client.ping()
         _redis_client = client

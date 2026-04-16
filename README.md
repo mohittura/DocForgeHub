@@ -1,5 +1,5 @@
 # 📄 DocForgeHub
-
+#### for CiteRagLab and StateCase README go here [README.md](./rag/README.md)
 > **AI-Powered Intelligent Document Generation & Management System**
 
 An enterprise-grade platform that transforms user-supplied answers into schema-compliant, professionally-written business documents. Using a dual-LLM architecture, a 5-node LangGraph agent, intelligent gap analysis, and user-in-the-loop feedback, DocForgeHub ensures every generated document is complete, accurate, and publication-ready.
